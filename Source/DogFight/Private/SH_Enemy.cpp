@@ -3,6 +3,7 @@
 
 #include "SH_Enemy.h"
 #include "SH_EnemyFSM.h"
+#include <GameFramework/CharacterMovementComponent.h>
 
 // Sets default values
 ASH_Enemy::ASH_Enemy()
@@ -19,7 +20,8 @@ ASH_Enemy::ASH_Enemy()
 
 	fsm = CreateDefaultSubobject<USH_EnemyFSM>(TEXT("FSM")); //	에너미에 FSM컴포넌트 추가
 
-	// GetCharacterMovement()->bOrientRotationToMovement = true;  강사님께 물어보기
+	
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
