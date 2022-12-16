@@ -26,4 +26,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
+	class USH_EnemyFSM* fsm; // 적  AI 관리하는 FSM액터 컴포넌트
+
 };
