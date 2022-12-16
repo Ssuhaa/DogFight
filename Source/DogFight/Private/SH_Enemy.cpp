@@ -19,7 +19,7 @@ ASH_Enemy::ASH_Enemy()
 
 	fsm = CreateDefaultSubobject<USH_EnemyFSM>(TEXT("FSM")); //	에너미에 FSM컴포넌트 추가
 
-	// GetCharacterMovement()->bOrientRotationToMovement = true;
+	// GetCharacterMovement()->bOrientRotationToMovement = true;  강사님께 물어보기
 }
 
 // Called when the game starts or when spawned
