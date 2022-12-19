@@ -4,7 +4,8 @@
 #include "SH_Player.h"
 #include "GameFramework/SpringArmComponent.h"
 #include <Camera/CameraComponent.h>
-
+#include "SH_EnemyFSM.h"
+#include <Components/BoxComponent.h>
 
 
 // Sets default values
@@ -29,12 +30,18 @@ ASH_Player::ASH_Player()
 	//카메라 컴포넌트
 	camComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camComp->SetupAttachment(springArmComp); // 스프링암 컴포넌트에 카메라를 자식으로 붙임
-	camComp->bUsePawnControlRotation = false; //회전값이 들어오면 카메라를 회전시킬지 여부 
-
+	camComp->bUsePawnControlRotation = false; //회전값이 들어오면  카메라를 회전시킬지 여부 
+	
 	bUseControllerRotationYaw = true; //사용자의 입력에 따라  캐릭터를 회전시킬지 여부
 
 	JumpMaxCount = 2; //플레이어가 2단 점프가 가능하게 만들기
-
+	
+	
+	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackInteraction"));
+	boxComp->SetupAttachment(RootComponent);
+	boxComp->SetBoxExtent(FVector(100, 100, 100));
+	boxComp->SetCollisionProfileName(TEXT("Player"));
+	
 }
 
 // Called when the game starts or when spawned
@@ -63,6 +70,7 @@ void ASH_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ASH_Player::InputHorizontal); //프로젝트 입력 축매핑 Horizontal에 InputHorizontal 함수 바인딩
 	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ASH_Player::InputVertical); // 프로젝트 입력 축 매핑 Vertical에 InputVertical 함수 바인딩
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASH_Player::InputJump); //프로젝트 입력 축 매핑 Jump에 Jump 함수 바인딩
+	PlayerInputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, & ASH_Player::inputAttack); //프로젝트 입력축 매핑 Attack에 Attack 함수 바인딩
 }
 
 void ASH_Player::Move()
@@ -98,4 +106,27 @@ void ASH_Player:: InputVertical(float value)// 상하 이동 이벤트 입력처리 함수
 void ASH_Player::InputJump() //점프 이벤트 입력처리
 {
 	Jump();
+}
+
+void ASH_Player::inputAttack() //공격 이벤트 입력처리
+{
+	FVector startPos = camComp->GetComponentLocation(); //라인트레이스 처리 camComp를 다른 컴포넌트로 교체해야할 것으로 예상
+	FVector endPos = camComp->GetComponentLocation() + camComp->GetForwardVector() * 5000;
+	FHitResult hitInfo;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+
+	if (bHit) //만약 히트된것이 있고
+	{
+		//부딛힌 대상이 적인지 판단하기
+		auto enemy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM")); //에너미변수에 히트된 액터의 FSM을 저장.?
+		if (enemy)
+		{
+			auto enemyFSM = Cast<USH_EnemyFSM>(enemy);
+			enemyFSM->OnDamageProcess();
+			UE_LOG(LogTemp, Warning, TEXT("PlayerAttack!"));
+		}
+	}
+
 }

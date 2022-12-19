@@ -51,4 +51,18 @@ public:
 
 	UPROPERTY()
 	class ASH_Enemy* me; //소유액터 변수 선언
+
+	UPROPERTY(EditAnywhere,Category=FSM)
+	float attackRange = 150.0f; // 공격범위 변수 선언
+
+	UPROPERTY(EditAnywhere, Category=FSM)
+	float attackDelayTime = 2.0f; //공격대기시간 변수 선언
+
+	void OnDamageProcess(); //피격알림이벤트 함수 선언
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
+	int32 hp = 3; // 에너미 HP 변수선언
+
+	UPROPERTY(EditAnywhere, Category=FSM)
+	float damageDelayTime = 2.0f; //피격 대기시간 변수 선언
 };

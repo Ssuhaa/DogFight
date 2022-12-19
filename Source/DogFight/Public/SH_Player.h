@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SH_Player.generated.h"
 
+
 UCLASS()
 class DOGFIGHT_API ASH_Player : public ACharacter
 {
@@ -26,10 +27,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	class USpringArmComponent* springArmComp;//스프링암컴포넌트 변수 선언
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	class UCameraComponent* camComp;//카메라컴포넌트 변수 선언
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* boxComp; 
 
 
 	void Move(); // 플레이어 이동처리
@@ -44,6 +48,9 @@ public:
 	void InputHorizontal(float value); // 좌우이동 이벤트 입력처리
 	void InputVertical(float value);// 상하 이동 이벤트 입력처리
 	void InputJump(); //점프 이벤트 입력처리
+	void inputAttack(); //공격 이벤트 입력처리
 
+	
+	
 
 };

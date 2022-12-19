@@ -4,6 +4,8 @@
 #include "SH_Enemy.h"
 #include "SH_EnemyFSM.h"
 #include <GameFramework/CharacterMovementComponent.h>
+#include <GameFramework/Character.h>
+
 
 // Sets default values
 ASH_Enemy::ASH_Enemy()
@@ -22,6 +24,9 @@ ASH_Enemy::ASH_Enemy()
 
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	// GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
 }
 
 // Called when the game starts or when spawned
