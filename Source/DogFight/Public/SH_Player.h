@@ -36,7 +36,7 @@ public:
 	void Move(); // 플레이어 이동처리
 	
 	void Turn(float value);//좌우 회전입력처리
-	void LookUp(float value); //상하 회전입력처리
+	//void LookUp(float value); //상하 회전입력처리
 
 	UPROPERTY(EditAnywhere, Category=PlayerSetting)
 	float walkSpeed = 600; //이동속도

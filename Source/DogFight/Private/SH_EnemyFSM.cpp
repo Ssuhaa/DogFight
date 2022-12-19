@@ -83,7 +83,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack")); //공격로그
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Attack Player")); //공격로그
 		currentTime = 0; //경과시간 초기화
 	}
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
@@ -101,8 +101,17 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 		currentTime = 0;
 	}
 }
-void USH_EnemyFSM::DieState() // 죽음 상태 함수정의
+void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의, 파티애니멀즈상 넉백상태.
 {
+	
+	currentTime += GetWorld()->DeltaRealTimeSeconds;
+	if (currentTime > dieDelayTime)
+	{
+		hp = 3; //체력초기화
+		mState = EEnemyState::Idle; // 대기 스테이트 전환
+		currentTime = 0;
+		
+	}
 
 }
 
@@ -116,6 +125,7 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 	}
 	else // 체력이 0이면 죽음상태로 전환
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
 		mState = EEnemyState::Die;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("%d"), hp);

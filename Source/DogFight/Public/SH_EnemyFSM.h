@@ -65,4 +65,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float damageDelayTime = 2.0f; //피격 대기시간 변수 선언
+
+	UPROPERTY(EditAnywhere, Category=FSM)
+	float dieDelayTime = 10.0f; //넉백 대기시간 변수선언
 };

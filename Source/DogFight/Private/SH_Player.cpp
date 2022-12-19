@@ -24,7 +24,7 @@ ASH_Player::ASH_Player()
 	//스프링암 컴포넌트
 	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp")); //SpringArm 컴포넌트 생성
 	springArmComp->SetupAttachment(RootComponent); // 루트 컴포넌트에 자식으로 붙이기
-	springArmComp->SetRelativeLocation((FVector(0, 70, 90))); // 위치 수정
+	springArmComp->SetRelativeLocation(FVector(0, 70, 90)); // 위치 수정
 	springArmComp->TargetArmLength = 400; // 타깃과 카메라 사이에 충돌이 없을 경우 타깃과의 지정 거리
 	springArmComp->bUsePawnControlRotation = true; // 회전값이 들어오면 스프링암 컴포넌트를 회전시킬지 여부
 	//카메라 컴포넌트
@@ -61,7 +61,7 @@ void ASH_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ASH_Player::Turn); //프로젝트 입력 축 매핑 Turn에 Turn 함수 바인딩
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ASH_Player::LookUp); // 프로젝트 입력 축 매핑 LockUp에 LockUp 함수 바인딩
+	//PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ASH_Player::LookUp); // 프로젝트 입력 축 매핑 LockUp에 LockUp 함수 바인딩
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ASH_Player::InputHorizontal); //프로젝트 입력 축매핑 Horizontal에 InputHorizontal 함수 바인딩
 	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ASH_Player::InputVertical); // 프로젝트 입력 축 매핑 Vertical에 InputVertical 함수 바인딩
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ASH_Player::InputJump); //프로젝트 입력 축 매핑 Jump에 Jump 함수 바인딩
@@ -86,15 +86,16 @@ void ASH_Player::Turn(float value)//좌우 회전입력처리 함수
 {
 	AddControllerYawInput(value);
 }
-void ASH_Player::LookUp(float value) //상하 회전입력처리 함수
+/*void ASH_Player::LookUp(float value) //상하 회전입력처리 함수
 {
 	AddControllerPitchInput(value);
 }
+*/
 void ASH_Player::InputHorizontal(float value)// 좌우이동 이벤트 입력처리 함수
 {
 	direction.Y = value;
 }
-void ASH_Player:: InputVertical(float value)// 상하 이동 이벤트 입력처리 함수
+void ASH_Player::InputVertical(float value)// 상하 이동 이벤트 입력처리 함수
 {
 	direction.X = value;
 }
@@ -107,7 +108,7 @@ void ASH_Player::inputAttack() //공격 이벤트 입력처리
 {
 
 	//라인트레이스 준비
-	FVector startPos = camComp->GetComponentLocation(); //라인트레이스 처리 camComp를 다른 컴포넌트로 교체해야할 것으로 예상
+	FVector startPos = camComp->GetComponentLocation()- FVector(0,0,100); //라인트레이스 처리 camComp를 다른 컴포넌트로 교체해야할 것으로 예상
 	FVector endPos = camComp->GetComponentLocation() + camComp->GetForwardVector() * 5000;
 	FHitResult hitInfo;
 	FCollisionQueryParams params;
@@ -121,8 +122,11 @@ void ASH_Player::inputAttack() //공격 이벤트 입력처리
 		if (enemy)
 		{
 			auto enemyFSM = Cast<USH_EnemyFSM>(enemy);//에너미FSM형변환
-			enemyFSM->OnDamageProcess(); //데미지 함수 호출
-			UE_LOG(LogTemp, Warning, TEXT("PlayerAttack!")); //로그 출력
+			if (enemyFSM->hp >= 0)
+			{
+				enemyFSM->OnDamageProcess(); //데미지 함수 호출
+				UE_LOG(LogTemp, Warning, TEXT("Player Attack Enemy!")); //로그 출력
+			}
 		}
 	}
 
