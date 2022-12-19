@@ -107,11 +107,11 @@ public:
 	//[BulletFactory 총알 공장 속성 추가]
 	//총알 공장
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
-	TSubclassOf<class ABullet> bulletFactory; //★★★오류. 클래스 ABullet을 못찾는 거 같음.
+	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류. 클래스 ABullet을 못찾는 거 같음.
 
 	//[ArrowFactory 화살 공장 속성 추가]
 	//화살 공장
 	UPROPERTY(EditDefaultsOnly, Category = ArrowFactory)
-	TSubclassOf<class AArrow> arrowFactory; //★★★오류. 클래스 AArrow을 못찾는 거 같음
+	TSubclassOf<class ARIM_Arrow> arrowFactory; //★★★오류. 클래스 AArrow을 못찾는 거 같음
 
 };

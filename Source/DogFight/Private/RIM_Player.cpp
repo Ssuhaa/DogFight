@@ -256,9 +256,9 @@ void ARIM_Player::InputRun()
 //[무기 버리기 이벤트 처리 함수 구현]
 
 
-#include "Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다.
+#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다.
 void ARIM_Player::InputPunchGrab()
 {
 	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FireFosition"));
-	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition);
 }
