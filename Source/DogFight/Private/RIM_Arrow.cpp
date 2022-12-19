@@ -53,11 +53,11 @@ ARIM_Arrow::ARIM_Arrow() //생성자
 	//반동 값. 반동이 있다면 탄성은 어느 정도 될지 Bounciness 속성 이용
 	//생명 시간 주기
 
-	movementComp->InitialSpeed = 5000;
-	movementComp->MaxSpeed = 5000;
+	movementComp->InitialSpeed = 2000; //★★★추후 조정 필요
+	movementComp->MaxSpeed = 2000; //★★★추후 조정 필요
 	movementComp->bShouldBounce = true;
-	movementComp->Bounciness = 0.3f;
-	InitialLifeSpan = 30.0f; //★★★추후 조정 필요
+	movementComp->Bounciness = 0.2f; //★★★추후 조정 필요
+	InitialLifeSpan = 0.10f; //★★★추후 조정 필요
 }
 
 // Called when the game starts or when spawned

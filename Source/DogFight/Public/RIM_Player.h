@@ -65,53 +65,42 @@ public:
 	//달리기 입력 이벤트 처리 함수. InputRun 함수 선언
 	void InputRun();
 
-	//점프 달리기 이벤트 처리 함수.
+	//달리기 점프 이벤트 처리 함수. ★★★구현 안 해도 됨
 
 	//공격/잡기 이벤트 처리 함수. 총알/화살 발사 처리 함수. InputPunchGrab 함수 선언
-	void InputPunchGrab(); //★★★오류.
+	void InputPunchGrab();
 
-	//달리기 공격 이벤트 처리 함수.
+	//달리기 공격 이벤트 처리 함수. ★★★아마 구현 안 해도 됨
 
 	//벽타기 이벤트 처리 함수.
+	void Climb();
 
 	//드롭킥/던지기 이벤트 처리 함수.
-	
+	void KickToss();
+
 	//박치기 이벤트 처리 함수.
+	void Headbutt();
 
 	//구르기 이벤트 처리 함수.
+	void Roll();
 
 	//무기 버리기 이벤트 처리 함수.
+	void DropWeapon();
 
-public:
-	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가]
-	//총 스켈레탈 메시
-	UPROPERTY(VisibleAnywhere, Category=GunMesh)
-	class USkeletalMeshComponent* gunMeshComp;
 
-	//[활 스켈레탈메시 컴포넌트 멤버 변수 추가]
-	//활 스켈레탈 메시
-	UPROPERTY(VisibleAnywhere, Category=BowMesh)
-	class USkeletalMeshComponent* bowMeshComp;
 
-	//[삽 스켈레탈메시 컴포넌트 멤버 변수 추가]
-	//삽 스켈레탈 메시
-	UPROPERTY(VisibleAnywhere, Category = ShovelMesh)
-	class USkeletalMeshComponent* shovelMeshComp;
-
-	//[야구망방이 스켈레탈메시 컴포넌트 멤버 변수 추가]
-	//야구망방이 스켈레탈 메시
-	UPROPERTY(VisibleAnywhere, Category = BaseballbatMesh)
-	class USkeletalMeshComponent* baseballbatMeshComp;
+/*
+플레이어가 아니라 총/활에 추가해야 하는 건가?
 
 public:
 	//[BulletFactory 총알 공장 속성 추가]
 	//총알 공장
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
-	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류. 클래스 ABullet을 못찾는 거 같음.
+	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류. 클래스 ABullet을 못찾는 거 같음 ---> 내 파일명 ARIM_Bullet 으로 해야 함
 
 	//[ArrowFactory 화살 공장 속성 추가]
 	//화살 공장
 	UPROPERTY(EditDefaultsOnly, Category = ArrowFactory)
-	TSubclassOf<class ARIM_Arrow> arrowFactory; //★★★오류. 클래스 AArrow을 못찾는 거 같음
-
+	TSubclassOf<class ARIM_Arrow> arrowFactory; //★★★오류. 클래스 AArrow을 못찾는 거 같음 ---> 내 파일명 ARIM_Arrow 으로 해야 함
+*/
 };

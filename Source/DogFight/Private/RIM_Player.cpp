@@ -32,96 +32,6 @@ ARIM_Player::ARIM_Player() //생성자
 	//[카메라 컴포넌트 추가/UCameraComponent 추가]
 	playerCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("playerCamComp"));
 	playerCamComp->SetupAttachment(springArmComp);
-
-
-
-	//[총 스켈레탈메시 컴포넌트 등록]
-	//총 스켈레탈메시 컴포넌트 등록
-	//부모 컴포넌트를 Mesh 컴포넌트로 설정
-	//스켈레탈메시 데이터 로드
-	
-	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
-	gunMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("")); //★★★오류 나는거 같아서 안 넣음.추후 변경 필요
-	
-	//[총 스켈레탈메시 컴포넌트 데이터 설정]
-	//스켈레탈메시 데이터 로드가 성공했다면
-	//스켈레탈메시 데이터 할당
-	//위치 조정하기
-
-	if (TempGunMesh.Succeeded())
-	{
-		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
-		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120)); //★★★임시로 세팅. 추후 변경 필요
-	}
-
-
-
-	//[활 스켈레탈메시 컴포넌트 등록]
-	//활 스켈레탈메시 컴포넌트 등록
-	//부모 컴포넌트를 Mesh 컴포넌트로 설정
-	//스켈레탈메시 데이터 로드
-	bowMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMeshComp"));
-	bowMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempBowMesh(TEXT("")); //★★★오류 나는거 같아서 안 넣음.추후 변경 필요
-
-	//[활 스켈레탈메시 컴포넌트 데이터 설정]
-	//스켈레탈메시 데이터 로드가 성공했다면
-	//스켈레탈메시 데이터 할당
-	//위치 조정하기
-
-	if (TempBowMesh.Succeeded())
-	{
-		bowMeshComp->SetSkeletalMesh(TempBowMesh.Object);
-		bowMeshComp->SetRelativeLocation(FVector(-14, 52, 120)); //★★★임시로 세팅. 추후 변경 필요
-	}
-
-
-
-	//[삽 스켈레탈메시 컴포넌트 등록]
-	//삽 스켈레탈메시 컴포넌트 등록
-	//부모 컴포넌트를 Mesh 컴포넌트로 설정
-	//스켈레탈메시 데이터 로드
-	shovelMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ShovelMeshComp"));
-	shovelMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempShovelMesh(TEXT("")); //★★★오류 나는거 같아서 안 넣음.추후 변경 필요
-
-	//[삽 스켈레탈메시 컴포넌트 데이터 설정]
-	//스켈레탈메시 데이터 로드가 성공했다면
-	//스켈레탈메시 데이터 할당
-	//위치 조정하기
-
-	if (TempShovelMesh.Succeeded())
-	{
-		shovelMeshComp->SetSkeletalMesh(TempShovelMesh.Object);
-		shovelMeshComp->SetRelativeLocation(FVector(-14, 52, 120)); //★★★임시로 세팅. 추후 변경 필요
-	}
-
-
-
-	//[야구방망이 스켈레탈메시 컴포넌트 등록]
-	//야구방망이 스켈레탈메시 컴포넌트 등록
-	//부모 컴포넌트를 Mesh 컴포넌트로 설정
-	//스켈레탈메시 데이터 로드
-	baseballbatMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BaseballbatComp"));
-	baseballbatMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempBaseballbatMesh(TEXT("")); //★★★오류 나는거 같아서 안 넣음.추후 변경 필요
-
-	//[야구방망이 스켈레탈메시 컴포넌트 데이터 설정]
-	//스켈레탈메시 데이터 로드가 성공했다면
-	//스켈레탈메시 데이터 할당
-	//위치 조정하기
-
-	if (TempBaseballbatMesh.Succeeded())
-	{
-		baseballbatMeshComp->SetSkeletalMesh(TempBaseballbatMesh.Object);
-		baseballbatMeshComp->SetRelativeLocation(FVector(-14, 52, 120)); //★★★임시로 세팅. 추후 변경 필요
-	}
-
-
-
-
-
 }
 
 // Called when the game starts or when spawned
@@ -182,11 +92,11 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ARIM_Player::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ARIM_Player::InputRun);
 
-	//[점프 달리기 이벤트 처리 함수 바인딩/호출]
+	//[달리기 점프 이벤트 처리 함수 바인딩/호출] ★★★구현 안 해도 됨
 
 	//[공격/잡기 이벤트 처리 함수 바인딩/호출]
 
-	//[달리기 공격 이벤트 처리 함수 바인딩/호출]
+	//[달리기 공격 이벤트 처리 함수 바인딩/호출] ★★★아마 구현 안 해도 됨
 
 	//[벽타기 이벤트 처리 함수 바인딩/호출]
 
@@ -199,11 +109,11 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	//[무기 버리기 이벤트 처리 함수 바인딩/호출]
 
 
-
+	/*
 	//[총알 발사 이벤트 처리 함수 바인딩/호출]
-	//InputFire 함수 바인딩/호출
+	//InputPunchGrab 함수 바인딩/호출
 	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, & ARIM_Player::InputPunchGrab);
-
+	*/
 }
 
 //[좌우 입력 함수 구현]
@@ -239,11 +149,16 @@ void ARIM_Player::InputRun()
 	}
 }
 
-//[점프 달리기 이벤트 처리 함수 구현]
+//[점프 달리기 이벤트 처리 함수 구현] ★★★구현 안 해도 됨
 
 //[공격/잡기 이벤트 처리 함수 구현]
+//펀치 공격 한다.
+//캐릭터를 잡는다.
+//무기를 잡는다. 한 번 무기를 잡으면 버튼을 클릭 안 해도 무기를 들고 있는다. 
+//무기를 잡은 상태에서, 다시 L Mauseu Button 클릭하면 잡은 무기를 휘두른다.
+//무기가 총/활 일 때 다시 L Mauseu Button 클릭하면 잡은 무기에서 총알/화살이 발사된다. 
 
-//[달리기 공격 이벤트 처리 함수 구현]
+//[달리기 공격 이벤트 처리 함수 구현] ★★★아마 구현 안 해도 됨
 
 //[벽타기 이벤트 처리 함수 구현]
 
@@ -256,9 +171,12 @@ void ARIM_Player::InputRun()
 //[무기 버리기 이벤트 처리 함수 구현]
 
 
-#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다.
+
+/*
+#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다 ---> 내 파일명 RIM_Bullet.h 으로 해야 함
 void ARIM_Player::InputPunchGrab()
 {
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FireFosition"));
+	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
 	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition);
 }
+*/
