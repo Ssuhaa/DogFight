@@ -32,9 +32,6 @@ public:
 	class USpringArmComponent* springArmComp;//스프링암컴포넌트 변수 선언
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	class UCameraComponent* camComp;//카메라컴포넌트 변수 선언
-	UPROPERTY(VisibleAnywhere)
-	class UBoxComponent* boxComp; 
-
 
 	void Move(); // 플레이어 이동처리
 	

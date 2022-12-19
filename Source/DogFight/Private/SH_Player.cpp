@@ -35,12 +35,7 @@ ASH_Player::ASH_Player()
 	bUseControllerRotationYaw = true; //사용자의 입력에 따라  캐릭터를 회전시킬지 여부
 
 	JumpMaxCount = 2; //플레이어가 2단 점프가 가능하게 만들기
-	
-	
-	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackInteraction"));
-	boxComp->SetupAttachment(RootComponent);
-	boxComp->SetBoxExtent(FVector(100, 100, 100));
-	boxComp->SetCollisionProfileName(TEXT("Player"));
+
 	
 }
 
@@ -110,6 +105,8 @@ void ASH_Player::InputJump() //점프 이벤트 입력처리
 
 void ASH_Player::inputAttack() //공격 이벤트 입력처리
 {
+
+	//라인트레이스 준비
 	FVector startPos = camComp->GetComponentLocation(); //라인트레이스 처리 camComp를 다른 컴포넌트로 교체해야할 것으로 예상
 	FVector endPos = camComp->GetComponentLocation() + camComp->GetForwardVector() * 5000;
 	FHitResult hitInfo;
@@ -120,12 +117,12 @@ void ASH_Player::inputAttack() //공격 이벤트 입력처리
 	if (bHit) //만약 히트된것이 있고
 	{
 		//부딛힌 대상이 적인지 판단하기
-		auto enemy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM")); //에너미변수에 히트된 액터의 FSM을 저장.?
+		auto enemy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM")); 
 		if (enemy)
 		{
-			auto enemyFSM = Cast<USH_EnemyFSM>(enemy);
-			enemyFSM->OnDamageProcess();
-			UE_LOG(LogTemp, Warning, TEXT("PlayerAttack!"));
+			auto enemyFSM = Cast<USH_EnemyFSM>(enemy);//에너미FSM형변환
+			enemyFSM->OnDamageProcess(); //데미지 함수 호출
+			UE_LOG(LogTemp, Warning, TEXT("PlayerAttack!")); //로그 출력
 		}
 	}
 
