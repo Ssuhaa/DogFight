@@ -122,11 +122,13 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 	{
 		hp--;	//체력 감소
 		mState = EEnemyState::Damage;
+		UE_LOG(LogTemp, Warning, TEXT("%d"), hp);
 	}
 	else // 체력이 0이면 죽음상태로 전환
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
+		
 		mState = EEnemyState::Die;
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("%d"), hp);
+	
 }
