@@ -19,7 +19,7 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	
 	collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	collisionComp->SetCollisionProfileName(TEXT("BlockAll"));
-	collisionComp->SetSphereRadius(13);
+	collisionComp->SetSphereRadius(13); //★★★추후 조정 필요
 	RootComponent = collisionComp;
 
 
@@ -33,7 +33,7 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	bodyMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMeshComp"));
 	bodyMeshComp->SetupAttachment(collisionComp);
 	bodyMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	bodyMeshComp->SetRelativeScale3D(FVector(0.25f));
+	bodyMeshComp->SetRelativeScale3D(FVector(0.25f)); //★★★추후 조정 필요
 
 
 
@@ -53,11 +53,11 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	//반동 값. 반동이 있다면 탄성은 어느 정도 될지 Bounciness 속성 이용
 	//생명 시간 주기
 
-	movementComp->InitialSpeed = 5000; //★★★추후 조정 필요
-	movementComp->MaxSpeed = 5000; //★★★추후 조정 필요
+	movementComp->InitialSpeed = 1000; //★★★추후 조정 필요
+	movementComp->MaxSpeed = 1000; //★★★추후 조정 필요
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.8f; //★★★추후 조정 필요
-	InitialLifeSpan = 0.30f; //★★★추후 조정 필요
+	InitialLifeSpan = 10.0f; //★★★추후 조정 필요
 }
 
 // Called when the game starts or when spawned

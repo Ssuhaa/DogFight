@@ -5,6 +5,8 @@
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Components/SkeletalMeshComponent.h>
+#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다 ---> 내 파일명 RIM_Bullet.h 으로 해야 함
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -13,7 +15,7 @@ ARIM_Player::ARIM_Player() //생성자
 	PrimaryActorTick.bCanEverTick = true;
 
 	//[스켈레탈메시. 캐릭터 추가]
-	//애셋 캐릭터2 파일 경로 추가
+	//★★★애셋 캐릭터2 파일 경로 추가. 추후 변경 필요 시 변경 진행
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor2.Charactor2'"));
 	if (TempMesh.Succeeded())
 	{
@@ -26,12 +28,40 @@ ARIM_Player::ARIM_Player() //생성자
 	//[스프링암 컴포넌트 추가/USpringArmComponent 추가]
 	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SringArmComp"));
 	springArmComp->SetupAttachment(RootComponent);
-	springArmComp->SetRelativeLocation(FVector(0, 70, 90));
-	springArmComp->TargetArmLength = 400;
+	springArmComp->SetRelativeLocation(FVector(0, 70, 90)); //★★★추후 필요시 변경
+	springArmComp->TargetArmLength = 400; //★★★추후 필요시 변경
+	springArmComp->bUsePawnControlRotation = true; //입력에 따른 회전 설정
 
 	//[카메라 컴포넌트 추가/UCameraComponent 추가]
 	playerCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("playerCamComp"));
 	playerCamComp->SetupAttachment(springArmComp);
+	playerCamComp->bUsePawnControlRotation = false; //입력에 따른 회전 설정
+
+	bUseControllerRotationYaw = true; //입력에 따른 회전 설정
+
+
+	//[총 스켈레탈메시 컴포넌트 등록]
+	//총 스켈레탈메시 컴포넌트 등록
+	//부모 컴포넌트를 Mesh 컴포넌트로 설정
+	//스켈레탈메시 데이터 로드
+
+	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+	gunMeshComp->SetupAttachment(GetMesh());
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor1.Charactor1'")); //★★★임시로 토기 넣음
+
+	//[총 스켈레탈메시 컴포넌트 데이터 설정]
+	//스켈레탈메시 데이터 로드가 성공했다면
+	//스켈레탈메시 데이터 할당
+	//위치 조정하기
+
+	if (TempGunMesh.Succeeded())
+	{
+		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+		gunMeshComp->SetRelativeLocation(FVector(14, 52, 200)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
+	}
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +82,8 @@ void ARIM_Player::Tick(float DeltaTime)
 	//[Move(플레이어 이동) 함수 호출]
 	Move();
 
+
+
 }
 
 //[Move(플레이어 이동) 함수 구현?]
@@ -67,7 +99,7 @@ void ARIM_Player::Move()
 	//SetActorLocation(P);
 	//direction = FVector::ZeroVector; //방향 direction의 모든 요소(x, y, z)에 0을 항당하여 초기화
 
-	//AddMovementInput() 함수를 이용하여 등속운동 코드 대체
+	//AddMovementInput() 함수를 이용하여 위에 있는 등속운동 코드 대체
 	direction = FTransform(GetControlRotation()).TransformVector(direction); //이동 방향을 컨트롤 방향 기준으로 변환
 	AddMovementInput(direction); //
 	direction = FVector::ZeroVector;
@@ -78,6 +110,9 @@ void ARIM_Player::Move()
 void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	//[좌우 회전 이벤트 처리 함수 바인딩/호출]
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ARIM_Player::Turn);
 
 	//[좌우 입력 이벤트 처리 함수 바인딩/호출]
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ARIM_Player::InputHorizontal);
@@ -92,28 +127,28 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ARIM_Player::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ARIM_Player::InputRun);
 
-	//[달리기 점프 이벤트 처리 함수 바인딩/호출] ★★★구현 안 해도 됨
-
-	//[공격/잡기 이벤트 처리 함수 바인딩/호출]
-
-	//[달리기 공격 이벤트 처리 함수 바인딩/호출] ★★★아마 구현 안 해도 됨
-
-	//[벽타기 이벤트 처리 함수 바인딩/호출]
+	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = [총알 발사 이벤트 처리 함수 바인딩/호출]
+	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
 
 	//[드롭킥/던지기 이벤트 처리 함수 바인딩/호출]
 
+	//[무기 버리기 이벤트 처리 함수 바인딩/호출]
+	
+	//[벽타기 이벤트 처리 함수 바인딩/호출]
+	
 	//[박치기 이벤트 처리 함수 바인딩/호출]
 
 	//[구르기 이벤트 처리 함수 바인딩/호출]
 
-	//[무기 버리기 이벤트 처리 함수 바인딩/호출]
+	//[달리기 점프 이벤트 처리 함수 바인딩/호출] ★★★구현 안 해도 됨
+	//[달리기 공격 이벤트 처리 함수 바인딩/호출] ★★★아마 구현 안 해도 됨
 
+}
 
-	/*
-	//[총알 발사 이벤트 처리 함수 바인딩/호출]
-	//InputPunchGrab 함수 바인딩/호출
-	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, & ARIM_Player::InputPunchGrab);
-	*/
+//[좌우 회전 함수 구현]
+void ARIM_Player::Turn(float value)
+{
+	AddControllerYawInput(value);
 }
 
 //[좌우 입력 함수 구현]
@@ -149,34 +184,29 @@ void ARIM_Player::InputRun()
 	}
 }
 
-//[점프 달리기 이벤트 처리 함수 구현] ★★★구현 안 해도 됨
 
-//[공격/잡기 이벤트 처리 함수 구현]
-//펀치 공격 한다.
-//캐릭터를 잡는다.
-//무기를 잡는다. 한 번 무기를 잡으면 버튼을 클릭 안 해도 무기를 들고 있는다. 
-//무기를 잡은 상태에서, 다시 L Mauseu Button 클릭하면 잡은 무기를 휘두른다.
-//무기가 총/활 일 때 다시 L Mauseu Button 클릭하면 잡은 무기에서 총알/화살이 발사된다. 
+//[공격/잡기 이벤트 처리 함수 구현] = [총알 발사 이벤트 처리 함수 구현]
+void ARIM_Player::InputPunchGrab()
+{
+	//FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition")); //책 내용인데 지금 필요 없을 것 같음
+	//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition); //책 내용인데 지금 필요 없을 것 같음
+	
+	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+	UE_LOG(LogTemp, Warning, TEXT("Attack!"));
+}
 
-//[달리기 공격 이벤트 처리 함수 구현] ★★★아마 구현 안 해도 됨
 
-//[벽타기 이벤트 처리 함수 구현]
 
 //[드롭킥/던지기 이벤트 처리 함수 구현]
+
+//[무기 버리기 이벤트 처리 함수 구현]
+
+//[벽타기 이벤트 처리 함수 구현]
 
 //[박치기 이벤트 처리 함수 구현]
 
 //[구르기 이벤트 처리 함수 구현]
 
-//[무기 버리기 이벤트 처리 함수 구현]
 
-
-
-/*
-#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다 ---> 내 파일명 RIM_Bullet.h 으로 해야 함
-void ARIM_Player::InputPunchGrab()
-{
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
-	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition);
-}
-*/
+//[점프 달리기 이벤트 처리 함수 구현] ★★★구현 안 해도 됨
+//[달리기 공격 이벤트 처리 함수 구현] ★★★아마 구현 안 해도 됨
