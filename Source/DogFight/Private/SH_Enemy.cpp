@@ -24,8 +24,12 @@ ASH_Enemy::ASH_Enemy()
 
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	// GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	// 애니메이션 블루프린트 할당
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempclass(TEXT("AnimBlueprint'/Game/BluePrint/ABP_EnemyAnim.ABP_EnemyAnim_C'")); //끝에 C를 써줘야 오류가 나지않음
+	if (tempclass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempclass.Class);
+	}
 
 }
 

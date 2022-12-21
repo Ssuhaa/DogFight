@@ -5,6 +5,7 @@
 #include <SH_Player.h>
 #include <SH_Enemy.h>
 #include <Kismet/GameplayStatics.h>
+#include <EnemyAnim.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -26,7 +27,8 @@ void USH_EnemyFSM::BeginPlay()
 	target = Cast<ASH_Player>(actor); //플레이어타입으로 캐스팅
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
 
-	// ...
+	// UEnemyAnim할당
+	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	
 }
 
@@ -64,6 +66,7 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 	{
 		mState = EEnemyState::Move; // 이동상태로 전환
 		currentTime = 0; //경과시간 초기화
+		anim->animState = mState;
 	}
 
 }
@@ -76,6 +79,9 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	if (dir.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
 	{
 		mState = EEnemyState::Attack; // 공격상태로 전환
+		anim->animState = mState;
+		anim->bAttackPlay = true;
+		currentTime = attackDelayTime;
 	}
 }
 void USH_EnemyFSM::AttackState()//공격 상태 함수정의
@@ -85,11 +91,13 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Attack Player")); //공격로그
 		currentTime = 0; //경과시간 초기화
+		anim->bAttackPlay = true;
 	}
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 	if (distance > attackRange) // 타깃과의 거리가 공격범위보다 벗어나면
 	{
 		mState = EEnemyState::Move; //에너미 상태 무브로 이동.
+		anim->animState = mState;
 	}
 }
 void USH_EnemyFSM::DamageState() //피격 상태 함수정의
@@ -99,6 +107,7 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 	{
 		mState = EEnemyState::Idle;
 		currentTime = 0;
+		//anim->animState = mState;
 	}
 }
 void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의, 파티애니멀즈상 넉백상태.
@@ -123,12 +132,14 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 		hp--;	//체력 감소
 		mState = EEnemyState::Damage;
 		UE_LOG(LogTemp, Warning, TEXT("%d"), hp);
+		//anim->animState = mState;
 	}
 	else // 체력이 0이면 죽음상태로 전환
 	{
 		
 		mState = EEnemyState::Die;
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
+		//anim->animState = mState;
 	}
 	
 }

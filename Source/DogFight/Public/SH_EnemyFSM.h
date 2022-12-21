@@ -68,4 +68,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float dieDelayTime = 10.0f; //넉백 대기시간 변수선언
+
+	UPROPERTY()
+	class UEnemyAnim* anim;
 };
