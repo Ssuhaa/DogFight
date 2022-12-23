@@ -13,5 +13,13 @@ UCLASS()
 class DOGFIGHT_API ADogFightGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ADogFightGameModeBase();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	
 };

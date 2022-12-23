@@ -20,4 +20,8 @@ public:
 	EEnemyState animState; //상태머신기억변수
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category=FSM)
 	bool bAttackPlay = false;
+	UFUNCTION(BlueprintImplementableEvent, Category = FSM)
+	void PlayDamagaAnim(FName sectionName);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
+	bool bDieDone =false;
 };

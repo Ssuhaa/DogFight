@@ -3,3 +3,11 @@
 
 #include "DogFightGameModeBase.h"
 
+void ADogFightGameModeBase::BeginPlay()
+{
+
+}
+ADogFightGameModeBase::ADogFightGameModeBase()
+{
+
+}

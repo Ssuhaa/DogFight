@@ -107,39 +107,50 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 	{
 		mState = EEnemyState::Idle;
 		currentTime = 0;
-		//anim->animState = mState;
+		anim->animState = mState;
 	}
 }
 void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의, 파티애니멀즈상 넉백상태.
 {
-	
-	currentTime += GetWorld()->DeltaRealTimeSeconds;
-	if (currentTime > dieDelayTime)
+	if (anim->bDieDone == false)
 	{
-		hp = 3; //체력초기화
-		mState = EEnemyState::Idle; // 대기 스테이트 전환
-		currentTime = 0;
-		
-	}
+		currentTime += GetWorld()->DeltaRealTimeSeconds;
+		if (currentTime > dieDelayTime)
+		{
+			anim->Montage_Stop(damageDelayTime);
+			hp = 3; //체력초기화
+			mState = EEnemyState::Idle; // 대기 스테이트 전환
+			currentTime = 0;
+			anim->animState = mState;
 
+		}
+
+	}
+	
 }
 
 void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 {
+	UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy!!"));
+ 	if (hp > 0) //체력이 0이아니면 피격상태 유지
+ 	{
+		hp--;
+ 		mState = EEnemyState::Damage;
+ 		currentTime = 0;
+ 
+ 		int32 index = FMath::RandRange(0, 1);
+ 		FString sectionName = FString::Printf(TEXT("Damage%d"), 0);
+ 		anim->PlayDamagaAnim(FName(*sectionName));
+ 	
+ 	}
+ 	else // 체력이 0이면 죽음상태로 전환
+ 	{
+ 
+ 		mState = EEnemyState::Die;
+ 		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
 
-	if (hp > 0) //체력이 0이아니면 피격상태 유지
-	{
-		hp--;	//체력 감소
-		mState = EEnemyState::Damage;
-		UE_LOG(LogTemp, Warning, TEXT("%d"), hp);
-		//anim->animState = mState;
-	}
-	else // 체력이 0이면 죽음상태로 전환
-	{
-		
-		mState = EEnemyState::Die;
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
-		//anim->animState = mState;
-	}
-	
+		anim->PlayDamagaAnim((TEXT("die")));
+ 	}
+ 	anim->animState = mState;
+
 }

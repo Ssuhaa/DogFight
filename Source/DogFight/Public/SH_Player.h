@@ -32,11 +32,13 @@ public:
 	class USpringArmComponent* springArmComp;//스프링암컴포넌트 변수 선언
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	class UCameraComponent* camComp;//카메라컴포넌트 변수 선언
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* compAttack;
 
 	void Move(); // 플레이어 이동처리
 	
 	void Turn(float value);//좌우 회전입력처리
-	//void LookUp(float value); //상하 회전입력처리
+	void LookUp(float value); //상하 회전입력처리
 
 	UPROPERTY(EditAnywhere, Category=PlayerSetting)
 	float walkSpeed = 600; //이동속도
@@ -47,7 +49,13 @@ public:
 	void InputJump(); //점프 이벤트 입력처리
 	void inputAttack(); //공격 이벤트 입력처리
 
+	UFUNCTION()
+	void attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	UFUNCTION()
+	void attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-
+	bool isinputAttack =false;
+	UPROPERTY()
+	class AActor* currEenemy;
 };

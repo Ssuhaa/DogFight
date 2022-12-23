@@ -10,10 +10,10 @@ UENUM(BlueprintType) //상태정의
 enum class EEnemyState : uint8
 {
 	Idle,
-		Move,
-		Attack,
-		Damage,
-		Die,
+	Move,
+	Attack,
+	Damage,
+	Die,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -44,6 +44,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category=FSM)
 	float idleDalayTime = 2; //대기시간
+	UPROPERTY(BlueprintReadOnly)
 	float currentTime = 0; //경과시간
 
 	UPROPERTY(VisibleAnywhere, Category=FSM)
@@ -66,7 +67,7 @@ public:
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float damageDelayTime = 2.0f; //피격 대기시간 변수 선언
 
-	UPROPERTY(EditAnywhere, Category=FSM)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=FSM)
 	float dieDelayTime = 10.0f; //넉백 대기시간 변수선언
 
 	UPROPERTY()
