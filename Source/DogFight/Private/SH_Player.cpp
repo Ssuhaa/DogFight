@@ -36,8 +36,9 @@ ASH_Player::ASH_Player()
 	bUseControllerRotationYaw = true; //사용자의 입력에 따라  캐릭터를 회전시킬지 여부
 
 	JumpMaxCount = 2; //플레이어가 2단 점프가 가능하게 만들기
-	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
-	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket"));
+
+	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")); //때렸는지 확인할 컴포넌트 생성
+	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket")); // 스켈레탈 메시 소켓에 어택콜리전 붙이기
 
 
 	
@@ -48,8 +49,8 @@ void ASH_Player::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	compAttack->OnComponentBeginOverlap.AddDynamic(this, &ASH_Player::attackBoxBeginOverlap);
-	compAttack->OnComponentEndOverlap.AddDynamic(this, &ASH_Player::attackBoxEndOverlap);
+	compAttack->OnComponentBeginOverlap.AddDynamic(this, &ASH_Player::attackBoxBeginOverlap); //컴포넌트 비긴오버랩 델리게이트 바인딩
+	compAttack->OnComponentEndOverlap.AddDynamic(this, &ASH_Player::attackBoxEndOverlap); //컴포넌트 앤드오버랩 델리게이트 바인딩
 
 	
 }
@@ -116,10 +117,10 @@ void ASH_Player::InputJump() //점프 이벤트 입력처리
 
 void ASH_Player::inputAttack() //공격 이벤트 입력처리
 {
-	if (isinputAttack == true)
+	if (isinputAttack == true) //만약 닿였을때 공격이벤트가 들어오면
 	{
-		ASH_Enemy* enemy = Cast<ASH_Enemy>(currEenemy);
-		enemy->fsm->OnDamageProcess();
+		ASH_Enemy* enemy = Cast<ASH_Enemy>(currEenemy); // 에너미 형변환시켜서
+		enemy->fsm->OnDamageProcess(); // 데미지 함수 호출.
 	}
 	
 }
@@ -127,10 +128,10 @@ void ASH_Player::inputAttack() //공격 이벤트 입력처리
 void ASH_Player::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	
-	if (OtherActor->GetName().Contains(TEXT("Enemy")))
+	if (OtherActor->GetName().Contains(TEXT("Enemy"))) //만약 닿인 액터의 이름이 에너미라면
 	{
-		currEenemy = OtherActor;
-		isinputAttack = true;
+		currEenemy = OtherActor; //currEenmy에 닿인 액터 저장
+		isinputAttack = true; // 불값 트루로 변경
 		
 	}
 
@@ -138,5 +139,5 @@ void ASH_Player::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 }
 void ASH_Player::attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	isinputAttack = false;
+	isinputAttack = false; //닿인게 끝났으면 false로 초기화
 }

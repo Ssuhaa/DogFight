@@ -134,7 +134,7 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 	UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy!!"));
  	if (hp > 0) //체력이 0이아니면 피격상태 유지
  	{
-		hp--;
+		hp--; //HP 마이너스
  		mState = EEnemyState::Damage;
  		currentTime = 0;
  
