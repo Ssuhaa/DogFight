@@ -23,9 +23,24 @@ void USH_EnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), ASH_Player::StaticClass()); //월드에서 타깃 찾아오기
-	target = Cast<ASH_Player>(actor); //플레이어타입으로 캐스팅
+// 	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), ASH_Player::StaticClass()); //월드에서 타깃 찾아오기
+// 	target = Cast<ASH_Player>(actor); //플레이어타입으로 캐스팅
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //모든 액터 배열로 가져오기
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
+	for (int32 i = 0; i < targets.Num(); i++) // 반복문 돌리기
+	{
+		if (targets[i] != me) //만약 타겟이 내가 아니고
+		{
+			float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation()); //타겟과의 거리
+			if (distance < dir) //타겟의 거리가 Dir보다 작을때
+			{
+				dir = distance; //dir에 타겟의 거리 저장
+				target = Cast<ACharacter>(targets[i]); // 타겟에 캐릭터로 형변환해서 저장.
+			}
+		}
+	}
+
+
 
 	// UEnemyAnim할당
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
@@ -51,6 +66,9 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	case EEnemyState::Damage:
 		DamageState();
 		break;
+	case  EEnemyState::Down:
+		DownState();
+		break;
 	case EEnemyState::Die:
 		DieState();
 		break;
@@ -72,11 +90,11 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 }
 void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
-	FVector destination = target->GetActorLocation(); // 목적지를 타겟의 액터 로케이션으로 설정
-	FVector dir = destination - me->GetActorLocation(); //타겟 방향
-	me->AddMovementInput(dir.GetSafeNormal()); //타겟 방향으로 이동
+	 // 목적지를 타겟의 액터 로케이션으로 설정
+	FVector P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
+	me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
 
-	if (dir.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
+	if (P.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
 	{
 		mState = EEnemyState::Attack; // 공격상태로 전환
 		anim->animState = mState;
@@ -89,9 +107,42 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Attack Player")); //공격로그
-		currentTime = 0; //경과시간 초기화
-		anim->bAttackPlay = true;
+		if (target->GetName().Contains(TEXT("Enemy"))) ///만약 타켓의 이름이 에너미를 포함하면
+		{
+			enemy = Cast<ASH_Enemy>(target); //에너미에 타겟을 형변환
+			if (enemy->fsm->mState != EEnemyState::Damage && enemy->fsm->mState != EEnemyState::Die && enemy->fsm->mState != EEnemyState::Down) //
+			{
+				if(enemy->fsm->hp <0)
+				{
+					enemy->fsm->OnDamageProcess();
+					anim->bAttackPlay = true;
+				}
+			}
+			else
+			{
+				for (int32 i = 0; i < targets.Num(); i++) //전체 타겟에서 반복문
+				{
+					if (targets[i] != me && targets[i] != enemy) //타겟이 내가아니고 내가 죽인 에너미가 아니면
+					{
+						float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation()); //거리 담기
+						if (distance < dir)
+						{
+							dir = distance;
+							target = Cast<ACharacter>(targets[i]); // 타겟 재 조정
+						}
+					}
+				}
+				mState = EEnemyState::Move; 
+				anim->animState = mState;
+			}
+				currentTime = 0; //경과시간 초기화
+		}
+		else if(target->GetName().Contains(TEXT("Player")))
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Enemy attack Player!!"));
+			currentTime = 0;
+		}
+		
 	}
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 	if (distance > attackRange) // 타깃과의 거리가 공격범위보다 벗어나면
@@ -110,46 +161,73 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 		anim->animState = mState;
 	}
 }
-void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의, 파티애니멀즈상 넉백상태.
+void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 {
-	if (anim->bDieDone == false)
+	
+	currentTime = 0;
+	currentTime += GetWorld()->DeltaRealTimeSeconds;
+	if (downCount > 0)
 	{
-		currentTime += GetWorld()->DeltaRealTimeSeconds;
-		if (currentTime > dieDelayTime)
+		if (anim->bDieDone == false)
 		{
-			anim->Montage_Stop(damageDelayTime);
-			hp = 3; //체력초기화
-			mState = EEnemyState::Idle; // 대기 스테이트 전환
-			currentTime = 0;
-			anim->animState = mState;
+			if (currentTime > dieDelayTime)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
+				anim->Montage_Stop(damageDelayTime);
+				mState = EEnemyState::Idle; // 대기 스테이트 전환
+				anim->animState = mState;
+				currentTime = 0;
+				hp = 5;
+				downCount--;
+				UE_LOG(LogTemp, Warning, TEXT("%d"), downCount);
+
+			}
 
 		}
-
 	}
-	
+	else
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
+		mState = EEnemyState::Die;
+		currentTime = 0;
+		anim->animState = mState;
+		downCount = 0;
+	}
+
+}
+void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의.
+{
+
 }
 
 void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player attack Enemy!!"));
- 	if (hp > 0) //체력이 0이아니면 피격상태 유지
+	currentTime = 0;
+	currentTime += GetWorld()->DeltaRealTimeSeconds;
+ 	if (hp > 0 && downCount>0) //체력이 0이아니면 피격상태 유지
  	{
 		hp--; //HP 마이너스
- 		mState = EEnemyState::Damage;
- 		currentTime = 0;
+		UE_LOG(LogTemp, Warning, TEXT("HP : %d"), hp);
+		if(currentTime<dieDelayTime)
+		{ 
+ 			mState = EEnemyState::Damage;
+ 			currentTime = 0;
+ 			int32 index = FMath::RandRange(0, 1);
+ 			FString sectionName = FString::Printf(TEXT("Damage%d"), index);
+ 			anim->PlayDamagaAnim(FName(*sectionName));
+		}
  
- 		int32 index = FMath::RandRange(0, 1);
- 		FString sectionName = FString::Printf(TEXT("Damage%d"), 0);
- 		anim->PlayDamagaAnim(FName(*sectionName));
  	
  	}
  	else // 체력이 0이면 죽음상태로 전환
  	{
- 
- 		mState = EEnemyState::Die;
- 		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
 
+		if (currentTime < dieDelayTime)
+		{
+ 		mState = EEnemyState::Down;
 		anim->PlayDamagaAnim((TEXT("die")));
+		}
  	}
  	anim->animState = mState;
 

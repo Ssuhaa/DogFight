@@ -26,7 +26,8 @@ ASH_Player::ASH_Player()
 	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp")); //SpringArm 컴포넌트 생성
 	springArmComp->SetupAttachment(RootComponent); // 루트 컴포넌트에 자식으로 붙이기
 	springArmComp->SetRelativeLocation(FVector(0, 70, 90)); // 위치 수정
-	springArmComp->TargetArmLength = 400; // 타깃과 카메라 사이에 충돌이 없을 경우 타깃과의 지정 거리
+	springArmComp->TargetArmLength = 500;// 타깃과 카메라 사이에 충돌이 없을 경우 타깃과의 지정 거리
+	springArmComp->SocketOffset = FVector(0, 0 , -20);
 	springArmComp->bUsePawnControlRotation = true; // 회전값이 들어오면 스프링암 컴포넌트를 회전시킬지 여부
 	//카메라 컴포넌트
 	camComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));

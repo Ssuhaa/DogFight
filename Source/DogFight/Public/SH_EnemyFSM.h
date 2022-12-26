@@ -14,6 +14,7 @@ enum class EEnemyState : uint8
 	Attack,
 	Damage,
 	Die,
+	Down,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -41,6 +42,8 @@ public:
 	void AttackState();	//공격 상태 함수선언
 	void DamageState(); //피격 상태 함수선언
 	void DieState(); // 죽음 상태 함수선언
+	void DownState();
+
 
 	UPROPERTY(EditDefaultsOnly, Category=FSM)
 	float idleDalayTime = 2; //대기시간
@@ -48,13 +51,24 @@ public:
 	float currentTime = 0; //경과시간
 
 	UPROPERTY(VisibleAnywhere, Category=FSM)
-	class ASH_Player* target; // 플레이어 타겟 변수 선언
+	class ACharacter* target; // 플레이어 타겟 변수 선언
+
+	UPROPERTY()
+	TArray<class AActor*> targets;
+
+	UPROPERTY()
+	class ASH_Enemy* enemy;
+
+	UPROPERTY()
+	class ASH_Player* player;
+
+	float dir = 1000.0f;
 
 	UPROPERTY()
 	class ASH_Enemy* me; //소유액터 변수 선언
 
 	UPROPERTY(EditAnywhere,Category=FSM)
-	float attackRange = 150.0f; // 공격범위 변수 선언
+	float attackRange = 180.0f; // 공격범위 변수 선언
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float attackDelayTime = 2.0f; //공격대기시간 변수 선언
@@ -62,7 +76,10 @@ public:
 	void OnDamageProcess(); //피격알림이벤트 함수 선언
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
-	int32 hp = 3; // 에너미 HP 변수선언
+	int32 hp = 5; // 에너미 HP 변수선언
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	int32 downCount  = 3;
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float damageDelayTime = 2.0f; //피격 대기시간 변수 선언
