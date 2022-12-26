@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RIM_Bullet.h"
-#include <Components/SphereComponent.h> //USphereComponent 를 사용하기 위해 추가
-#include <GameFramework/ProjectileMovementComponent.h> //UProjectileMovementComponentf 를 사용하기 위해 추가
+#include "RIM_Gun.h"
+#include <Components/BoxComponent.h>
+#include <Components/SphereComponent.h>
+#include <GameFramework/ProjectileMovementComponent.h>
 
 // Sets default values
-ARIM_Bullet::ARIM_Bullet() //생성자
+ARIM_Gun::ARIM_Gun()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,7 +17,7 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	//충돌프로파일 설정. 충돌체의 충돌 프로파일을 BlockAll로 지정. 모든 물체와 부딪혀 튕귈 수 있게 하기
 	//충돌체 크기 설정
 	//충돌체를 루트 컴포넌트로 등록
-	
+
 	collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	collisionComp->SetCollisionProfileName(TEXT("BlockAll"));
 	collisionComp->SetSphereRadius(13); //★★★추후 조정 필요. 무엇인지 모르겠다. 블루프린트에서 조정 시 삭제
@@ -30,47 +31,48 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	//충돌 비활성화
 	//외관 크기 설정
 
-	bodyMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMeshComp"));
+	bodyMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("gunMeshComp"));
 	bodyMeshComp->SetupAttachment(collisionComp);
 	bodyMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bodyMeshComp->SetRelativeScale3D(FVector(0.25f)); //★★★추후 조정 필요. 블루프린트에서 조정 시 삭제
 
 
 
-	//[발사체 컴포넌트 추가]
-	//발사체 컴포넌트
+	//[총 컴포넌트 추가]
+	//총 컴포넌트
 	//movement 컴포넌트가 생산시킬 컴포넌트 지정
 
 	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
 	movementComp->SetUpdatedComponent(collisionComp);
-	
 
 
-	//[발사체 컴포넌트 초깃값 설정]
+
+	//[총 컴포넌트 초깃값 설정]
 	//초기속도. InitialSpeed 속성 이용
 	//최대속도. MaxSpeed 속성 이용
 	//반동여부. bShouldBounce 속성 이용. true 할당
 	//반동 값. 반동이 있다면 탄성은 어느 정도 될지 Bounciness 속성 이용
 	//생명 시간 주기
 
-	movementComp->InitialSpeed = 1000; //★★★추후 조정 필요
-	movementComp->MaxSpeed = 1000; //★★★추후 조정 필요
+	movementComp->InitialSpeed = 500; //★★★추후 조정 필요
+	movementComp->MaxSpeed = 500; //★★★추후 조정 필요
 	movementComp->bShouldBounce = true;
-	movementComp->Bounciness = 0.8f; //★★★추후 조정 필요
-	InitialLifeSpan = 10.0f; //★★★추후 조정 필요
+	movementComp->Bounciness = 0.2f; //★★★추후 조정 필요
+	InitialLifeSpan = 30.0f; //★★★추후 조정 필요
+
+
 }
 
 // Called when the game starts or when spawned
-void ARIM_Bullet::BeginPlay()
+void ARIM_Gun::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ARIM_Bullet::Tick(float DeltaTime)
+void ARIM_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-

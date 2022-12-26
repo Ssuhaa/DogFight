@@ -40,6 +40,7 @@ ARIM_Player::ARIM_Player() //생성자
 	bUseControllerRotationYaw = true; //입력에 따른 회전 설정
 
 
+
 	//[총 스켈레탈메시 컴포넌트 등록]
 	//총 스켈레탈메시 컴포넌트 등록
 	//부모 컴포넌트를 Mesh 컴포넌트로 설정
@@ -47,7 +48,7 @@ ARIM_Player::ARIM_Player() //생성자
 
 	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
 	gunMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor1.Charactor1'")); //★★★임시로 토기 넣음
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Chractor3.Chractor3'")); //★★★임시로 토끼 넣음
 
 	//[총 스켈레탈메시 컴포넌트 데이터 설정]
 	//스켈레탈메시 데이터 로드가 성공했다면
@@ -59,8 +60,6 @@ ARIM_Player::ARIM_Player() //생성자
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 		gunMeshComp->SetRelativeLocation(FVector(14, 52, 200)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
 	}
-
-
 
 }
 
@@ -188,11 +187,11 @@ void ARIM_Player::InputRun()
 //[공격/잡기 이벤트 처리 함수 구현] = [총알 발사 이벤트 처리 함수 구현]
 void ARIM_Player::InputPunchGrab()
 {
-	//FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition")); //책 내용인데 지금 필요 없을 것 같음
-	//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition); //책 내용인데 지금 필요 없을 것 같음
+	//FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition")); //★★★책 내용인데 지금 필요 없을 것 같음
+	//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition); //★★★책 내용인데 지금 필요 없을 것 같음
 	
 	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation(), GetActorRotation());
-	UE_LOG(LogTemp, Warning, TEXT("Attack!"));
+	UE_LOG(LogTemp, Warning, TEXT("Attack!")); //★★★나중에 삭제
 }
 
 
