@@ -35,6 +35,8 @@ ASH_Enemy::ASH_Enemy()
 	//어택 콜리전
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
 	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket"));
+	
+	//!!!!!!!!에너미 콜리전 수정할것.
 
 }
 
@@ -90,6 +92,8 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		}
 		else if (OtherActor->GetName().Contains(TEXT("Player")))
 		{
+		//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
+		//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
 			player = Cast<ASH_Player>(OtherActor);
 			player->OnDamageProcess();
 		}

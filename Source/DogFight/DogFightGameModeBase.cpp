@@ -42,11 +42,14 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 				TimeWG->RemoveFromParent();
 				if (currenttime > 2)
 				{
+					//!!!!!!!!성공 위젯을 띄우고
+					//!!!!!!!!커런트 타임 리셋
+					//!!!!!!!!2초 뒤에
+					//!!!!!!!!오픈레벨
 					UE_LOG(LogTemp,Warning,TEXT("TIME OUT!"));
 					UGameplayStatics::OpenLevel(GetWorld(), "ResultLevel");
 				}
-				//성공 위젯 띄우기
-
+	
 			}
 			else
 			{

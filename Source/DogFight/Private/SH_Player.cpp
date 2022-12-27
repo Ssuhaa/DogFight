@@ -42,6 +42,7 @@ ASH_Player::ASH_Player()
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")); //때렸는지 확인할 컴포넌트 생성
 	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket")); // 스켈레탈 메시 소켓에 어택콜리전 붙이기
 
+	//!!!!!!!!플레이어 콜리전 수정할 것
 }
 
 // Called when the game starts or when spawned
@@ -146,6 +147,9 @@ void ASH_Player::OnDamageProcess()
 	UE_LOG(LogTemp, Warning, TEXT("playerHP : %d"), playerHP);
 	if (playerHP <= 0)
 	{
+		//실패 위젯 띄우고
+		//마우스 커서 보이게 한다음
+		//위젯 버튼에 따라서 스타트레벨 오픈 혹은 재시작
 		UGameplayStatics::SetGamePaused(GetWorld(),true);
-		}
+	}
 }
