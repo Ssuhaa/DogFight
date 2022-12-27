@@ -81,6 +81,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	int32 downCount  = 3;
 
+	int32 randindex;
+
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float damageDelayTime = 2.0f; //피격 대기시간 변수 선언
 

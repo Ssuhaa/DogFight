@@ -23,8 +23,6 @@ void USH_EnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 
-// 	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), ASH_Player::StaticClass()); //월드에서 타깃 찾아오기
-// 	target = Cast<ASH_Player>(actor); //플레이어타입으로 캐스팅
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //모든 액터 배열로 가져오기
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
 	for (int32 i = 0; i < targets.Num(); i++) // 반복문 돌리기
@@ -39,7 +37,6 @@ void USH_EnemyFSM::BeginPlay()
 			}
 		}
 	}
-
 
 
 	// UEnemyAnim할당
@@ -83,11 +80,12 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 	if (currentTime > idleDalayTime) //만약 경과시간이 대기시간을 초과했다면
 	{
 		mState = EEnemyState::Move; // 이동상태로 전환
-		currentTime = 0; //경과시간 초기화
 		anim->animState = mState;
+		currentTime = 0; //경과시간 초기화
 	}
 
 }
+
 void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
 	 // 목적지를 타겟의 액터 로케이션으로 설정
@@ -102,6 +100,7 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 		currentTime = attackDelayTime;
 	}
 }
+
 void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
@@ -116,6 +115,9 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 				{
 					enemy->fsm->OnDamageProcess();
 					anim->bAttackPlay = true;
+					mState = EEnemyState::Idle;
+					anim->animState = mState;
+					currentTime = 0; //경과시간 초기화
 				}
 			}
 			else
@@ -129,17 +131,19 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 						{
 							dir = distance;
 							target = Cast<ACharacter>(targets[i]); // 타겟 재 조정
+							mState = EEnemyState::Move; 
+							anim->animState = mState;
+							currentTime = 0;
 						}
 					}
 				}
-				mState = EEnemyState::Move; 
-				anim->animState = mState;
 			}
-				currentTime = 0; //경과시간 초기화
 		}
 		else if(target->GetName().Contains(TEXT("Player")))
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Enemy attack Player!!"));
+			mState = EEnemyState::Idle;
+			anim->animState = mState;
 			currentTime = 0;
 		}
 		
@@ -149,6 +153,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	{
 		mState = EEnemyState::Move; //에너미 상태 무브로 이동.
 		anim->animState = mState;
+		currentTime = 0;
 	}
 }
 void USH_EnemyFSM::DamageState() //피격 상태 함수정의
@@ -156,79 +161,65 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 	currentTime += GetWorld()->DeltaRealTimeSeconds;
 	if (currentTime > damageDelayTime) //피격대기시간이 지나면 대기상태로 전환
 	{
+		anim->Montage_Stop(damageDelayTime);
 		mState = EEnemyState::Idle;
-		currentTime = 0;
 		anim->animState = mState;
+		currentTime = 0;
+
 	}
 }
 void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 {
-	
-	currentTime = 0;
+
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
 	currentTime += GetWorld()->DeltaRealTimeSeconds;
-	if (downCount > 0)
+	if (currentTime > dieDelayTime)
 	{
-		if (anim->bDieDone == false)
-		{
-			if (currentTime > dieDelayTime)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
-				anim->Montage_Stop(damageDelayTime);
-				mState = EEnemyState::Idle; // 대기 스테이트 전환
-				anim->animState = mState;
-				currentTime = 0;
-				hp = 5;
-				downCount--;
-				UE_LOG(LogTemp, Warning, TEXT("%d"), downCount);
-
-			}
-
-		}
-	}
-	else
-	{
-
-		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
-		mState = EEnemyState::Die;
-		currentTime = 0;
+		anim->Montage_Stop(damageDelayTime);
+		mState = EEnemyState::Idle; // 대기 스테이트 전환
 		anim->animState = mState;
-		downCount = 0;
+		currentTime = 0;
+		downCount--;
+		hp = 5;
 	}
 
 }
+	
+
 void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의.
 {
+		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
 
 }
 
 void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 {
-	currentTime = 0;
-	currentTime += GetWorld()->DeltaRealTimeSeconds;
- 	if (hp > 0 && downCount>0) //체력이 0이아니면 피격상태 유지
+	
+ 	if (hp > 0 && downCount > 0) //체력이 0이아니고 다운카운트가 0이아니면 피격상태 유지
  	{
-		hp--; //HP 마이너스
 		UE_LOG(LogTemp, Warning, TEXT("HP : %d"), hp);
-		if(currentTime<dieDelayTime)
-		{ 
- 			mState = EEnemyState::Damage;
- 			currentTime = 0;
- 			int32 index = FMath::RandRange(0, 1);
- 			FString sectionName = FString::Printf(TEXT("Damage%d"), index);
- 			anim->PlayDamagaAnim(FName(*sectionName));
-		}
- 
- 	
- 	}
- 	else // 체력이 0이면 죽음상태로 전환
+		mState = EEnemyState::Damage;
+		randindex = FMath::RandRange(0, 1);
+		FString sectionName = FString::Printf(TEXT("Damage%d"), randindex);
+		anim->PlayDamagaAnim(FName(*sectionName));
+		currentTime = 0;	
+		hp--;
+	}
+ 	else if(hp < 1 && downCount > 0)
  	{
-
-		if (currentTime < dieDelayTime)
-		{
+		UE_LOG(LogTemp, Warning, TEXT("	Down : %d"), downCount);
  		mState = EEnemyState::Down;
-		anim->PlayDamagaAnim((TEXT("die")));
-		}
+		FString sectionName = FString::Printf(TEXT("Down%d"), randindex);
+		anim->PlayDamagaAnim(FName(*sectionName));
+		
  	}
+	else
+	{
+		mState = EEnemyState::Die;
+		FString sectionName = FString::Printf(TEXT("Down%d"), randindex);
+		anim->PlayDamagaAnim(FName(*sectionName));
+		
+	}
  	anim->animState = mState;
 
 }
