@@ -21,5 +21,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	float currenttime = 0;
+	int32 SuccessMintime = 5;
+	float SuccessSectime = 0;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UTimer> Timer;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	class UTimer* TimeWG;
 };

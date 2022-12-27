@@ -30,4 +30,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
 	class USH_EnemyFSM* fsm; // 적  AI 관리하는 FSM액터 컴포넌트
 
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* compAttack;
+
+	UFUNCTION()
+	void attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY()
+	bool isAttackBoxOverlap ;
+
+	UPROPERTY()
+	class ASH_Enemy* currEenemy;
+
+	UPROPERTY()
+	class ASH_Player* player;
+
+	float currentTime = 0;
+	float delayTime = 2.0f;
+
 };

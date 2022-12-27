@@ -58,4 +58,8 @@ public:
 	bool isinputAttack =false;
 	UPROPERTY()
 	class AActor* currEenemy;
+
+	void OnDamageProcess(); //피격알림이벤트 함수 선언
+
+	int32 playerHP = 10;
 };

@@ -7,6 +7,7 @@
 #include "SH_EnemyFSM.h"
 #include <Components/BoxComponent.h>
 #include "SH_Enemy.h"
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -41,8 +42,6 @@ ASH_Player::ASH_Player()
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")); //때렸는지 확인할 컴포넌트 생성
 	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket")); // 스켈레탈 메시 소켓에 어택콜리전 붙이기
 
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -63,8 +62,6 @@ void ASH_Player::Tick(float DeltaTime)
 
 	Move(); // 플레이어 이동 함수
 
-	
-	
 }
 
 // Called to bind functionality to input
@@ -141,4 +138,14 @@ void ASH_Player::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 void ASH_Player::attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	isinputAttack = false; //닿인게 끝났으면 false로 초기화
+}
+
+void ASH_Player::OnDamageProcess()
+{
+	playerHP --;
+	UE_LOG(LogTemp, Warning, TEXT("playerHP : %d"), playerHP);
+	if (playerHP <= 0)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(),true);
+		}
 }

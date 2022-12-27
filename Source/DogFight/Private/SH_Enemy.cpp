@@ -5,12 +5,14 @@
 #include "SH_EnemyFSM.h"
 #include <GameFramework/CharacterMovementComponent.h>
 #include <GameFramework/Character.h>
+#include <Components/BoxComponent.h>
+#include "SH_Player.h"
 
 
 // Sets default values
 ASH_Enemy::ASH_Enemy()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor1.Charactor1'")); //메시 데이터 찾기
@@ -22,7 +24,7 @@ ASH_Enemy::ASH_Enemy()
 
 	fsm = CreateDefaultSubobject<USH_EnemyFSM>(TEXT("FSM")); //	에너미에 FSM컴포넌트 추가
 
-	
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	// 애니메이션 블루프린트 할당
 	ConstructorHelpers::FClassFinder<UAnimInstance> tempclass(TEXT("AnimBlueprint'/Game/BluePrint/ABP_EnemyAnim.ABP_EnemyAnim_C'")); //끝에 C를 써줘야 오류가 나지않음
@@ -30,6 +32,9 @@ ASH_Enemy::ASH_Enemy()
 	{
 		GetMesh()->SetAnimInstanceClass(tempclass.Class);
 	}
+	//어택 콜리전
+	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
+	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket"));
 
 }
 
@@ -37,14 +42,15 @@ ASH_Enemy::ASH_Enemy()
 void ASH_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	compAttack->OnComponentBeginOverlap.AddDynamic(this, &ASH_Enemy::attackBoxBeginOverlap); //컴포넌트 비긴오버랩 델리게이트 바인딩
+	compAttack->OnComponentEndOverlap.AddDynamic(this, &ASH_Enemy::attackBoxEndOverlap);
 }
 
 // Called every frame
 void ASH_Enemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 
 }
 
@@ -55,3 +61,43 @@ void ASH_Enemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+
+void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != fsm->me)
+	{
+		if (OtherActor->GetName().Contains(TEXT("Enemy")))
+		{
+			currEenemy = Cast<ASH_Enemy>(OtherActor);
+			if (fsm->isAttackState == true)
+			{
+				if(fsm->mState != EEnemyState::Down && fsm->mState != EEnemyState::Die && fsm->mState != EEnemyState::Damage)
+				{
+					if(currEenemy->fsm->mState != EEnemyState::Down && currEenemy->fsm->mState != EEnemyState::Die && currEenemy->fsm->mState != EEnemyState::Damage)
+					{
+					currEenemy->fsm->OnDamageProcess();
+					UE_LOG(LogTemp, Warning, TEXT("Enemy Attack enemy"));
+					}
+				}
+
+			}
+			if (currEenemy->fsm->mState == EEnemyState::Damage || currEenemy->fsm->mState == EEnemyState::Die || currEenemy->fsm->mState == EEnemyState::Down)
+			{
+			
+				fsm->SeachLongTarget();
+
+			}
+		}
+		else if (OtherActor->GetName().Contains(TEXT("Player")))
+		{
+			player = Cast<ASH_Player>(OtherActor);
+			player->OnDamageProcess();
+		}
+	}
+}
+
+
+void ASH_Enemy::attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
+}
