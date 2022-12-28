@@ -77,9 +77,9 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	// 목적지를 타겟의 액터 로케이션으로 설정
 	FVector P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
 	me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
-	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
 	if (P.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
 	{
+		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
 		stateChange(EEnemyState::Attack);
 		anim->bAttackPlay = true;
 		currentTime = attackDelayTime;
