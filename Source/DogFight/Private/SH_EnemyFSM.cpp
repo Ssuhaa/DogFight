@@ -67,8 +67,7 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 	if (currentTime > idleDalayTime) //만약 경과시간이 대기시간을 초과했다면
 	{
 		isAttackState = false;
-		mState = EEnemyState::Move; // 이동상태로 전환
-		anim->animState = mState;
+		stateChange(EEnemyState::Move);
 		currentTime = 0; //경과시간 초기화
 	}
 }
@@ -81,8 +80,7 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
 	if (P.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
 	{
-		mState = EEnemyState::Attack; // 공격상태로 전환
-		anim->animState = mState;
+		stateChange(EEnemyState::Attack);
 		anim->bAttackPlay = true;
 		currentTime = attackDelayTime;
 	}
@@ -99,13 +97,11 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 		if (distance > attackRange) // 타깃과의 거리가 공격범위보다 벗어나면
 		{
 			isAttackState = false;
-			mState = EEnemyState::Move; //에너미 상태 무브로 이동.
-			anim->animState = mState;
+			stateChange(EEnemyState::Move);
 			currentTime = 0;
 		}
 		anim->bAttackPlay = true;
-		mState = EEnemyState::Idle;
-		anim->animState = mState;
+		stateChange(EEnemyState::Idle);
 		currentTime = 0; //경과시간 초기화
 	}
 
@@ -118,8 +114,7 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 	if (currentTime > damageDelayTime) //피격대기시간이 지나면 대기상태로 전환
 	{
 		anim->Montage_Stop(damageDelayTime);
-		mState = EEnemyState::Attack;
-		anim->animState = mState;
+		stateChange(EEnemyState::Attack);
 		currentTime = 0;
 
 	}
@@ -132,8 +127,7 @@ void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 	{
 		anim->Montage_Stop(damageDelayTime);
 		SeachLongTarget();
-		mState = EEnemyState::Idle; // 대기 스테이트 전환
-		anim->animState = mState;
+		stateChange(EEnemyState::Idle);
 		currentTime = 0;
 		downCount--;
 		hp = 5;
@@ -151,32 +145,23 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 
 	if (hp > 0 && downCount > 0) //체력이 0이아니고 다운카운트가 0이아니면 피격상태 유지
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HP : %d"), hp);
-		mState = EEnemyState::Damage;
+		UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), hp);
 		randindex = FMath::RandRange(0, 1);
-		FString sectionName = FString::Printf(TEXT("Damage%d"), randindex);
-		anim->PlayDamagaAnim(FName(*sectionName));
+		stateChangeMontage(EEnemyState::Damage, "Damage");
 		currentTime = 0;
 		hp--;
 	}
 	else if (hp < 1 && downCount > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("	Down : %d"), downCount);
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Fall down!"));
-		mState = EEnemyState::Down;
-		FString sectionName = FString::Printf(TEXT("Down%d"), randindex);
-		anim->PlayDamagaAnim(FName(*sectionName));
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Down : %d"), downCount);
+		stateChangeMontage(EEnemyState::Down, "Down");
 
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
-		mState = EEnemyState::Die;
-		FString sectionName = FString::Printf(TEXT("Down%d"), randindex);
-		anim->PlayDamagaAnim(FName(*sectionName));
-
+		stateChangeMontage(EEnemyState::Die, "Down");
 	}
-	anim->animState = mState;
 
 }
 
@@ -196,7 +181,7 @@ void USH_EnemyFSM::SeachShortTarget() //가까운 타겟 찾기
 			}
 		}
 	}
-}
+}//가장 가까운타겟 찾기
 
 void USH_EnemyFSM::SeachLongTarget() // 먼 타겟 찾기
 {
@@ -213,4 +198,19 @@ void USH_EnemyFSM::SeachLongTarget() // 먼 타겟 찾기
 			}
 		}
 	}
-}
+} // 가장 먼 타겟 찾기
+
+void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 애니메이션 동기화
+{
+	mState = state;
+	anim->animState = mState;
+} 
+
+void USH_EnemyFSM::stateChangeMontage(EEnemyState State, char* Name)
+{
+	FString sectionName = FString::Printf(TEXT("%s%d"), Name, randindex);
+	mState = State;
+	anim->PlayDamagaAnim(FName(*sectionName));
+	anim->animState = mState;
+
+} 

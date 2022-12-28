@@ -78,7 +78,7 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 					if(currEenemy->fsm->mState != EEnemyState::Down && currEenemy->fsm->mState != EEnemyState::Die && currEenemy->fsm->mState != EEnemyState::Damage)
 					{
 					currEenemy->fsm->OnDamageProcess();
-					UE_LOG(LogTemp, Warning, TEXT("Enemy Attack enemy"));
+					//UE_LOG(LogTemp, Warning, TEXT("Enemy Attack enemy"));
 					}
 				}
 

@@ -96,4 +96,7 @@ public:
 	class UEnemyAnim* anim; //에너미 애니메이션
 
 	bool isAttackState = false;
+
+	void stateChange(EEnemyState State);
+	void stateChangeMontage(EEnemyState State, char* Name);
 };
