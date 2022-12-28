@@ -4,22 +4,29 @@
 #include "DogFightGameModeBase.h"
 #include "Timer.h"
 #include <Kismet/GameplayStatics.h>
+#include "SuccessWidget.h"
+
 
 void ADogFightGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	TimeWG = CreateWidget<UTimer>(GetWorld(),Timer);
-	//TimeWG->AddToViewport();
+	successWG = CreateWidget<USuccessWidget>(GetWorld(),successUI);
 }
 
 ADogFightGameModeBase::ADogFightGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FClassFinder<UTimer> tempWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_Timer.BP_Timer_C'"));
-	if (tempWG.Succeeded())
+	ConstructorHelpers::FClassFinder<UTimer> tempTimeWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_Timer.BP_Timer_C'"));
+	if (tempTimeWG.Succeeded())
 	{
-		Timer = tempWG.Class;
+		Timer = tempTimeWG.Class;
+	}
+	ConstructorHelpers::FClassFinder<USuccessWidget> tempSuccessWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_Succes.BP_Succes_C'"));
+	if (tempSuccessWG.Succeeded())
+	{
+		successUI = tempSuccessWG.Class;
 	}
 }
 
@@ -37,19 +44,21 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 		}
 		else if (SuccessMintime >= 0)
 		{
+
 			if (SuccessMintime == 0)
 			{
-				TimeWG->RemoveFromParent();
-				if (currenttime > 2)
+				if (successWG->IsInViewport() == false)
 				{
-					//!!!!!!!!성공 위젯을 띄우고
-					//!!!!!!!!커런트 타임 리셋
-					//!!!!!!!!2초 뒤에
-					//!!!!!!!!오픈레벨
-					UE_LOG(LogTemp,Warning,TEXT("TIME OUT!"));
-					UGameplayStatics::OpenLevel(GetWorld(), "ResultLevel");
+					successWG->AddToViewport();
+					TimeWG->RemoveFromParent();
 				}
-	
+
+				openleveltime += DeltaTime;
+				if (openleveltime > 2)
+				{
+					UGameplayStatics::OpenLevel(GetWorld(), "Result");
+				}
+
 			}
 			else
 			{
@@ -57,6 +66,8 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 				SuccessSectime = 60;
 				currenttime = 0;
 			}
+				
+
 		}
 	}
 

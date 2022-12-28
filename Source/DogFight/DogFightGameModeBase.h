@@ -26,11 +26,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	float currenttime = 0;
-	int32 SuccessMintime = 5;
-	float SuccessSectime = 0;
+	int32 SuccessMintime = 0;
+	float SuccessSectime = 10;
+	float openleveltime = 0;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UTimer> Timer;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class USuccessWidget> successUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USuccessWidget* successWG;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	class UTimer* TimeWG;
