@@ -105,6 +105,9 @@ public:
 	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류해결. 클래스 ABullet을 못찾는 거 같음 ---> 내 파일명 ARIM_Bullet 으로 해야 함
 
 public:
+	//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 선언]
+	UFUNCTION()
+	void VisibleGun();
 
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };

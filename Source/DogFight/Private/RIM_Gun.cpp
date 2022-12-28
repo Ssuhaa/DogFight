@@ -5,6 +5,8 @@
 #include <Components/BoxComponent.h>
 #include <Components/SphereComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
+#include "RIM_Player.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 ARIM_Gun::ARIM_Gun()
@@ -29,16 +31,18 @@ ARIM_Gun::ARIM_Gun()
 	bodyMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("itemGunMeshComp"));
 	bodyMeshComp->SetupAttachment(collisionComp);
 	bodyMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
+	//ConstructorHelpers::FObjectFinder<UStaticMesh> tempmesh(TEXT(""));
+// 	if (tempmesh.Succeeded())
+// 	{
+// 		bodyMeshComp->Set
+// 	}
 
 
 	//[movementComp 컴포넌트 추가] //★★★필요 없을 시 전체 삭제
 	//movementComp 컴포넌트
 	//movement 컴포넌트가 생산시킬 컴포넌트 지정
-	movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
-	movementComp->SetUpdatedComponent(collisionComp);
-
-
+	//movementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComp"));
+	//movementComp->SetUpdatedComponent(collisionComp);
 
 	//[movementComp 컴포넌트 초기값 설정] //★★★필요 없을 시 전체 삭제
 	//초기속도. InitialSpeed 속성 이용
@@ -46,12 +50,17 @@ ARIM_Gun::ARIM_Gun()
 	//반동여부. bShouldBounce 속성 이용. true 할당
 	//반동 값. 반동이 있다면 탄성은 어느 정도 될지 Bounciness 속성 이용
 	//생명 시간 주기
-	movementComp->InitialSpeed = 500; //★★★추후 조정 필요
-	movementComp->MaxSpeed = 500; //★★★추후 조정 필요
-	movementComp->bShouldBounce = true;
-	movementComp->Bounciness = 0.2f; //★★★추후 조정 필요
-	InitialLifeSpan = 30.0f; //★★★추후 조정 필요
+	//movementComp->InitialSpeed = 500; //★★★추후 조정 필요
+	//movementComp->MaxSpeed = 500; //★★★추후 조정 필요
+	//movementComp->bShouldBounce = true;
+	//movementComp->Bounciness = 0.2f; //★★★추후 조정 필요
+	//InitialLifeSpan = 30.0f; //★★★추후 조정 필요
 
+
+	collisionComp->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Gun::collisionBeginOverlap);
+	collisionComp->OnComponentEndOverlap.AddDynamic(this, &ARIM_Gun::collisionEndOverlap);
+	
+	
 
 }
 
@@ -59,7 +68,8 @@ ARIM_Gun::ARIM_Gun()
 void ARIM_Gun::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//[바닥에 있는 총과 플레이어 충돌 이벤트 함수 바인딩/호출]
+
 }
 
 // Called every frame
@@ -67,4 +77,47 @@ void ARIM_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARIM_Gun::EnableInput(APlayerController* PlayerController)
+{
+	Super::EnableInput(PlayerController);
+
+	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Gun::getGun);
+}
+
+
+//[바닥에 있는 총과 플레이어 충돌 이벤트 함수 구현]
+void ARIM_Gun::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("11111111111111"));
+	RIM_Player = Cast<ARIM_Player>(OtherActor);
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+}
+
+void ARIM_Gun::collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	//AActor* RIM_Player = Cast<ARIM_Player>(OtherActor);
+	//DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+}
+
+void ARIM_Gun::getGun()
+{
+	UE_LOG(LogTemp, Warning, TEXT("22222222"));
+	RIM_Player->VisibleGun();
+	Destroy();
+}
+
+void ARIM_Gun::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("5555555555"));
+	RIM_Player = Cast<ARIM_Player>(OtherActor);
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+}
+
+void ARIM_Gun::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	AActor* RIM_Player = Cast<ARIM_Player>(OtherActor);
+	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }

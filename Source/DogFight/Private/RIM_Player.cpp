@@ -46,8 +46,8 @@ ARIM_Player::ARIM_Player() //생성자
 	//부모 컴포넌트를 Mesh 컴포넌트로 설정
 	//스켈레탈메시 데이터 로드
 	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
-	gunMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Chractor3.Chractor3'")); //★★★임시로 토끼 넣음. 추후 필요시 변경
+	gunMeshComp->SetupAttachment(GetMesh(),TEXT("Gun")); //총을 캐릭터 소켓에 붙임
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
 
 	//[총 스켈레탈메시 컴포넌트 데이터 설정]
 	//스켈레탈메시 데이터 로드가 성공했다면
@@ -56,7 +56,8 @@ ARIM_Player::ARIM_Player() //생성자
 	if (TempGunMesh.Succeeded())
 	{
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
-		gunMeshComp->SetRelativeLocation(FVector(14, 52, 200)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
+		gunMeshComp->SetRelativeLocation(FVector(-90, 0, -159)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
+		gunMeshComp->SetRelativeScale3D(FVector(0.5f)); //★★★총 크기. 임시로 세팅. 추후 변경 필요
 	}
 
 }
@@ -68,6 +69,7 @@ void ARIM_Player::BeginPlay()
 
 	//[초기 속도를 걷기로 설정]
 	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+	gunMeshComp->SetVisibility(false);
 	
 }
 
@@ -187,9 +189,12 @@ void ARIM_Player::InputPunchGrab()
 {
 	//FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition")); //★★★책 내용인데 지금 필요 없을 것 같음
 	//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, firePosition); //★★★책 내용인데 지금 필요 없을 것 같음
-	
+	if (gunMeshComp->IsVisible() == true)
+	{
 	GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation(), GetActorRotation());
 	UE_LOG(LogTemp, Warning, TEXT("Attack!")); //★★★나중에 삭제
+
+	}
 }
 
 
@@ -209,5 +214,15 @@ void ARIM_Player::InputPunchGrab()
 //[달리기 공격 이벤트 처리 함수 구현] ★★★아마 구현 안 해도 됨
 
 
+//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 구현]
+void ARIM_Player::VisibleGun()
+{
+	gunMeshComp->SetVisibility(true);
+}
 
 
+
+void ARIM_Player::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	UE_LOG(LogTemp , Warning, TEXT("4444444444"));
+}
