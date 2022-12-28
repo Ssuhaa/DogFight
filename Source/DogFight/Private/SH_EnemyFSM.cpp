@@ -27,7 +27,7 @@ void USH_EnemyFSM::BeginPlay()
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //모든 액터 배열로 가져오기
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
-	SeachShortTarget();
+	SeachShortTarget();//가까운 적 찾기
 
 	// UEnemyAnim할당
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
@@ -63,12 +63,12 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 {
-	currentTime += GetWorld()->DeltaTimeSeconds; //시간흐름 저장.
-	if (currentTime > idleDalayTime) //만약 경과시간이 대기시간을 초과했다면
+	currentTime += GetWorld()->DeltaTimeSeconds; 
+	if (currentTime > idleDalayTime)
 	{
 		isAttackState = false;
 		stateChange(EEnemyState::Move);
-		currentTime = 0; //경과시간 초기화
+		currentTime = 0; 
 	}
 }
 
@@ -94,7 +94,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	{
 		isAttackState = true;
 		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
-		if (distance > attackRange) // 타깃과의 거리가 공격범위보다 벗어나면
+		if (distance > attackRange)
 		{
 			isAttackState = false;
 			stateChange(EEnemyState::Move);
@@ -102,7 +102,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 		}
 		anim->bAttackPlay = true;
 		stateChange(EEnemyState::Idle);
-		currentTime = 0; //경과시간 초기화
+		currentTime = 0; 
 	}
 
 }
@@ -111,7 +111,7 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
-	if (currentTime > damageDelayTime) //피격대기시간이 지나면 대기상태로 전환
+	if (currentTime > damageDelayTime)
 	{
 		anim->Montage_Stop(damageDelayTime);
 		stateChange(EEnemyState::Attack);
@@ -143,7 +143,7 @@ void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의.
 void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 {
 
-	if (hp > 0 && downCount > 0) //체력이 0이아니고 다운카운트가 0이아니면 피격상태 유지
+	if (hp > 0 && downCount > 0) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), hp);
 		randindex = FMath::RandRange(0, 1);
@@ -206,7 +206,7 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 애니메이션 �
 	anim->animState = mState;
 } 
 
-void USH_EnemyFSM::stateChangeMontage(EEnemyState State, char* Name)
+void USH_EnemyFSM::stateChangeMontage(EEnemyState State, char* Name) //스테이트 변경 후 애님몽타주 플레이.
 {
 	FString sectionName = FString::Printf(TEXT("%s%d"), Name, randindex);
 	mState = State;
