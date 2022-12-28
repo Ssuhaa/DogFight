@@ -6,7 +6,7 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Components/SkeletalMeshComponent.h>
-#include "RIM_Bullet.h" //★★★오류. Bullet.h 파일 소스를 열수없다고 한다 ---> 내 파일명 RIM_Bullet.h 으로 해야 함
+#include "RIM_Bullet.h" //★★★오류해결. Bullet.h 파일 소스를 열수없다고 한다 ---> 내 파일명 RIM_Bullet.h 으로 해야 함
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -14,13 +14,13 @@ ARIM_Player::ARIM_Player() //생성자
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//[스켈레탈메시. 캐릭터 추가]
-	//★★★애셋 캐릭터2 파일 경로 추가. 추후 변경 필요 시 변경 진행
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor2.Charactor2'"));
+	//[스켈레탈메시. 옷 추가]
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor2.Charactor2'")); //★★★임시로 캐릭터2 넣음. 추후 필요시 변경
 	if (TempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(TempMesh.Object); 
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0)); 
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
+		//gunMeshComp->SetVisibility(false); //★★★확인 필요. 디폴트로 총 안 보이게 하는 코드 이거 아닌가??? 컴파일은 되는데, 엔진 꺼짐. 실행 안됨
 	}
 
 
@@ -41,20 +41,18 @@ ARIM_Player::ARIM_Player() //생성자
 
 
 
-	//[총 스켈레탈메시 컴포넌트 등록]
+	//[총 스켈레탈메시 컴포넌트 등록] //★★★책에 스켈레탈메시로 만들어서 동일하게 했는데, 총인데 왜 스켈레탈메시로 해야하는지 궁금
 	//총 스켈레탈메시 컴포넌트 등록
 	//부모 컴포넌트를 Mesh 컴포넌트로 설정
 	//스켈레탈메시 데이터 로드
-
 	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
 	gunMeshComp->SetupAttachment(GetMesh());
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Chractor3.Chractor3'")); //★★★임시로 토끼 넣음
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Chractor3.Chractor3'")); //★★★임시로 토끼 넣음. 추후 필요시 변경
 
 	//[총 스켈레탈메시 컴포넌트 데이터 설정]
 	//스켈레탈메시 데이터 로드가 성공했다면
 	//스켈레탈메시 데이터 할당
 	//위치 조정하기
-
 	if (TempGunMesh.Succeeded())
 	{
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
@@ -126,7 +124,7 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ARIM_Player::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ARIM_Player::InputRun);
 
-	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = [총알 발사 이벤트 처리 함수 바인딩/호출]
+	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사
 	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
 
 	//[드롭킥/던지기 이벤트 처리 함수 바인딩/호출]
@@ -184,7 +182,7 @@ void ARIM_Player::InputRun()
 }
 
 
-//[공격/잡기 이벤트 처리 함수 구현] = [총알 발사 이벤트 처리 함수 구현]
+//[공격/잡기 이벤트 처리 함수 구현] = 총알 발사
 void ARIM_Player::InputPunchGrab()
 {
 	//FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition")); //★★★책 내용인데 지금 필요 없을 것 같음
@@ -209,3 +207,7 @@ void ARIM_Player::InputPunchGrab()
 
 //[점프 달리기 이벤트 처리 함수 구현] ★★★구현 안 해도 됨
 //[달리기 공격 이벤트 처리 함수 구현] ★★★아마 구현 안 해도 됨
+
+
+
+

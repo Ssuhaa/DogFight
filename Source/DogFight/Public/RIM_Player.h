@@ -36,16 +36,14 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* playerCamComp;
 
-
-
 public:
 	//걷기 속도
 	UPROPERTY(EditAnywhere) //★★★오류 나서 뺌 Category = PlayerSetting
-	float walkSpeed = 200;
+	float walkSpeed = 200; //★★★필요 시 수치 변경
 
 	//달리기 속도 
 	UPROPERTY(EditAnywhere) //★★★오류 나서 뺌 Category = PlayerSetting
-	float runSpeed = 600;
+	float runSpeed = 600; //★★★추후 필요시 변경
 
 	//이동 방향
 	FVector direction;
@@ -95,7 +93,7 @@ public:
 
 
 public:
-	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가]
+	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가] //★★★책에 스켈레탈메시로 만들어서 동일하게 했는데, 총인데 왜 스켈레탈메시로 해야하는지 궁금
 	//총 스켈레탈 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = GunMesh)
 	class USkeletalMeshComponent* gunMeshComp;
@@ -104,7 +102,7 @@ public:
 	//[BulletFactory 총알 공장 속성 추가]
 	//총알 공장
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
-	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류. 클래스 ABullet을 못찾는 거 같음 ---> 내 파일명 ARIM_Bullet 으로 해야 함
+	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류해결. 클래스 ABullet을 못찾는 거 같음 ---> 내 파일명 ARIM_Bullet 으로 해야 함
 
 public:
 

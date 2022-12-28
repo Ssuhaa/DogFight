@@ -24,17 +24,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	//발사체의 이동, 발사체 형태의 물리 기능을 제고하는 컴포넌트. UProjectileMovementComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, Category = Movement) //필요 없을 시 삭제
-	class UProjectileMovementComponent* movementComp; //필요 없을 시 삭제
-
-	//충돌체, 충돌 컴포넌트. USphereComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, Category = Collision)
-	class USphereComponent* collisionComp;
+	//충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
+	class UBoxComponent* collisionComp;
 
 	//외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, Category = BodyMesh)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = BodyMesh)
 	class UStaticMeshComponent* bodyMeshComp;
+
+	//발사체의 이동, 발사체 형태의 물리 기능을 제고하는 컴포넌트. UProjectileMovementComponent 멤버 변수 추가 //★★★필요 없을 시 전체 삭제
+	UPROPERTY(VisibleAnywhere, Category = Movement)
+	class UProjectileMovementComponent* movementComp;
 
 };
 
