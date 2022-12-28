@@ -118,6 +118,6 @@ void ARIM_Gun::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ARIM_Gun::NotifyActorEndOverlap(AActor* OtherActor)
 {
-	AActor* RIM_Player = Cast<ARIM_Player>(OtherActor);
+	RIM_Player = Cast<ARIM_Player>(OtherActor);
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
