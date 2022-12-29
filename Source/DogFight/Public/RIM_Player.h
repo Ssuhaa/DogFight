@@ -26,7 +26,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
 public:
 	//SpringArm 컴포넌트 변수 선언. USpringArmComponent 속성 추가
 	UPROPERTY(VisibleAnywhere, Category = Camera) //★★★카테고리 필요 없으면 추후 삭제
@@ -109,6 +108,7 @@ public:
 	UFUNCTION()
 	void VisibleGun();
 
+	//[???]
 	virtual void EnableInput(class APlayerController* PlayerController) override;
 
 public:
@@ -121,12 +121,29 @@ public:
 	class UBoxComponent* compCollisionPunchL;
 
 public:
-	//[플레이어가 공격해서 에너미가 데미지를 받음???]
+	//[???]
+	bool isInputPunchGrab = false;
+
+	//[???]
+	UPROPERTY()
+	class AActor* currEnemy;
+
+	//[플레이어 주먹과 충돌 시 함수]
+// 	UFUNCTION()
+// 	void collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+// 	UFUNCTION()
+// 	void collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+// 	UFUNCTION()
+// 	void collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+// 	UFUNCTION()
+// 	void collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+public:
+	//[플레이어가 공격해서 에너미가 데미지를 받는 함수]
 	UFUNCTION()
 	void OnDamageProcess();
 	
-
-
-
+	//[플레이어 HP 변수]
+	int32 HP = 10;
 
 };

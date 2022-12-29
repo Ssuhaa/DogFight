@@ -82,9 +82,20 @@ void ARIM_Player::BeginPlay()
 
 	//[초기 속도를 걷기로 설정]
 	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
-	//초기에 총이 안보이게
+	
+	//[총이 디폴트로 안보이게 설정]
 	compMeshGun->SetVisibility(false);
 
+
+	/*
+	//[플레이어 주먹과 충돌 시... ???]
+	compCollisionPunchR->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionPunchRBeginOverlap);
+	compCollisionPunchL->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionPunchLBeginOverlap);
+	compCollisionPunchR->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionPunchREndOverlap);
+	compCollisionPunchL->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionPunchLEndOverlap);
+	*/
+
+	
 }
 
 // Called every frame
@@ -206,24 +217,24 @@ void ARIM_Player::InputPunchGrab()
 	if (compMeshGun->IsVisible() == true)
 	{
 		//compMeshGun->GetSocketTransform(TEXT("FirePos")); //FirePos(총구 위치) Transform 가져온다
-		//FTransform trFire = compMeshGun->GetSocketTransform(TEXT("FirePos")); //총 스켈레톤에서 소켓 추가
-		//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, trFire); //월드에서 ARIM_Bullet(총알) 가져온다
+		FTransform trFire = compMeshGun->GetSocketTransform(TEXT("FirPos")); //총 스켈레톤에서 소켓 추가
+		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, trFire); //월드에서 ARIM_Bullet(총알) 가져온다
 
-		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation(), GetActorRotation());
+		//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation());
 		UE_LOG(LogTemp, Warning, TEXT("Attack!")); //★★★추후 삭제
-	
-
 	}
-	else
+	/*else
 	{
-		if () // isAttack Bool 변수가 true면
+		if (isInputPunchGrab == true)
 		{
-			 //에너미를 형변환 해서 에너미의 OnDamageP...호출한다.
+		//U에너미* 에너미변수 = Cast<U에너미>(currEnemy);
+		//에너미변수->OnDamageProcess;
+			//에너미를 형변환 해서 에너미의 OnDamageProcess 호출한다.
 			//펀치 애니메이션을 플레이한다.
 		}
 	}
-
-
+	*/
+	
 	
 
 }
@@ -257,14 +268,42 @@ void ARIM_Player::EnableInput(APlayerController* PlayerController)
 {
 	Super::EnableInput(PlayerController);
 
-	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사
+	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사. Gun에 바인딩 넘겼다가 플레이어가 가져옴
 	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
 }
 
 
+/*
+//[플레이어 주먹과 충돌 시 함수 구현]
+void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+{
+	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
+	// is 불  = True;
+	// curre~ = OtherActor; //
+}
 
-//[플레이어가 공격해서 에너미가 데미지를 받음???]
-void ARIM_Player::OnDamageProcess()
+void ARIM_Player::collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 {
 
+}
+
+void ARIM_Player::collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+{
+
+}
+
+void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+{
+
+}
+*/
+
+
+
+//[플레이어가 공격당했을때 에너미가 호출하는 함수 ]
+void ARIM_Player::OnDamageProcess()
+{
+	//플레이어가 공격당했다면 발생하는 로직
+	//HP--; 
+	//만약 HP <=0 Destroy; 
 }

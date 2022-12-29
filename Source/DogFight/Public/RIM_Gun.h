@@ -27,11 +27,11 @@ public:
 
 public:
 	//충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision) //★★★카테고리 필요 없으면 추후 삭제
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* compCollision;
 
 	//외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BodyMesh) //★★★카테고리 필요 없으면 추후 삭제
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* compMeshWeaponGun;
 
 public:

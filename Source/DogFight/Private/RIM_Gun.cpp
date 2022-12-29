@@ -41,11 +41,6 @@ ARIM_Gun::ARIM_Gun()
 		compMeshWeaponGun->SetRelativeScale3D(FVector(0.35f));
 	}
 
-
-
-	
-	
-	
 }
 
 // Called when the game starts or when spawned
@@ -85,7 +80,6 @@ void ARIM_Gun::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 void ARIM_Gun::collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	RIM_Player = Cast<ARIM_Player>(OtherActor);
-
 }
 
 
@@ -98,7 +92,6 @@ void ARIM_Gun::getGun()
 /*
 void ARIM_Gun::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("5555555555"));
 	RIM_Player = Cast<ARIM_Player>(OtherActor);
 	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
@@ -106,4 +99,5 @@ void ARIM_Gun::NotifyActorBeginOverlap(AActor* OtherActor)
 void ARIM_Gun::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	AActor::EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-}*/
+}
+*/
