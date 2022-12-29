@@ -10,8 +10,8 @@
 void ADogFightGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	TimeWG = CreateWidget<UTimer>(GetWorld(),Timer);
-	successWG = CreateWidget<USuccessWidget>(GetWorld(),successUI);
+	TimeWG = CreateWidget<UTimer>(GetWorld(), Timer);
+	successWG = CreateWidget<USuccessWidget>(GetWorld(), successUI);
 }
 
 ADogFightGameModeBase::ADogFightGameModeBase()
@@ -33,7 +33,7 @@ ADogFightGameModeBase::ADogFightGameModeBase()
 void ADogFightGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	currenttime += DeltaTime;
 	if (currenttime > 1)
 	{
@@ -51,13 +51,13 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 				{
 					if (TimeWG->IsInViewport() == true)
 					{
-					successWG->AddToViewport();
-					TimeWG->RemoveFromParent();
-					openleveltime += DeltaTime;
-					if (openleveltime > 2)
-					{
-						UGameplayStatics::OpenLevel(GetWorld(), "Result");
-					}
+						successWG->AddToViewport();
+						TimeWG->RemoveFromParent();
+						openleveltime += DeltaTime;
+						if (openleveltime > 2)
+						{
+							UGameplayStatics::OpenLevel(GetWorld(), "Result");
+						}
 					}
 				}
 
@@ -68,12 +68,12 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 				SuccessSectime = 60;
 				currenttime = 0;
 			}
-				
+
 
 		}
 	}
 
 	TimeWG->UpdateSetText(SuccessMintime, int32(SuccessSectime));
-	
-	
+
+
 }

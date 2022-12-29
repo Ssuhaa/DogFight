@@ -43,7 +43,7 @@ public:
 	bool isAttackBoxOverlap ;
 
 	UPROPERTY()
-	class ASH_Enemy* currEenemy;
+	class ASH_Enemy* currEnemy;
 
 	UPROPERTY()
 	class ASH_Player* player;

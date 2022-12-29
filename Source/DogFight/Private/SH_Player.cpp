@@ -119,7 +119,11 @@ void ASH_Player::inputAttack() //공격 이벤트 입력처리
 	if (isinputAttack == true) //만약 닿였을때 공격이벤트가 들어오면
 	{
 		ASH_Enemy* enemy = Cast<ASH_Enemy>(currEenemy); // 에너미 형변환시켜서
+		if (enemy->fsm->mState != EEnemyState::Down && enemy->fsm->mState != EEnemyState::Die && enemy->fsm->mState != EEnemyState::Damage)
+		{
 		enemy->fsm->OnDamageProcess(); // 데미지 함수 호출.
+
+		}
 	}
 	
 }
@@ -143,13 +147,12 @@ void ASH_Player::attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 
 void ASH_Player::OnDamageProcess()
 {
-	playerHP --;
-	UE_LOG(LogTemp, Warning, TEXT("playerHP : %d"), playerHP);
-	if (playerHP <= 0)
-	{
-		//실패 위젯 띄우고
-		//마우스 커서 보이게 한다음
-		//위젯 버튼에 따라서 스타트레벨 오픈 혹은 재시작
-		UGameplayStatics::SetGamePaused(GetWorld(),true);
-	}
+// 	playerHP --;
+// 	UE_LOG(LogTemp, Warning, TEXT("playerHP : %d"), playerHP);
+// 	if (playerHP <= 0)
+// 	{
+// 		//실패 위젯 띄우고
+// 		//마우스 커서 보이게 한다음
+// 		//위젯 버튼에 따라서 스타트레벨 오픈 혹은 재시작
+// 	}
 }
