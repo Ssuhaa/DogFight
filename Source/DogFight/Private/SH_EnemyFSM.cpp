@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "SH_EnemyFSM.h"
@@ -8,6 +8,7 @@
 #include <EnemyAnim.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetArrayLibrary.h>
+#include <Containers/UnrealString.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -25,11 +26,11 @@ void USH_EnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //¸ğµç ¾×ÅÍ ¹è¿­·Î °¡Á®¿À±â
-	me = Cast<ASH_Enemy>(GetOwner()); //¼ÒÀ¯ °´Ã¼ °¡Á®¿À±â
-	SeachShortTarget();//°¡±î¿î Àû Ã£±â
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //ëª¨ë“  ì•¡í„° ë°°ì—´ë¡œ ê°€ì ¸ì˜¤ê¸°
+	me = Cast<ASH_Enemy>(GetOwner()); //ì†Œìœ  ê°ì²´ ê°€ì ¸ì˜¤ê¸°
+	SeachShortTarget();//ê°€ê¹Œìš´ ì  ì°¾ê¸°
 
-	// UEnemyAnimÇÒ´ç
+	// UEnemyAnimí• ë‹¹
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 
 }
@@ -38,7 +39,8 @@ void USH_EnemyFSM::BeginPlay()
 void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	switch (mState) // Ä³¸¯ÅÍ »óÅÂ º¯¼ö¿¡ µû¶ó ½ºÀ§Äª ½ÃÄÑ ÇØ´ç ÇÔ¼ö È£ÃâÇÏ´Â ÄÚµå
+	currentTime += DeltaTime;
+	switch (mState) // ìºë¦­í„° ìƒíƒœ ë³€ìˆ˜ì— ë”°ë¼ ìŠ¤ìœ„ì¹­ ì‹œì¼œ í•´ë‹¹ í•¨ìˆ˜ í˜¸ì¶œí•˜ëŠ” ì½”ë“œ
 	{
 	case EEnemyState::Idle:
 		IdleState();
@@ -61,9 +63,8 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	}
 }
 
-void USH_EnemyFSM::IdleState()//´ë±â »óÅÂ ÇÔ¼öÁ¤ÀÇ
+void USH_EnemyFSM::IdleState()//ëŒ€ê¸° ìƒíƒœ í•¨ìˆ˜ì •ì˜
 {
-	currentTime += GetWorld()->DeltaTimeSeconds; 
 	if (currentTime > idleDalayTime)
 	{
 		isAttackState = false;
@@ -72,13 +73,13 @@ void USH_EnemyFSM::IdleState()//´ë±â »óÅÂ ÇÔ¼öÁ¤ÀÇ
 	}
 }
 
-void USH_EnemyFSM::MoveState()//ÀÌµ¿ »óÅÂ ÇÔ¼öÁ¤ÀÇ
+void USH_EnemyFSM::MoveState()//ì´ë™ ìƒíƒœ í•¨ìˆ˜ì •ì˜
 {
-	// ¸ñÀûÁö¸¦ Å¸°ÙÀÇ ¾×ÅÍ ·ÎÄÉÀÌ¼ÇÀ¸·Î ¼³Á¤
-	FVector P = target->GetActorLocation() - me->GetActorLocation(); //Å¸°Ù ¹æÇâ
-	me->AddMovementInput(P.GetSafeNormal()); //Å¸°Ù ¹æÇâÀ¸·Î ÀÌµ¿
-	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// Å¸°Ù¹æÇâÀ» ¹Ù¶óº¸°Ô
-	if (P.Size() < attackRange) //¸¸¾à Å¸±ê°úÀÇ °Å¸®°¡ °ø°İ¹üÀ§ ¾È¿¡ µé¾î¿À¸é
+	// ëª©ì ì§€ë¥¼ íƒ€ê²Ÿì˜ ì•¡í„° ë¡œì¼€ì´ì…˜ìœ¼ë¡œ ì„¤ì •
+	FVector P = target->GetActorLocation() - me->GetActorLocation(); //íƒ€ê²Ÿ ë°©í–¥
+	me->AddMovementInput(P.GetSafeNormal()); //íƒ€ê²Ÿ ë°©í–¥ìœ¼ë¡œ ì´ë™
+	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// íƒ€ê²Ÿë°©í–¥ì„ ë°”ë¼ë³´ê²Œ
+	if (P.Size() < attackRange) //ë§Œì•½ íƒ€ê¹ƒê³¼ì˜ ê±°ë¦¬ê°€ ê³µê²©ë²”ìœ„ ì•ˆì— ë“¤ì–´ì˜¤ë©´
 	{
 		stateChange(EEnemyState::Attack);
 		anim->bAttackPlay = true;
@@ -87,42 +88,42 @@ void USH_EnemyFSM::MoveState()//ÀÌµ¿ »óÅÂ ÇÔ¼öÁ¤ÀÇ
 	
 }
 
-void USH_EnemyFSM::AttackState()//°ø°İ »óÅÂ ÇÔ¼öÁ¤ÀÇ
+void USH_EnemyFSM::AttackState()//ê³µê²© ìƒíƒœ í•¨ìˆ˜ì •ì˜
 {
-	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
 		isAttackState = true;
-		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //Å¸±ê°úÀÇ °Å¸® º¯¼ö ´ã±â
+		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //íƒ€ê¹ƒê³¼ì˜ ê±°ë¦¬ ë³€ìˆ˜ ë‹´ê¸°
 		if (distance > attackRange)
 		{
 			isAttackState = false;
 			stateChange(EEnemyState::Move);
 			currentTime = 0;
 		}
-		anim->bAttackPlay = true;
-		stateChange(EEnemyState::Idle);
-		currentTime = 0; 
+		else
+		{
+			anim->bAttackPlay = true;
+			stateChange(EEnemyState::Idle);
+			currentTime = 0;
+
+		}
 	}
 
 }
 
-void USH_EnemyFSM::DamageState() //ÇÇ°İ »óÅÂ ÇÔ¼öÁ¤ÀÇ
+void USH_EnemyFSM::DamageState() //í”¼ê²© ìƒíƒœ í•¨ìˆ˜ì •ì˜
 {
-	currentTime += GetWorld()->DeltaTimeSeconds;
-
 	if (currentTime > damageDelayTime)
 	{
 		anim->Montage_Stop(damageDelayTime);
+		SeachShortTarget();
 		stateChange(EEnemyState::Attack);
 		currentTime = 0;
-
 	}
 }
 
-void USH_EnemyFSM::DownState() //³Ë¹é »óÅÂ ÇÔ¼ö Á¤ÀÇ
+void USH_EnemyFSM::DownState() //ë„‰ë°± ìƒíƒœ í•¨ìˆ˜ ì •ì˜
 {
-	currentTime += GetWorld()->DeltaRealTimeSeconds;
 	if (currentTime > dieDelayTime)
 	{
 		anim->Montage_Stop(damageDelayTime);
@@ -134,38 +135,38 @@ void USH_EnemyFSM::DownState() //³Ë¹é »óÅÂ ÇÔ¼ö Á¤ÀÇ
 	}
 }
 
-void USH_EnemyFSM::DieState() // Á×À½ »óÅÂ ÇÔ¼ö Á¤ÀÇ.
+void USH_EnemyFSM::DieState() // ì£½ìŒ ìƒíƒœ í•¨ìˆ˜ ì •ì˜.
 {
 
 
 }
 
-void  USH_EnemyFSM::OnDamageProcess() //ÇÇ°İ¾Ë¸² ÀÌº¥Æ® ÇÔ¼ö Á¤ÀÇ
+void  USH_EnemyFSM::OnDamageProcess() //í”¼ê²©ì•Œë¦¼ ì´ë²¤íŠ¸ í•¨ìˆ˜ ì •ì˜
 {
-
+	
 	if (hp > 0 && downCount > 0) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), hp);
 		randindex = FMath::RandRange(0, 1);
-		stateChangeMontage(EEnemyState::Damage, "Damage");
+		stateChangeMontage(EEnemyState::Damage, TEXT("Damage"));
 		currentTime = 0;
 		hp--;
 	}
 	else if (hp < 1 && downCount > 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Down : %d"), downCount);
-		stateChangeMontage(EEnemyState::Down, "Down");
+		stateChangeMontage(EEnemyState::Down, TEXT("Down"));
 
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
-		stateChangeMontage(EEnemyState::Die, "Down");
+		stateChangeMontage(EEnemyState::Die, TEXT("Die"));
 	}
 
 }
 
-void USH_EnemyFSM::SeachShortTarget() //°¡±î¿î Å¸°Ù Ã£±â
+void USH_EnemyFSM::SeachShortTarget() //ê°€ê¹Œìš´ íƒ€ê²Ÿ ì°¾ê¸°
 {
 
 	for (int32 i = 0; i < targets.Num(); i++)
@@ -181,9 +182,9 @@ void USH_EnemyFSM::SeachShortTarget() //°¡±î¿î Å¸°Ù Ã£±â
 			}
 		}
 	}
-}//°¡Àå °¡±î¿îÅ¸°Ù Ã£±â
+}//ê°€ì¥ ê°€ê¹Œìš´íƒ€ê²Ÿ ì°¾ê¸°
 
-void USH_EnemyFSM::SeachLongTarget() // ¸Õ Å¸°Ù Ã£±â
+void USH_EnemyFSM::SeachLongTarget() // ë¨¼ íƒ€ê²Ÿ ì°¾ê¸°
 {
 	for (int32 i = 0; i < targets.Num(); i++)
 	{
@@ -198,18 +199,19 @@ void USH_EnemyFSM::SeachLongTarget() // ¸Õ Å¸°Ù Ã£±â
 			}
 		}
 	}
-} // °¡Àå ¸Õ Å¸°Ù Ã£±â
+}
 
-void USH_EnemyFSM::stateChange(EEnemyState state)//½ºÅ×ÀÌÆ® º¯°æ ÈÄ ¾Ö´Ï¸ŞÀÌ¼Ç µ¿±âÈ­
+void USH_EnemyFSM::stateChange(EEnemyState state)//ìŠ¤í…Œì´íŠ¸ ë³€ê²½ í›„ ì• ë‹ˆë©”ì´ì…˜ ë™ê¸°í™”
 {
 	mState = state;
 	anim->animState = mState;
 } 
 
-void USH_EnemyFSM::stateChangeMontage(EEnemyState State, char* Name) //½ºÅ×ÀÌÆ® º¯°æ ÈÄ ¾Ö´Ô¸ùÅ¸ÁÖ ÇÃ·¹ÀÌ.
+void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //ìŠ¤í…Œì´íŠ¸ ë³€ê²½ í›„ ì• ë‹˜ëª½íƒ€ì£¼ í”Œë ˆì´.
 {
-	FString sectionName = FString::Printf(TEXT("%s%d"), Name, randindex);
+	
 	mState = State;
+	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
 	anim->PlayDamagaAnim(FName(*sectionName));
 	anim->animState = mState;
 

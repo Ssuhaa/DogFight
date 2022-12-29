@@ -98,5 +98,6 @@ public:
 	bool isAttackState = false;
 
 	void stateChange(EEnemyState State);
-	void stateChangeMontage(EEnemyState State, char* Name);
+	void stateChangeMontage(EEnemyState State, FString Name);
+
 };

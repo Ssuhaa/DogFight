@@ -35,7 +35,7 @@ ASH_Enemy::ASH_Enemy()
 	//어택 콜리전
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
 	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket"));
-	
+
 	//!!!!!!!!에너미 콜리전 수정할것.
 
 }
@@ -73,27 +73,25 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			currEenemy = Cast<ASH_Enemy>(OtherActor);
 			if (fsm->isAttackState == true)
 			{
-				if(fsm->mState != EEnemyState::Down && fsm->mState != EEnemyState::Die && fsm->mState != EEnemyState::Damage)
+				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState != EEnemyState::Damage) return;
+				if (currEnemy->fsm->mState != EEnemyState::Down && currEnemy->fsm->mState != EEnemyState::Die && currEnemy->fsm->mState != EEnemyState::Damage)
 				{
-					if(currEenemy->fsm->mState != EEnemyState::Down && currEenemy->fsm->mState != EEnemyState::Die && currEenemy->fsm->mState != EEnemyState::Damage)
-					{
 					currEenemy->fsm->OnDamageProcess();
-					//UE_LOG(LogTemp, Warning, TEXT("Enemy Attack enemy"));
-					}
+				}
+				else
+				{
+
+					fsm->SeachLongTarget();
 				}
 
-			}
-			if (currEenemy->fsm->mState == EEnemyState::Damage || currEenemy->fsm->mState == EEnemyState::Die || currEenemy->fsm->mState == EEnemyState::Down)
-			{
-			
-				fsm->SeachLongTarget();
 
 			}
+
 		}
 		else if (OtherActor->GetName().Contains(TEXT("Player")))
 		{
-		//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
-		//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
+			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
+			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
 			player = Cast<ASH_Player>(OtherActor);
 			player->OnDamageProcess();
 		}
