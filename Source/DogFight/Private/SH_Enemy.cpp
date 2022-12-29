@@ -70,7 +70,7 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		if (OtherActor->GetName().Contains(TEXT("Enemy")))
 		{
-			currEenemy = Cast<ASH_Enemy>(OtherActor);
+			currEnemy = Cast<ASH_Enemy>(OtherActor);
 			if (fsm->isAttackState == true)
 			{
 				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState != EEnemyState::Damage) return;
