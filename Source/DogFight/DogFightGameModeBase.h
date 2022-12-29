@@ -26,7 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	float currenttime = 0;
-	int32 SuccessMintime = 0;
+	int32 SuccessMintime = 5;
 	float SuccessSectime = 10;
 	float openleveltime = 0;
 

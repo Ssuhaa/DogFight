@@ -56,6 +56,7 @@ public:
 	void attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	bool isinputAttack =false;
+
 	UPROPERTY()
 	class AActor* currEenemy;
 

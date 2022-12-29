@@ -27,19 +27,15 @@ public:
 
 public:
 	//충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
-	class UBoxComponent* collisionComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision) //★★★카테고리 필요 없으면 추후 삭제
+	class UBoxComponent* compCollision;
 
 	//외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = BodyMesh)
-	class UStaticMeshComponent* bodyMeshComp;
-
-	//발사체의 이동, 발사체 형태의 물리 기능을 제고하는 컴포넌트. UProjectileMovementComponent 멤버 변수 추가 //★★★필요 없을 시 전체 삭제
-	//UPROPERTY(VisibleAnywhere, Category = Movement)
-	//class UProjectileMovementComponent* movementComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BodyMesh) //★★★카테고리 필요 없으면 추후 삭제
+	class UStaticMeshComponent* compMeshWeaponGun;
 
 public:
-	//[바닥에 있는 총과 플레이어 충돌 이벤트 함수 구현]
+	//[바닥에 있는 총과 플레이어 충돌 시 함수 구현]
 	UFUNCTION()
 	void collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -50,6 +46,9 @@ public:
 
 	void getGun();
 
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	//virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	//virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+
+
+
 };

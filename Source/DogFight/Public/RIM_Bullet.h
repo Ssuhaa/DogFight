@@ -25,15 +25,15 @@ public:
 
 public:
 	//충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Collision)
-	class USphereComponent* collisionComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=Collision) //★★★카테고리 필요 없으면 추후 삭제
+	class USphereComponent* compCollision;
 
 	//외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=BodyMesh)
-	class UStaticMeshComponent* bodyMeshComp;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category=BodyMesh) //★★★카테고리 필요 없으면 추후 삭제
+	class UStaticMeshComponent* compMeshWeaponBullet;
+	 
 	//발사체의 이동, 발사체 형태의 물리 기능을 제고하는 컴포넌트. UProjectileMovementComponent 멤버 변수 추가
 	UPROPERTY(VisibleAnywhere, Category = Movement)
-	class UProjectileMovementComponent* movementComp;
+	class UProjectileMovementComponent* compMovement;
 
 };
