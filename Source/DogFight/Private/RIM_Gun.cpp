@@ -14,7 +14,7 @@ ARIM_Gun::ARIM_Gun()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//[충돌 컴포넌트(충돌체) 추가]
+	//[바닥에 있는 총 충돌 컴포넌트(충돌체) 추가]
 	//충돌체 등록하기. 충돌체 인스턴스 등록하고 compCollision 변수에 담기
 	//충돌체를 루트 컴포넌트로 등록
 	//충돌프로파일 설정. 충돌체의 충돌 프로파일을 BlockAll로 지정. 모든 물체와 부딪혀 튕귈 수 있게 하기
@@ -24,7 +24,7 @@ ARIM_Gun::ARIM_Gun()
 
 
 
-	//[스테틱메시 컴포넌트 추가]
+	//[바닥에 있는 총 스테틱메시 컴포넌트 추가]
 	//외관 컴포넌트 등록하기. UStaticMeshComponent 인스턴스 만들고 compMeshWeaponGun 멤버 변수에 할당
 	//부모 컴포넌트 지정. 부모 컴포넌트로 coolisionComp 지정
 	//충돌 비활성화
@@ -32,7 +32,7 @@ ARIM_Gun::ARIM_Gun()
 	compMeshWeaponGun->SetupAttachment(compCollision);
 	compMeshWeaponGun->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	//[스테틱메시. 옷 추가]
+	//[바닥에 있는 총 스테틱메시. 옷 추가]
 	ConstructorHelpers::FObjectFinder<UStaticMesh> TempItemGunMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'")); //★★★추후 필요시 변경
 	if (TempItemGunMesh.Succeeded())
 	{
@@ -48,8 +48,10 @@ void ARIM_Gun::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//[???]
 	compCollision->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Gun::collisionBeginOverlap);
 	compCollision->OnComponentEndOverlap.AddDynamic(this, &ARIM_Gun::collisionEndOverlap);
+
 
 }
 
@@ -62,6 +64,7 @@ void ARIM_Gun::Tick(float DeltaTime)
 
 }
 
+//[???]
 void ARIM_Gun::EnableInput(APlayerController* PlayerController)
 {
 	Super::EnableInput(PlayerController);
@@ -71,6 +74,8 @@ void ARIM_Gun::EnableInput(APlayerController* PlayerController)
 
 
 
+
+//[???]
 void ARIM_Gun::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	RIM_Player = Cast<ARIM_Player>(OtherActor);
@@ -83,8 +88,13 @@ void ARIM_Gun::collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 }
 
 
+
+
+//[바닥에 있는 총 안 보이게 하는 함수 구현]
 void ARIM_Gun::getGun()
 {
+	//플레이어가 들고 있는 총이 보이면
+	//바닥에 있는 총 파괴(안 보임)
 	RIM_Player->VisibleGun();
 	Destroy();
 }

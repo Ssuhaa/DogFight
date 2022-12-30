@@ -9,6 +9,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Components/BoxComponent.h>
 #include "RIM_Bullet.h"
+#include "SH_Enemy.h"
+#include "SH_EnemyFSM.h"
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -86,14 +88,12 @@ void ARIM_Player::BeginPlay()
 	//[총이 디폴트로 안보이게 설정]
 	compMeshGun->SetVisibility(false);
 
-
-	/*
 	//[플레이어 주먹과 충돌 시... ???]
 	compCollisionPunchR->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionPunchRBeginOverlap);
 	compCollisionPunchL->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionPunchLBeginOverlap);
 	compCollisionPunchR->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionPunchREndOverlap);
 	compCollisionPunchL->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionPunchLEndOverlap);
-	*/
+
 
 	
 }
@@ -216,27 +216,24 @@ void ARIM_Player::InputPunchGrab()
 	//총의 총구에서 총알을 발사한다.
 	if (compMeshGun->IsVisible() == true)
 	{
-		//compMeshGun->GetSocketTransform(TEXT("FirePos")); //FirePos(총구 위치) Transform 가져온다
 		FTransform trFire = compMeshGun->GetSocketTransform(TEXT("FirPos")); //총 스켈레톤에서 소켓 추가
 		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, trFire); //월드에서 ARIM_Bullet(총알) 가져온다
 
 		//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation());
-		UE_LOG(LogTemp, Warning, TEXT("Attack!")); //★★★추후 삭제
+
 	}
-	/*else
+	else
 	{
 		if (isInputPunchGrab == true)
 		{
-		//U에너미* 에너미변수 = Cast<U에너미>(currEnemy);
-		//에너미변수->OnDamageProcess;
-			//에너미를 형변환 해서 에너미의 OnDamageProcess 호출한다.
+			ASH_Enemy* Enemy = Cast<class ASH_Enemy>(currEnemy); //에너미 형변환
+			Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+
 			//펀치 애니메이션을 플레이한다.
+
 		}
 	}
-	*/
 	
-	
-
 }
 
 
@@ -273,37 +270,48 @@ void ARIM_Player::EnableInput(APlayerController* PlayerController)
 }
 
 
-/*
+
 //[플레이어 주먹과 충돌 시 함수 구현]
-void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
-	// is 불  = True;
-	// curre~ = OtherActor; //
+	if (OtherActor->GetName().Contains(TEXT("Enemy")))  //GetDefaultSubojectByname
+	{
+		isInputPunchGrab = true;
+		currEnemy = OtherActor;
+	}
 }
 
-void ARIM_Player::collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+void ARIM_Player::collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
+	if (OtherActor->GetName().Contains(TEXT("Enemy")))
+	{
+		isInputPunchGrab = true;
+		currEnemy = OtherActor;
+	}
 }
 
-void ARIM_Player::collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+void ARIM_Player::collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	isInputPunchGrab = false;
 }
 
-void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	isInputPunchGrab = false;
 }
-*/
 
 
 
-//[플레이어가 공격당했을때 에너미가 호출하는 함수 ]
+//[플레이어가 공격당했을때 에너미가 호출하는 함수] = 플레이어가 공격당했다면 발생하는 로직
 void ARIM_Player::OnDamageProcess()
 {
-	//플레이어가 공격당했다면 발생하는 로직
-	//HP--; 
-	//만약 HP <=0 Destroy; 
+	//HP 감소
+	//만약 플레이어의 HP가 0보다 같거나 적으면 플레이어를 파괴한다
+	HP--; 
+	if (HP <= 0)
+	{
+		Destroy();
+	}
 }
