@@ -26,11 +26,11 @@ public:
 	virtual void EnableInput(class APlayerController* PlayerController) override;
 
 public:
-	//충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
+	//바닥에 있는 총 충돌 컴포넌트(충돌체). USphereComponent 멤버 변수 추가
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* compCollision;
 
-	//외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
+	//바닥에 있는 총 외관 컴포넌트. UStaticMeshComponent 멤버 변수 추가
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* compMeshWeaponGun;
 
@@ -41,9 +41,11 @@ public:
 	UFUNCTION()
 	void collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	//[플레이어???]
 	UPROPERTY()
 	class ARIM_Player* RIM_Player;
 
+	//[바닥에 있는 총 안 보이게 하는 함수]
 	void getGun();
 
 	//virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
