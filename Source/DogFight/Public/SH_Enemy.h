@@ -46,7 +46,7 @@ public:
 	class ASH_Enemy* currEnemy;
 
 	UPROPERTY()
-	class ASH_Player* player;
+	class ARIM_Player* player;
 
 	float currentTime = 0;
 	float delayTime = 2.0f;

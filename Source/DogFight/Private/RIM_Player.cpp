@@ -304,7 +304,7 @@ void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedCompo
 
 
 
-//[플레이어가 공격당했을때 에너미가 호출하는 함수] = 플레이어가 공격당했다면 발생하는 로직
+//[플레이어가 공격 당하면 에너미에서 호출]
 void ARIM_Player::OnDamageProcess()
 {
 	//HP 감소

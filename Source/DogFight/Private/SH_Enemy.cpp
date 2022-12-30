@@ -6,7 +6,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <GameFramework/Character.h>
 #include <Components/BoxComponent.h>
-#include "SH_Player.h"
+#include "RIM_Player.h"
 
 
 // Sets default values
@@ -92,7 +92,7 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		{
 			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
 			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
-			player = Cast<ASH_Player>(OtherActor);
+			player = Cast<ARIM_Player>(OtherActor);
 			player->OnDamageProcess();
 		}
 	}

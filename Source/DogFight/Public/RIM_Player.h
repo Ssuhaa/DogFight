@@ -138,7 +138,7 @@ public:
 	UPROPERTY()
 	class AActor* currEnemy;
 
-	//[플레이어가 공격해서 에너미가 데미지를 받는 함수]
+	//[에너미가 공격하면 플레이어가 데미지를 받는 함수]
 	UFUNCTION()
 	void OnDamageProcess();
 	
