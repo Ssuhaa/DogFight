@@ -34,7 +34,8 @@ ASH_Enemy::ASH_Enemy()
 	}
 	//어택 콜리전
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
-	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket"));
+	compAttack->SetupAttachment(GetMesh(), TEXT("Prop_Socket"));
+	compAttack->SetBoxExtent(FVector(25));
 
 	//!!!!!!!!에너미 콜리전 수정할것.
 
@@ -73,14 +74,13 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			currEnemy = Cast<ASH_Enemy>(OtherActor);
 			if (fsm->isAttackState == true)
 			{
-				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState != EEnemyState::Damage) return;
+				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Damage) return;
 				if (currEnemy->fsm->mState != EEnemyState::Down && currEnemy->fsm->mState != EEnemyState::Die && currEnemy->fsm->mState != EEnemyState::Damage)
 				{
 					currEnemy->fsm->OnDamageProcess();
 				}
 				else
 				{
-
 					fsm->SeachLongTarget();
 				}
 

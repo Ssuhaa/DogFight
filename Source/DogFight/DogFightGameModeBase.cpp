@@ -53,14 +53,17 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 					{
 						successWG->AddToViewport();
 						TimeWG->RemoveFromParent();
-						openleveltime += DeltaTime;
-						if (openleveltime > 2)
-						{
-							UGameplayStatics::OpenLevel(GetWorld(), "Result");
-						}
 					}
 				}
+				else
+				{
+					openleveltime += DeltaTime;
+					if (openleveltime > 2)
+					{
+						UGameplayStatics::OpenLevel(GetWorld(), "Result");
+					}
 
+				}
 			}
 			else
 			{

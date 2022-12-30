@@ -68,7 +68,7 @@ public:
 	class ASH_Enemy* me; //소유액터 변수 
 
 	UPROPERTY(EditAnywhere,Category=FSM)
-	float attackRange = 170.0f; // 공격범위 변수 
+	float attackRange = 180.0f; // 공격범위 변수 
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float attackDelayTime = 1.0f; //공격대기시간 변수

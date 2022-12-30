@@ -27,7 +27,7 @@ public:
 
 	float currenttime = 0;
 	int32 SuccessMintime = 5;
-	float SuccessSectime = 10;
+	float SuccessSectime = 0;
 	float openleveltime = 0;
 
 	UPROPERTY(EditAnywhere)
