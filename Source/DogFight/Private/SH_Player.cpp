@@ -40,9 +40,11 @@ ASH_Player::ASH_Player()
 	JumpMaxCount = 2; //플레이어가 2단 점프가 가능하게 만들기
 
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")); //때렸는지 확인할 컴포넌트 생성
-	compAttack->SetupAttachment(GetMesh(), TEXT("Rod_Socket")); // 스켈레탈 메시 소켓에 어택콜리전 붙이기
+	compAttack->SetupAttachment(GetMesh(), TEXT("Prop_Socket")); // 스켈레탈 메시 소켓에 어택콜리전 붙이기
 
 	//!!!!!!!!플레이어 콜리전 수정할 것
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), TEXT("Prop_Socket"));
 }
 
 // Called when the game starts or when spawned

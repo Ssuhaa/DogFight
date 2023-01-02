@@ -34,10 +34,20 @@ public:
 	TSubclassOf<class UTimer> Timer;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class USuccessWidget> successUI;
+	
+	UPROPERTY()
+	TArray <class AActor*> enemyarray;
+
+	UPROPERTY()
+	class ASH_Enemy* currEnemy;
+
+	bool EnemyAllDie = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USuccessWidget* successWG;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	class UTimer* TimeWG;
+
+	void checkEnemyState();
 };
