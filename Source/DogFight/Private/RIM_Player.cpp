@@ -59,9 +59,9 @@ ARIM_Player::ARIM_Player() //생성자
 	if (tempGunMesh.Succeeded())
 	{
 		compMeshGun->SetStaticMesh(tempGunMesh.Object);
-		compMeshGun->SetRelativeLocation(FVector(5.759851f, -0.573986f, 26.993545f)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
-		compMeshGun->SetRelativeRotation(FRotator(0, -159, - 90)); //★★★총 회전. 임시로 세팅. 추후 변경 필요
-		compMeshGun->SetRelativeScale3D(FVector(0.5f)); //★★★총 크기. 임시로 세팅. 추후 변경 필요
+// 		compMeshGun->SetRelativeLocation(FVector(5.759851f, -0.573986f, 26.993545f)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
+// 		compMeshGun->SetRelativeRotation(FRotator(0, -159, - 90)); //★★★총 회전. 임시로 세팅. 추후 변경 필요
+// 		compMeshGun->SetRelativeScale3D(FVector(0.5f)); //★★★총 크기. 임시로 세팅. 추후 변경 필요
 	}
 	
 	//[롤리팝 컴포넌트 추가] --->스태틱 무기
