@@ -4,6 +4,8 @@
 #include "RIM_Bullet.h"
 #include <Components/SphereComponent.h> //USphereComponent 를 사용하기 위해 추가
 #include <GameFramework/ProjectileMovementComponent.h> //UProjectileMovementComponentf 를 사용하기 위해 추가
+#include "SH_Enemy.h"
+#include "SH_EnemyFSM.h"
 
 // Sets default values
 ARIM_Bullet::ARIM_Bullet() //생성자
@@ -60,13 +62,19 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	compMovement->MaxSpeed = 1000; //★★★추후 조정 필요
 	compMovement->bShouldBounce = true;
 	compMovement->Bounciness = 0.8f; //★★★추후 조정 필요
-	//InitialLifeSpan = 10.0f; //★★★추후 조정 필요
+	InitialLifeSpan = 5.0f; //★★★추후 조정 필요
 }
 
 // Called when the game starts or when spawned
 void ARIM_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+	//[총알 콜리전과 에너미가 충돌 시...?]
+	compCollision->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Bullet::collisionBulletBeginOverlap);
+
+
 	
 }
 
@@ -77,3 +85,16 @@ void ARIM_Bullet::Tick(float DeltaTime)
 
 }
 
+//[총알 콜리전과 에너미가 충돌할 때 실행할 내용(함수 구현)]
+UFUNCTION()
+void ARIM_Bullet::collisionBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->GetName().Contains(TEXT("Enemy"))) //만약에 부딛힌 OtherActor 중에 이름이 enemy를 포함하고있으면
+	{
+
+		//에너미에 데미지가 들어간다 함수 호출
+		Enemy = Cast<ASH_Enemy>(OtherActor); //SH_Enemy 클래스의 enemy이면 Enemy라고 한다
+		Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+		Destroy(); //총알 콜리전이 에너미와 충돌하면 파괴 된다
+	}
+}

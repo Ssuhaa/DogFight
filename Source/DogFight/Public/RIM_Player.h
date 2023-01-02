@@ -48,54 +48,46 @@ public:
 	FVector direction;
 
 public:
-
-	//좌우 회전 입력 이벤트 처리 함수. 
+	//좌우 회전 입력 이벤트 처리 함수
 	void Turn(float value);
 
-	//좌우 이동 입력 이벤트 처리 함수. InputHorizontal 함수 선언
+	//좌우 이동 입력 이벤트 처리 함수
 	void InputHorizontal(float value);
 
-    //상하 이동 입력 이벤트 처리 함수. InputVertical 함수 선언
+    //상하 이동 입력 이벤트 처리 함수
 	void InputVertical(float value);
 
-	//플레이어 이동 처리
+	//플레이어 이동 처리 함수
 	void Move();
 
 public:
-	//점프 입력 이벤트 처리 함수. InputJump 함수 선언
+	//점프 입력 이벤트 처리 함수
 	void InputJump();
 
-	//달리기 입력 이벤트 처리 함수. InputRun 함수 선언
+	//달리기 입력 이벤트 처리 함수
 	void InputRun();
 
-	//공격/잡기 이벤트 처리 함수. 총알 발사 처리 함수. InputPunchGrab 함수 선언
+	//공격/잡기 이벤트 처리 함수
 	void InputPunchGrab();
 
-	//드롭킥/던지기 이벤트 처리 함수.
-	void KickToss();
+	//무기 버리기 이벤트 처리 함수
+	void InputDropWeapon();
 
-	//무기 버리기 이벤트 처리 함수.
-	void DropWeapon();
+	//드롭킥/던지기 이벤트 처리 함수
+	//void InputKickToss();
 
-	//벽타기 이벤트 처리 함수.
-	void Climb();
-
-	//박치기 이벤트 처리 함수.
-	void Headbutt();
-
-	//구르기 이벤트 처리 함수.
-	void Roll();
-
-	//달리기 점프 이벤트 처리 함수. ★★★구현 안 해도 됨
-    //달리기 공격 이벤트 처리 함수. ★★★아마 구현 안 해도 됨
-
+	//박치기 이벤트 처리 함수
+	//void InputHeadbutt();
 
 
 public:
-	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가]
-	//총 스켈레탈 메시
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = GunMesh) //★★★카테고리 필요 없으면 추후 삭제
+	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가] --->스켈레탈 무기
+	UPROPERTY(VisibleAnywhere)
 	class USkeletalMeshComponent* compMeshGun;
+
+	//[롤리팝 스태틱메시 컴포넌트 추가] ---->스태틱 무기
+	//UPROPERTY(VisibleAnywhere)
+	//class UStaticMeshComponent* compMeshLollipop;
 
 public:
 	//[BulletFactory 총알 공장 속성 추가]
@@ -107,6 +99,10 @@ public:
 	//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 선언]
 	UFUNCTION()
 	void VisibleGun();
+
+	//[플레어이어가 들고 있는 롤리팝이 안 보였다 보이는 함수 선언]
+	//UFUNCTION()
+	//void VisibleLollipop();
 
 	//[???]
 	virtual void EnableInput(class APlayerController* PlayerController) override;
@@ -120,8 +116,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* compCollisionPunchL;
 
+	//[플레이어 킥 충돌 컴포넌트 변수 추가] 게임에서 왼발로 킥 한다
+	//class UBoxComponent* compCollisionKick;
+
+	//[플레이어 헤딩 충돌 컴포넌트 변수 추가]
+	//class UBoxComponent* compCollisionHeadbutt;
+
 public:
-	//[플레이어 주먹과 충돌 시 함수]
+	//[[2]플레이어 펀치 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
+	//펀치 콜리전 컴포넌트 변수의 멤버 함수 OnComponentBeginOverlap과 OnComponentEndOverlap 델리케이트 호출
 	UFUNCTION()
 	void collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -131,19 +134,48 @@ public:
 	UFUNCTION()
 	void collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	//[[2]플레이어	킥 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
+	//킥 콜리전 컴포넌트 변수의 멤버 함수 OnComponentBeginOverlap과 OnComponentEndOverlap 델리케이트 호출
+// 	UFUNCTION()
+// 	void collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+// 	UFUNCTION()
+// 	void collisionKickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	//[[2]플레이어 박치기 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
+// 	UFUNCTION()
+// 	void collisionHeadbuttBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+// 	UFUNCTION()
+// 	void collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+
+public:
 	//[???]
 	bool isInputPunchGrab = false;
+
+	//[???]
+	//bool isInputKickToss = false;
+
+	//[???]
+	//bool isInputHeadbutt = false;
 
 	//[???]
 	UPROPERTY()
 	class AActor* currEnemy;
 
-	//[에너미가 공격하면 플레이어가 데미지를 받는 함수]
+	//[에너미가 공격하면 플레이어가 데미지를 받는 함수] 플레이어의 데미지니까 플레이어에서 구현
 	UFUNCTION()
 	void OnDamageProcess();
 	
-	//[플레이어 HP 변수]
-	int32 HP = 10;
+	//[플레이어 풀 HP 변수]
+	int32 HP = 5;
 
+	//[현재시간]
+	float currentTime = 0;
+
+	UPROPERTY()
+	TSubclassOf<class ARIM_Gun> Gun;
+
+	
 
 };

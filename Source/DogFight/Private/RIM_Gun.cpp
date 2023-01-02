@@ -48,7 +48,7 @@ void ARIM_Gun::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//[???]
+	//[바닥에 있는 총과 플레이어 충돌 시...?]
 	compCollision->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Gun::collisionBeginOverlap);
 	compCollision->OnComponentEndOverlap.AddDynamic(this, &ARIM_Gun::collisionEndOverlap);
 
@@ -75,11 +75,15 @@ void ARIM_Gun::EnableInput(APlayerController* PlayerController)
 
 
 
-//[???]
+//[바닥에 있는 총과 플레이어 충돌 시 함수 구현]
 void ARIM_Gun::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+    //원래 충돌한게 뭔지 확인하는거 있어야한다
 	RIM_Player = Cast<ARIM_Player>(OtherActor);
-	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (RIM_Player != nullptr)
+	{
+		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	}
 }
 
 void ARIM_Gun::collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
