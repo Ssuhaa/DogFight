@@ -25,3 +25,4 @@ void URIM_PlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	speed = FVector::DotProduct(forwardVector, velocity);
 	}
 }
+//
