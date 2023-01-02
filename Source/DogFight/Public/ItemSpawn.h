@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "KillZone.generated.h"
+#include "LollipopWeapon.h"
+#include "ItemSpawn.generated.h"
 
 UCLASS()
-class DOGFIGHT_API AKillZone : public AActor
+class DOGFIGHT_API AItemSpawn : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AKillZone();
+	AItemSpawn();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,18 +23,18 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* itemSpawnLocation ;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<class AWeapon*> ItemArray;
 
 	UPROPERTY(EditAnywhere)
-	class UBoxComponent* compBox;
-	
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	TSubclassOf<class ALollipopWeapon> Loliipop;
 
-	UPROPERTY()
-	class ASH_Player* Player;
+	float CurrentTime =0;
+	float SpawnTime = 5;
 
-	UPROPERTY()
-	class ASH_Enemy* Enemy;
-
-	float delayDieTime;
 
 };

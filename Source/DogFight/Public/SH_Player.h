@@ -35,6 +35,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* compAttack;
 
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* Weapon;
+
 	void Move(); // 플레이어 이동처리
 	
 	void Turn(float value);//좌우 회전입력처리

@@ -32,12 +32,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* compAttack;
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* compAttack2;
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* compMesh;
 
 	UFUNCTION()
 	void attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void attackBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY()
 	bool isAttackBoxOverlap ;
@@ -46,9 +47,11 @@ public:
 	class ASH_Enemy* currEnemy;
 
 	UPROPERTY()
-	class ARIM_Player* player;
+	class ASH_Player* player;
 
 	float currentTime = 0;
 	float delayTime = 2.0f;
 
+	UFUNCTION()
+	void GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname);
 };

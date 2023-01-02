@@ -9,6 +9,7 @@
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetArrayLibrary.h>
 #include <Containers/UnrealString.h>
+#include "Weapon.h"
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -25,13 +26,10 @@ USH_EnemyFSM::USH_EnemyFSM()
 void USH_EnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets); //모든 액터 배열로 가져오기
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
-	SeachShortTarget();//가까운 적 찾기
-
 	// UEnemyAnim할당
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
+	SeachShortTarget();//가까운 적 찾기
 
 }
 
@@ -60,6 +58,9 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	case EEnemyState::Die:
 		DieState();
 		break;
+	case EEnemyState::Pickup:
+		PickupState();
+		break;
 	}
 }
 
@@ -67,25 +68,69 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 {
 	if (currentTime > idleDalayTime)
 	{
+
 		isAttackState = false;
 		stateChange(EEnemyState::Move);
-		currentTime = 0; 
+		currentTime = 0;
+
 	}
 }
 
 void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
+	FVector P;
 	// 목적지를 타겟의 액터 로케이션으로 설정
-	FVector P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
-	me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
-	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
-	if (P.Size() < attackRange) //만약 타깃과의 거리가 공격범위 안에 들어오면
+	SeachShortTarget();
+	if (target != nullptr)
 	{
-		stateChange(EEnemyState::Attack);
-		anim->bAttackPlay = true;
-		currentTime = attackDelayTime;
+		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
+		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
+		{
+			if (P.Length() < attackRange) 
+			{
+				me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
+				stateChange(EEnemyState::Attack);
+				currentTime = attackDelayTime;
+
+			}
+			else
+			{
+				me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
+			}
+		}
+		else if (target->GetName().Contains(TEXT("Weapon")))
+		{
+			if (P.Length() < 120.0)
+			{
+				SeachLongTarget();
+			}
+			else
+			{
+				me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
+				
+			}
+		
+		}
 	}
-	
+	else
+	{
+		SeachShortTarget();
+	}
+
+
+}
+
+
+void USH_EnemyFSM::PickupState()
+{
+
+	if (currentTime > 0.2)
+	{
+		SeachShortTarget();
+		stateChange(EEnemyState::Idle);
+		currentTime = 0;
+	}
+
 }
 
 void USH_EnemyFSM::AttackState()//공격 상태 함수정의
@@ -93,6 +138,15 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	if (currentTime > attackDelayTime)
 	{
 		isAttackState = true;
+		if (anim->isLollipopget || anim->isGunget)
+		{
+			anim->bAttackPlay = false;
+		}
+		else
+		{
+			anim->bAttackPlay = true;
+		}
+
 		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 		if (distance > attackRange)
 		{
@@ -102,7 +156,8 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 		}
 		else
 		{
-			anim->bAttackPlay = true;
+			//anim->bAttackPlay = true;
+			isAttackState = false;
 			stateChange(EEnemyState::Idle);
 			currentTime = 0;
 
@@ -143,8 +198,8 @@ void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의.
 
 void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 {
-	
-	if (hp > 0 && downCount > 0) 
+
+	if (hp > 0 && downCount > 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), hp);
 		randindex = FMath::RandRange(0, 1);
@@ -168,34 +223,49 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 
 void USH_EnemyFSM::SeachShortTarget() //가까운 타겟 찾기
 {
-
+	addarray();
 	for (int32 i = 0; i < targets.Num(); i++)
 	{
-		if (targets[i] != me)
+		if (targets[i]->GetName().Contains(TEXT("Weapon")) || targets[i]->GetName().Contains(TEXT("Player")) || targets[i]->GetName().Contains(TEXT("Enemy")))
 		{
-			float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation());
-			if (distance < dir)
+			if (targets[i] != me)
 			{
-				dir = distance;
-				target = Cast<ACharacter>(targets[i]);
+				float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation());
+				if (distance < dir)
+				{
+					dir = distance;
+					target = Cast<ACharacter>(targets[i]);
+					if (target == nullptr)
+					{
+						target = Cast<AWeapon>(targets[i]);
+					}
 
+				}
 			}
 		}
 	}
-}//가장 가까운타겟 찾기
+}
 
 void USH_EnemyFSM::SeachLongTarget() // 먼 타겟 찾기
 {
+	addarray();
 	for (int32 i = 0; i < targets.Num(); i++)
 	{
-		if (targets[i] != me)
+		if (targets[i]->GetName().Contains(TEXT("Weapon")) || targets[i]->GetName().Contains(TEXT("RIM")) || targets[i]->GetName().Contains(TEXT("SH")))
 		{
-			float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation());
-			if (distance > dir)
+			if (targets[i] != me)
 			{
-				dir = distance;
-				target = Cast<ACharacter>(targets[i]);
+				float distance = FVector::Distance(targets[i]->GetActorLocation(), me->GetActorLocation());
+				if (distance > dir)
+				{
+					dir = distance;
+					target = Cast<ACharacter>(targets[i]);
+					if (target == nullptr)
+					{
+						target = Cast<AWeapon>(targets[i]);
+					}
 
+				}
 			}
 		}
 	}
@@ -205,14 +275,25 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 애�
 {
 	mState = state;
 	anim->animState = mState;
-} 
+}
 
 void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테이트 변경 후 애님몽타주 플레이.
 {
-	
+
 	mState = State;
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
 	anim->PlayDamagaAnim(FName(*sectionName));
 	anim->animState = mState;
 
-} 
+}
+
+void USH_EnemyFSM::addarray() //캐릭터와 웨폰 어레이 수집
+{
+	targets.Empty();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets);
+	if (anim->isGunget == false && anim->isLollipopget == false)
+	{
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeapon::StaticClass(), Weaponarray);
+		targets.Append(Weaponarray);
+	}
+}

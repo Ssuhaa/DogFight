@@ -5,6 +5,8 @@
 #include "Timer.h"
 #include <Kismet/GameplayStatics.h>
 #include "SuccessWidget.h"
+#include "SH_Enemy.h"
+#include "SH_EnemyFSM.h"
 
 
 void ADogFightGameModeBase::BeginPlay()
@@ -12,6 +14,7 @@ void ADogFightGameModeBase::BeginPlay()
 	Super::BeginPlay();
 	TimeWG = CreateWidget<UTimer>(GetWorld(), Timer);
 	successWG = CreateWidget<USuccessWidget>(GetWorld(), successUI);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASH_Enemy::StaticClass(), enemyarray);
 }
 
 ADogFightGameModeBase::ADogFightGameModeBase()
@@ -75,8 +78,48 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 
 		}
 	}
-
 	TimeWG->UpdateSetText(SuccessMintime, int32(SuccessSectime));
+	checkEnemyState();
+	if (EnemyAllDie == true)
+	{
+		if (successWG->IsInViewport() == false)
+		{
+			if (TimeWG->IsInViewport() == true)
+			{
+				successWG->AddToViewport();
+			}
+		}
+		else
+		{
+			openleveltime += DeltaTime;
+			if (openleveltime > 2)
+			{
+				UGameplayStatics::OpenLevel(GetWorld(), "Result");
+			}
+
+		}
+	}
+
 
 
 }
+
+void ADogFightGameModeBase::checkEnemyState() //에너미가 다 죽었는지 체크하는 함수
+{
+
+	for (int32 i = 0; i < enemyarray.Num(); i++)
+	{
+		currEnemy = Cast<ASH_Enemy>(enemyarray[i]);
+		if (currEnemy->fsm->mState != EEnemyState::Die)
+		{
+			EnemyAllDie = false; return;
+		}
+		else
+		{
+			EnemyAllDie = true;
+		}
+	}
+}
+
+
+//실패로직 만들기

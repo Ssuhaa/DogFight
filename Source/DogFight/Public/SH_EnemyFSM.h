@@ -15,6 +15,7 @@ enum class EEnemyState : uint8
 	Damage,
 	Die,
 	Down,
+	Pickup,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -43,18 +44,22 @@ public:
 	void DamageState(); //피격 상태 함수선언
 	void DieState(); // 죽음 상태 함수선언
 	void DownState();//넉백 상태 함수
+	void PickupState();
 
 
 	UPROPERTY(EditDefaultsOnly, Category=FSM)
-	float idleDalayTime = 2; //대기시간
+	float idleDalayTime = 1; //대기시간
 	UPROPERTY(BlueprintReadOnly)
 	float currentTime = 0; //경과시간
 
 	UPROPERTY(VisibleAnywhere, Category=FSM)
-	class ACharacter* target; // 플레이어 타겟 변수 선언
+	class AActor* target; // 플레이어 타겟 변수 선언
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<class AActor*> targets; //모든 액터 배열 받을 변수
+
+	UPROPERTY()
+	TArray<class AActor*> Weaponarray;
 
 	UPROPERTY(BlueprintReadOnly)
 	class ASH_Enemy* enemy; // 내가아닌 에너미 변수
@@ -62,13 +67,16 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	class ASH_Player* player; //플레이어 변수
 
+	UPROPERTY(BlueprintReadOnly)
+	class AWeapon* weapon;
+
 	float dir = 1000.0f; // 나와 타겟의 거리
 
 	UPROPERTY()
 	class ASH_Enemy* me; //소유액터 변수 
 
 	UPROPERTY(EditAnywhere,Category=FSM)
-	float attackRange = 180.0f; // 공격범위 변수 
+	float attackRange = 160.0f; // 공격범위 변수 
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float attackDelayTime = 1.0f; //공격대기시간 변수
@@ -99,5 +107,6 @@ public:
 
 	void stateChange(EEnemyState State);
 	void stateChangeMontage(EEnemyState State, FString Name);
+	void addarray();
 
 };

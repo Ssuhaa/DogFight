@@ -24,4 +24,8 @@ public:
 	void PlayDamagaAnim(FName sectionName);
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
 	bool bDieDone =false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	bool isLollipopget =false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	bool isGunget = false;
 };
