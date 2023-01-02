@@ -51,14 +51,14 @@ ARIM_Player::ARIM_Player() //생성자
 
 	
 	//[총 컴포넌트 추가] --->스켈레탈 무기
-	compMeshGun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+	compMeshGun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GunMeshComp"));
 	compMeshGun->SetupAttachment(GetMesh(), TEXT("Gun")); //부모 컴포넌트를 Mesh 컴포넌트로 설정. 총을 캐릭터 손 소켓에 붙임...?
 	
 	//[총 스켈레탈메시 추가. 옷 추가]
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempGunMesh(TEXT("SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempGunMesh(TEXT("StaticMesh'/Game/Geometry/Gun.Gun'"));
 	if (tempGunMesh.Succeeded())
 	{
-		compMeshGun->SetSkeletalMesh(tempGunMesh.Object);
+		compMeshGun->SetStaticMesh(tempGunMesh.Object);
 		compMeshGun->SetRelativeLocation(FVector(5.759851f, -0.573986f, 26.993545f)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
 		compMeshGun->SetRelativeRotation(FRotator(0, -159, - 90)); //★★★총 회전. 임시로 세팅. 추후 변경 필요
 		compMeshGun->SetRelativeScale3D(FVector(0.5f)); //★★★총 크기. 임시로 세팅. 추후 변경 필요

@@ -66,15 +66,16 @@ void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 
 void AWeapon::BindGetWeapon()
 {
+	
 	GetWeapon(overlapActor);
 }
 
 void AWeapon::GetWeapon(AActor* Actor)
 {
-	player = Cast<ASH_Player>(Actor);
+	player = Cast<ARIM_Player>(Actor);
 	if (player != nullptr)
 	{
-		player->Weapon->SetStaticMesh(compMesh->GetStaticMesh());
+		player->VisibleGun();
 		Destroy();
 	}
 	Enemy = Cast<ASH_Enemy>(Actor);

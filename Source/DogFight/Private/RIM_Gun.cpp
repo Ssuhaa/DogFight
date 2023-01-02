@@ -33,7 +33,7 @@ ARIM_Gun::ARIM_Gun()
 	compMeshWeaponGun->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[바닥에 있는 총 스테틱메시. 옷 추가]
-	ConstructorHelpers::FObjectFinder<UStaticMesh> TempItemGunMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'")); //★★★추후 필요시 변경
+	ConstructorHelpers::FObjectFinder<UStaticMesh> TempItemGunMesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'")); 
 	if (TempItemGunMesh.Succeeded())
 	{
 		compMeshWeaponGun->SetStaticMesh(TempItemGunMesh.Object);

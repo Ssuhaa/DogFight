@@ -41,7 +41,7 @@ public:
 	void BindGetWeapon();
 
 	UPROPERTY()
-	class ASH_Player* player;
+	class ARIM_Player* player;
 
 	UPROPERTY()
 	class ASH_Enemy* Enemy;

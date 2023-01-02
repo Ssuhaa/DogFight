@@ -83,7 +83,7 @@ public:
 public:
 	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가] --->스켈레탈 무기
 	UPROPERTY(VisibleAnywhere)
-	class USkeletalMeshComponent* compMeshGun;
+	class UStaticMeshComponent* compMeshGun;
 
 	//[롤리팝 스태틱메시 컴포넌트 추가] ---->스태틱 무기
 	//UPROPERTY(VisibleAnywhere)
