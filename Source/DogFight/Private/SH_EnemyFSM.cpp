@@ -82,6 +82,7 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	// 목적지를 타겟의 액터 로케이션으로 설정
 	if (target != nullptr)
 	{
+		
 		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
 		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{

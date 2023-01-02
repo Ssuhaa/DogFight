@@ -87,7 +87,7 @@ public:
 	void SeachLongTarget(); // 먼 타겟 찾는 함수
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
-	int32 hp = 5; // 에너미 HP 변수선언
+	int32 hp = 3; // 에너미 HP 변수선언
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	int32 downCount  = 3; //넉백 카운트
