@@ -28,7 +28,7 @@ public:
 	class USceneComponent* itemSpawnLocation ;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<class AWeapon*> ItemArray;
+	TArray<TSubclassOf<class AWeapon>> ItemArray;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ALollipopWeapon> Loliipop;

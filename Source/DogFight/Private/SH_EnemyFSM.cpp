@@ -80,7 +80,6 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
 	FVector P;
 	// 목적지를 타겟의 액터 로케이션으로 설정
-	SeachShortTarget();
 	if (target != nullptr)
 	{
 		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
@@ -156,11 +155,9 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 		}
 		else
 		{
-			//anim->bAttackPlay = true;
 			isAttackState = false;
 			stateChange(EEnemyState::Idle);
 			currentTime = 0;
-
 		}
 	}
 
@@ -275,6 +272,25 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 애�
 {
 	mState = state;
 	anim->animState = mState;
+	switch (state)
+	{
+	case EEnemyState::Idle:
+		break;
+	case EEnemyState::Move:
+		break;
+	case EEnemyState::Attack:
+		break;
+	case EEnemyState::Damage:
+		break;
+	case EEnemyState::Die:
+		break;
+	case EEnemyState::Down:
+		break;
+	case EEnemyState::Pickup:
+		break;
+	default:
+		break;
+	}
 }
 
 void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테이트 변경 후 애님몽타주 플레이.
