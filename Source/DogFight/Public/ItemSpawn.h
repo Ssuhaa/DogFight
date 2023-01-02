@@ -33,8 +33,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ALollipopWeapon> Loliipop;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AGunWeapon> Gun;
+
 	float CurrentTime =0;
-	float SpawnTime = 5;
+	float SpawnTime = 1;
 
 
 };

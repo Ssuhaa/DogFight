@@ -4,6 +4,7 @@
 
 #include "ItemSpawn.h"
 #include "Weapon.h"
+#include "GunWeapon.h"
 
 // Sets default values
 AItemSpawn::AItemSpawn()
@@ -19,7 +20,14 @@ AItemSpawn::AItemSpawn()
 	{
 		Loliipop = tempLollipop.Class;
 	}
-	//ItemArray.Add(Loliipop.Class);
+	ConstructorHelpers::FClassFinder <AGunWeapon> tempGun(TEXT("Class'/Script/DogFight.GunWeapon_C'"));
+	if (tempLollipop.Succeeded())
+	{
+		Gun = tempGun.Class;
+	}
+
+	ItemArray.Add(Loliipop);
+	ItemArray.Add(Gun);
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +45,7 @@ void AItemSpawn::Tick(float DeltaTime)
 	if (CurrentTime > SpawnTime)
 	{
 		int32 index = FMath::RandRange(0, ItemArray.Num());
-		//GetWorld()->SpawnActor<AWeapon>(ItemArray[index]);
+		GetWorld()->SpawnActor<AWeapon>(ItemArray[index]);
 		CurrentTime = 0;
 	}
 
