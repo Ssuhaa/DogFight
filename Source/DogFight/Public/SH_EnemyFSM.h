@@ -109,4 +109,6 @@ public:
 	void stateChangeMontage(EEnemyState State, FString Name);
 	void addarray();
 
+	bool isDelay(float delaytime);
+
 };

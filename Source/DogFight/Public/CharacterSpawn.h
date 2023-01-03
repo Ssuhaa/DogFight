@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LollipopWeapon.h"
-#include "ItemSpawn.generated.h"
+#include "CharacterSpawn.generated.h"
 
 UCLASS()
-class DOGFIGHT_API AItemSpawn : public AActor
+class DOGFIGHT_API ACharacterSpawn : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AItemSpawn();
+	ACharacterSpawn();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,15 +22,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* itemSpawnLocation ;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	TArray<TSubclassOf<class AWeapon>> ItemArray;
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<class ASH_Enemy>> EnemyArray;
 
-	float CurrentTime =10;
-	float SpawnTime = 10;
-
+	UPROPERTY(EditAnywhere)
+	TArray<class USceneComponent*> SpawnPosition;
 
 };

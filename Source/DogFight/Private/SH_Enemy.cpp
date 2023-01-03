@@ -114,5 +114,6 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 void ASH_Enemy::GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname)
 {
 	compMesh->SetStaticMesh(WeaponMesh);
-	compMesh->SetupAttachment(compMesh, FName(*soketname));
+	compMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform ,FName(*soketname));
+	//compMesh->SetupAttachment(compMesh, FName(*soketname));
 }

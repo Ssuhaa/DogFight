@@ -37,7 +37,7 @@ void USH_EnemyFSM::BeginPlay()
 void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	currentTime += DeltaTime;
+	
 	switch (mState) // 캐릭터 상태 변수에 따라 스위칭 시켜 해당 함수 호출하는 코드
 	{
 	case EEnemyState::Idle:
@@ -66,13 +66,9 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 {
-	if (currentTime > idleDalayTime)
+	if (isDelay(idleDalayTime))
 	{
-
-		isAttackState = false;
 		stateChange(EEnemyState::Move);
-		currentTime = 0;
-
 	}
 }
 
@@ -82,7 +78,6 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	// 목적지를 타겟의 액터 로케이션으로 설정
 	if (target != nullptr)
 	{
-		
 		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
 		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{
@@ -90,12 +85,10 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 			{
 				me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
 				stateChange(EEnemyState::Attack);
-				currentTime = attackDelayTime;
-
 			}
 			else
 			{
-				me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
+				me->AddMovementInput(P.GetSafeNormal());
 			}
 		}
 		else if (target->GetName().Contains(TEXT("Weapon")))
@@ -106,10 +99,8 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 			}
 			else
 			{
-				me->AddMovementInput(P.GetSafeNormal()); //타겟 방향으로 이동
-				
+				me->AddMovementInput(P.GetSafeNormal()); 
 			}
-		
 		}
 	}
 	else
@@ -124,20 +115,18 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 void USH_EnemyFSM::PickupState()
 {
 
-	if (currentTime > 0.2)
+	if (isDelay(0.2))
 	{
 		SeachShortTarget();
 		stateChange(EEnemyState::Idle);
-		currentTime = 0;
 	}
 
 }
 
 void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 {
-	if (currentTime > attackDelayTime)
+	if (isDelay(attackDelayTime))
 	{
-		isAttackState = true;
 		if (anim->isLollipopget || anim->isGunget)
 		{
 			anim->bAttackPlay = false;
@@ -150,15 +139,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 		if (distance > attackRange)
 		{
-			isAttackState = false;
 			stateChange(EEnemyState::Move);
-			currentTime = 0;
-		}
-		else
-		{
-			isAttackState = false;
-			stateChange(EEnemyState::Idle);
-			currentTime = 0;
 		}
 	}
 
@@ -166,23 +147,19 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 
 void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 {
-	if (currentTime > damageDelayTime)
+	if (isDelay(damageDelayTime))
 	{
-		anim->Montage_Stop(damageDelayTime);
 		SeachShortTarget();
 		stateChange(EEnemyState::Attack);
-		currentTime = 0;
 	}
 }
 
 void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 {
-	if (currentTime > dieDelayTime)
+	if (isDelay(dieDelayTime))
 	{
-		anim->Montage_Stop(damageDelayTime);
 		SeachLongTarget();
 		stateChange(EEnemyState::Idle);
-		currentTime = 0;
 		downCount--;
 		hp = 5;
 	}
@@ -199,21 +176,17 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 
 	if (hp > 0 && downCount > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy HP : %d"), hp);
-		randindex = FMath::RandRange(0, 1);
-		stateChangeMontage(EEnemyState::Damage, TEXT("Damage"));
-		currentTime = 0;
 		hp--;
+		randindex = FMath::RandRange(0, 1); //몽타주 인덱스 뽑기
+		stateChangeMontage(EEnemyState::Damage, TEXT("Damage"));
 	}
 	else if (hp < 1 && downCount > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Down : %d"), downCount);
 		stateChangeMontage(EEnemyState::Down, TEXT("Down"));
 
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy DIE"));
 		stateChangeMontage(EEnemyState::Die, TEXT("Die"));
 	}
 
@@ -276,18 +249,28 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 애�
 	switch (state)
 	{
 	case EEnemyState::Idle:
+		isAttackState = false;
 		break;
 	case EEnemyState::Move:
+		isAttackState = false;
 		break;
 	case EEnemyState::Attack:
+		currentTime = attackDelayTime;
+		isAttackState = true;
 		break;
 	case EEnemyState::Damage:
+		isAttackState = false;
+		anim->Montage_Stop(damageDelayTime);
 		break;
 	case EEnemyState::Die:
+		isAttackState = false;
 		break;
 	case EEnemyState::Down:
+		isAttackState = false;
+		anim->Montage_Stop(damageDelayTime);
 		break;
 	case EEnemyState::Pickup:
+		isAttackState = false;
 		break;
 	default:
 		break;
@@ -312,5 +295,19 @@ void USH_EnemyFSM::addarray() //캐릭터와 웨폰 어레이 수집
 	{
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeapon::StaticClass(), Weaponarray);
 		targets.Append(Weaponarray);
+	}
+}
+
+bool USH_EnemyFSM::isDelay(float delaytime)
+{
+	currentTime += GetWorld()->DeltaTimeSeconds;
+	if (currentTime > delaytime)
+	{
+		currentTime = 0;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

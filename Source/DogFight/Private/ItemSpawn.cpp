@@ -5,6 +5,7 @@
 #include "ItemSpawn.h"
 #include "Weapon.h"
 #include "GunWeapon.h"
+#include "LollipopWeapon.h"
 
 // Sets default values
 AItemSpawn::AItemSpawn()
@@ -15,19 +16,17 @@ AItemSpawn::AItemSpawn()
 	itemSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("ItemSpawnLocation"));
 	RootComponent = itemSpawnLocation;
 
-	ConstructorHelpers::FClassFinder <ALollipopWeapon> tempLollipop(TEXT("Class'/Script/DogFight.LollipopWeapon_C'"));
+	ConstructorHelpers::FClassFinder <ALollipopWeapon> tempLollipop(TEXT("Class'/Script/DogFight.LollipopWeapon'"));
 	if (tempLollipop.Succeeded())
 	{
-		Loliipop = tempLollipop.Class;
+		ItemArray.Add(tempLollipop.Class);
 	}
-	ConstructorHelpers::FClassFinder <AGunWeapon> tempGun(TEXT("Class'/Script/DogFight.GunWeapon_C'"));
+	ConstructorHelpers::FClassFinder <AGunWeapon> tempGun(TEXT("Class'/Script/DogFight.GunWeapon'"));
 	if (tempLollipop.Succeeded())
 	{
-		Gun = tempGun.Class;
+		ItemArray.Add(tempGun.Class);
 	}
-
-	ItemArray.Add(Loliipop);
-	ItemArray.Add(Gun);
+	
 }
 
 // Called when the game starts or when spawned
@@ -44,8 +43,8 @@ void AItemSpawn::Tick(float DeltaTime)
 	CurrentTime+=DeltaTime;
 	if (CurrentTime > SpawnTime)
 	{
-		int32 index = FMath::RandRange(0, ItemArray.Num());
-		GetWorld()->SpawnActor<AWeapon>(ItemArray[index]);
+		int32 index = FMath::RandRange(0, ItemArray.Num()-1);
+		GetWorld()->SpawnActor<AWeapon>(ItemArray[index], itemSpawnLocation->GetRelativeTransform());
 		CurrentTime = 0;
 	}
 

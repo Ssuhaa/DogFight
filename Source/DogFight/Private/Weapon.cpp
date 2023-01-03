@@ -67,18 +67,22 @@ void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 void AWeapon::BindGetWeapon()
 {
 	
-	GetWeapon(overlapActor);
+	GetWeapon();
 }
 
-void AWeapon::GetWeapon(AActor* Actor)
+void AWeapon::GetWeapon()
 {
-	player = Cast<ARIM_Player>(Actor);
+	player = Cast<ARIM_Player>(overlapActor);
 	if (player != nullptr)
-	{
-		player->VisibleGun();
-		Destroy();
+	{	
+		if (Soketname == TEXT("Gun"))
+		{
+			player->VisibleGun();
+			Destroy();
+
+		}
 	}
-	Enemy = Cast<ASH_Enemy>(Actor);
+	Enemy = Cast<ASH_Enemy>(overlapActor);
 	if (Enemy != nullptr)
 	{
 		if(Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false)
