@@ -10,6 +10,7 @@
 #include "EnemyAnim.h"
 #include <Engine/SkeletalMeshSocket.h>
 #include "SH_Player.h"
+#include <Engine/SkeletalMesh.h>
 
 // Sets default values
 AWeapon::AWeapon()
@@ -28,6 +29,7 @@ AWeapon::AWeapon()
 	compCollision->SetupAttachment(compMesh);
 	compCollision->SetBoxExtent(FVector(40));
 	compCollision->SetCollisionProfileName(TEXT("OverlapAll"));
+
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +87,7 @@ void AWeapon::GetWeapon()
 	Enemy = Cast<ASH_Enemy>(overlapActor);
 	if (Enemy != nullptr)
 	{
+		if (Enemy->fsm->mState == EEnemyState::Damage || Enemy->fsm->mState == EEnemyState::Down || Enemy->fsm->mState == EEnemyState::Die|| Enemy->fsm->mState == EEnemyState::Attack) return;
 		if(Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false)
 		{
 			Enemy->GetEnemyWeapon(compMesh->GetStaticMesh(), Soketname);

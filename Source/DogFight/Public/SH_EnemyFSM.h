@@ -16,6 +16,7 @@ enum class EEnemyState : uint8
 	Die,
 	Down,
 	Pickup,
+	Wakeup,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -45,6 +46,7 @@ public:
 	void DieState(); // 죽음 상태 함수선언
 	void DownState();//넉백 상태 함수
 	void PickupState();
+	void WakeupState();
 
 
 	UPROPERTY(EditDefaultsOnly, Category=FSM)
@@ -70,7 +72,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	class AWeapon* weapon;
 
-	float dir = 1000.0f; // 나와 타겟의 거리
+	float dir = 2000.0f; // 나와 타겟의 거리
 
 	UPROPERTY()
 	class ASH_Enemy* me; //소유액터 변수 
@@ -79,12 +81,10 @@ public:
 	float attackRange = 160.0f; // 공격범위 변수 
 
 	UPROPERTY(EditAnywhere, Category=FSM)
-	float attackDelayTime = 1.0f; //공격대기시간 변수
+	float attackDelayTime = 2.0f; //공격대기시간 변수
 
 	void OnDamageProcess(); //피격알림이벤트 함수 
-
-	void SeachShortTarget(); //가까운 타겟 찾는 함수
-	void SeachLongTarget(); // 먼 타겟 찾는 함수
+	void RandomTarget();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=FSM)
 	int32 hp = 3; // 에너미 HP 변수선언
@@ -95,10 +95,16 @@ public:
 	int32 randindex; //애니메이션 몽타주 인덱스
 
 	UPROPERTY(EditAnywhere, Category=FSM)
-	float damageDelayTime = 1.0f; //피격 대기시간 변수 선언
+	float damageDelayTime = 3.0f; //피격 대기시간 변수 선언
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=FSM)
-	float dieDelayTime = 5.0f; //넉백 대기시간 변수선언
+	float downDelayTime = 10.0f; //넉백 대기시간 변수선언
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
+	float WakeupDelayTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
+	float PickupDelayTime = 0.2f;
 
 	UPROPERTY(BlueprintReadOnly)
 	class UEnemyAnim* anim; //에너미 애니메이션
@@ -108,7 +114,15 @@ public:
 	void stateChange(EEnemyState State);
 	void stateChangeMontage(EEnemyState State, FString Name);
 	void addarray();
+	void DropWeapon();
 
 	bool isDelay(float delaytime);
 
+	FVector P;
+
+	UPROPERTY()
+	TSubclassOf<class AGunWeapon> Gun;
+
+	UPROPERTY()
+	TSubclassOf<class ALollipopWeapon> Lollipop;
 };

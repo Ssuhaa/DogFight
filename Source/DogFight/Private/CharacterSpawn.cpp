@@ -4,6 +4,7 @@
 #include "CharacterSpawn.h"
 #include "../Public/SH_Enemy.h"
 #include "Components/SceneComponent.h"
+#include <GameFramework/CharacterMovementComponent.h>
 
 // Sets default values
 ACharacterSpawn::ACharacterSpawn()
@@ -19,31 +20,35 @@ ACharacterSpawn::ACharacterSpawn()
 		}
 	}
 	
-
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
 	
-// 	for (int32 i = 0; i < 6; i++)
-// 	{
-// 		FString str = FString::Printf(TEXT("Position%d"), i);
-// 		USceneComponent* temp2 = CreateDefaultSubobject<USceneComponent>(*str);
-// 		SpawnPosition.Add(temp2);
-// 		SpawnPosition[i]->SetupAttachment(RootComponent);
-// 
-// 	}
-
-
+	for (int32 i = 0; i < 6; i++)
+	{
+		FString str = FString::Printf(TEXT("Position%d"), i);
+		USceneComponent* temp2 = CreateDefaultSubobject<USceneComponent>(*str);
+		SpawnPosition.Add(temp2);
+		SpawnPosition[i]->SetupAttachment(RootComponent);
+		FVector V = FVector::ForwardVector;
+		V = V.RotateAngleAxis(i * (360 / 7), FVector::UpVector);
+		SpawnPosition[i]->SetRelativeLocation(V * 800);
+	}
+	
 }
 
 // Called when the game starts or when spawned
 void ACharacterSpawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	for (int32 i = 0; i < 6; i++)
+	{
+		GetWorld()->SpawnActor<ASH_Enemy>(EnemyArray[i], SpawnPosition[i]->GetComponentTransform());
+	}
 }
 
 // Called every frame
 void ACharacterSpawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

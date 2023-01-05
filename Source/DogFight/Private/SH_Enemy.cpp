@@ -9,6 +9,7 @@
 #include "RIM_Player.h"
 #include "SH_Player.h"
 #include "EnemyAnim.h"
+#include <Components/CapsuleComponent.h>
 
 
 // Sets default values
@@ -18,12 +19,21 @@ ASH_Enemy::ASH_Enemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//SkeletalMesh
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor1.Charactor1'")); 
-	if (TempMesh.Succeeded())
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh1(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Charactor1.Charactor1'")); 
+	if (TempMesh1.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(TempMesh.Object); 
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0)); 
+		randmesh.Add(TempMesh1.Object);
 	}
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh2(TEXT("SkeletalMesh'/Game/Animation/Charecter/Mesh/Chractor3.Chractor3'"));
+	if (TempMesh2.Succeeded())
+	{
+		randmesh.Add(TempMesh2.Object);
+	}
+
+	int32 meshindex = FMath::RandRange(0, randmesh.Num()-1);
+	GetMesh()->SetSkeletalMesh(randmesh[meshindex]); 
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0)); 
+	
 	//Fsm
 	fsm = CreateDefaultSubobject<USH_EnemyFSM>(TEXT("FSM"));
 
@@ -39,7 +49,7 @@ ASH_Enemy::ASH_Enemy()
 	//Weapon
 	compMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 	compMesh->SetupAttachment(GetMesh(), TEXT("Prop_RSocket"));
-
+	compMesh->SetCollisionProfileName("Weapon");
 
 	//AttackCollision Hand
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
@@ -49,6 +59,10 @@ ASH_Enemy::ASH_Enemy()
 	compAttack2 = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollisionfoot"));
 	compAttack2->SetupAttachment(GetMesh(), TEXT("Foot_Socket"));
 	compAttack2->SetBoxExtent(FVector(25));
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
 
@@ -84,7 +98,6 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		if (OtherActor->GetName().Contains(TEXT("Enemy")))
 		{
 			currEnemy = Cast<ASH_Enemy>(OtherActor);
-			//if (fsm->isAttackState == true)
 			if(fsm->target == currEnemy)
 			{
 				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Damage) return;
@@ -94,7 +107,8 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 				}
 				else
 				{
-					fsm->SeachLongTarget();
+					fsm->RandomTarget();
+					fsm->stateChange(EEnemyState::Idle);
 				}
 
 

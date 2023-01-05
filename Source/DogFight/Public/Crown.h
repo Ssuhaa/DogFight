@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CharacterSpawn.generated.h"
+#include "Crown.generated.h"
 
 UCLASS()
-class DOGFIGHT_API ACharacterSpawn : public AActor
+class DOGFIGHT_API ACrown : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ACharacterSpawn();
+	ACrown();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,15 +24,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class ASH_Enemy>> EnemyArray;
+	class UStaticMeshComponent* Crown;
 
-	UPROPERTY(VisibleAnywhere)
-	TArray<class USceneComponent*> SpawnPosition;
+	float Runtime;
+	UPROPERTY(EditAnywhere)
+	float Length = 10;
+	UPROPERTY(EditAnywhere)
+	float Speed = 3;
 
-	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* Root;
-
-
-	float currTime = 0;
-	
 };

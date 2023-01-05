@@ -91,7 +91,6 @@ void ARIM_Bullet::collisionBulletBeginOverlap(UPrimitiveComponent* OverlappedCom
 {
 	if (OtherActor->GetName().Contains(TEXT("Enemy"))) //만약에 부딛힌 OtherActor 중에 이름이 enemy를 포함하고있으면
 	{
-
 		//에너미에 데미지가 들어간다 함수 호출
 		Enemy = Cast<ASH_Enemy>(OtherActor); //SH_Enemy 클래스의 enemy이면 Enemy라고 한다
 		Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
