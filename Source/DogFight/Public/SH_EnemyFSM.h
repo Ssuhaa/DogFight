@@ -45,8 +45,8 @@ public:
 	void DamageState(); //피격 상태 함수선언
 	void DieState(); // 죽음 상태 함수선언
 	void DownState();//넉백 상태 함수
-	void PickupState();
-	void WakeupState();
+	void PickupState();//픽업 상태함수
+	void WakeupState();// 일어나는 상태 함수
 
 
 	UPROPERTY(EditDefaultsOnly, Category=FSM)
@@ -111,9 +111,11 @@ public:
 
 	bool isAttackState = false;
 
-	void stateChange(EEnemyState State);
-	void stateChangeMontage(EEnemyState State, FString Name);
+	void stateChange(EEnemyState State); //mState 변경
+	void stateChangeMontage(EEnemyState State, FString Name);//mstate변경 및 몽타주 변경
 	void addarray();
+	void removeWeaponArray();
+	void addWeaponArray();
 	void DropWeapon();
 
 	bool isDelay(float delaytime);
@@ -125,4 +127,6 @@ public:
 
 	UPROPERTY()
 	TSubclassOf<class ALollipopWeapon> Lollipop;
+
+	void removeDieTarget();
 };

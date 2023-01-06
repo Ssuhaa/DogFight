@@ -91,6 +91,7 @@ void AWeapon::GetWeapon()
 		if(Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false)
 		{
 			Enemy->GetEnemyWeapon(compMesh->GetStaticMesh(), Soketname);
+			Enemy->fsm->removeWeaponArray();
 			Enemy->fsm->stateChange(EEnemyState::Pickup);
 			if (Soketname == TEXT("Lollipop"))
 			{

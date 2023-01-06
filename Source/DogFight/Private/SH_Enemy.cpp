@@ -33,7 +33,7 @@ ASH_Enemy::ASH_Enemy()
 	int32 meshindex = FMath::RandRange(0, randmesh.Num()-1);
 	GetMesh()->SetSkeletalMesh(randmesh[meshindex]); 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0)); 
-	
+	GetMesh()->SetCollisionProfileName("Enemy");
 	//Fsm
 	fsm = CreateDefaultSubobject<USH_EnemyFSM>(TEXT("FSM"));
 
@@ -49,7 +49,7 @@ ASH_Enemy::ASH_Enemy()
 	//Weapon
 	compMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 	compMesh->SetupAttachment(GetMesh(), TEXT("Prop_RSocket"));
-	compMesh->SetCollisionProfileName("Weapon");
+	compMesh->SetCollisionProfileName("Enemy");
 
 	//AttackCollision Hand
 	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
