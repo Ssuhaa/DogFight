@@ -27,7 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	//SpringArm 컴포넌트 변수 선언. USpringArmComponent 속성 추가
+	//SpringArm 컴포넌트 변수 선언
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* compSpringArm;
 	
@@ -38,11 +38,11 @@ public:
 public:
 	//걷기 속도
 	UPROPERTY(EditAnywhere)
-	float walkSpeed = 600; //★★★필요 시 수치 변경
+	float walkSpeed = 800; //★★★필요 시 수치 변경
 
 	//달리기 속도 
 	UPROPERTY(EditAnywhere)
-	float runSpeed = 1200; //★★★추후 필요시 변경
+	float runSpeed = 1500; //★★★추후 필요시 변경
 
 	//이동 방향
 	FVector direction;
@@ -70,30 +70,30 @@ public:
 	//공격/잡기 이벤트 처리 함수
 	void InputPunchGrab();
 
-	//무기 버리기 이벤트 처리 함수
-	void InputDropWeapon();
-
 	//드롭킥/던지기 이벤트 처리 함수
-	//void InputKickToss();
+	void InputKickToss();
 
 	//박치기 이벤트 처리 함수
-	//void InputHeadbutt();
+	void InputHeadbutt();
+
+	//무기 버리기 이벤트 처리 함수
+	//void InputDropWeapon();
 
 
 public:
-	//[총 스켈레탈메시 컴포넌트 멤버 변수 추가] --->스켈레탈 무기
+	//[총 스태틱메시 컴포넌트 멤버 변수 추가]
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMeshGun;
 
-	//[롤리팝 스태틱메시 컴포넌트 추가] ---->스태틱 무기
-	//UPROPERTY(VisibleAnywhere)
-	//class UStaticMeshComponent* compMeshLollipop;
+	//[롤리팝 스태틱메시 컴포넌트 추가]
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* compMeshLollipop;
 
 public:
 	//[BulletFactory 총알 공장 속성 추가]
 	//총알 공장
-	UPROPERTY(EditAnywhere, Category = BulletFactory) //★★★카테고리 필요 없으면 추후 삭제
-	TSubclassOf<class ARIM_Bullet> bulletFactory; //★★★오류해결. 클래스 ABullet을 못찾는 거 같음 ---> 내 파일명 ARIM_Bullet 으로 해야 함
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ARIM_Bullet> bulletFactory;
 
 public:
 	//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 선언]
@@ -101,11 +101,11 @@ public:
 	void VisibleGun();
 
 	//[플레어이어가 들고 있는 롤리팝이 안 보였다 보이는 함수 선언]
-	//UFUNCTION()
-	//void VisibleLollipop();
+	UFUNCTION()
+	void VisibleLollipop();
 
-	//[???]
-	virtual void EnableInput(class APlayerController* PlayerController) override;
+	//[총, 롤리팝 관련 ??? 함수 선언]
+	virtual void EnableInput(class APlayerController* PlayerController) override; //★★★ 잘 모르겠음..
 
 public:
 	//[플레이어 오른손 펀치 충돌 컴포넌트 변수 추가]
@@ -117,12 +117,16 @@ public:
 	class UBoxComponent* compCollisionPunchL;
 
 	//[플레이어 킥 충돌 컴포넌트 변수 추가] 게임에서 왼발로 킥 한다
-	//class UBoxComponent* compCollisionKick;
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* compCollisionKick;
 
 	//[플레이어 헤딩 충돌 컴포넌트 변수 추가]
-	//class UBoxComponent* compCollisionHeadbutt;
+	UPROPERTY(EditAnywhere) 
+	class UBoxComponent* compCollisionHeadbutt;
 
 public:
+	//[델리케이트] ★★★ 완벽하게 이해하지 못 함
+
 	//[[2]플레이어 펀치 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
 	//펀치 콜리전 컴포넌트 변수의 멤버 함수 OnComponentBeginOverlap과 OnComponentEndOverlap 델리케이트 호출
 	UFUNCTION()
@@ -136,46 +140,48 @@ public:
 
 	//[[2]플레이어	킥 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
 	//킥 콜리전 컴포넌트 변수의 멤버 함수 OnComponentBeginOverlap과 OnComponentEndOverlap 델리케이트 호출
-// 	UFUNCTION()
-// 	void collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-// 	UFUNCTION()
-// 	void collisionKickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+	void collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void collisionKickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	//[[2]플레이어 박치기 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
-// 	UFUNCTION()
-// 	void collisionHeadbuttBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-// 	UFUNCTION()
-// 	void collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-
+	UFUNCTION()
+	void collisionHeadbuttBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	//[???]
-	bool isInputPunchGrab = false;
+	//[PunchGrab 버튼 관련...?] 
+	bool isInputPunchGrab = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
 
-	//[???]
-	//bool isInputKickToss = false;
+	//[KickToss 버튼 관련...?]
+	bool isInputKickToss = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
 
-	//[???]
-	//bool isInputHeadbutt = false;
+	//[Headbutt 버튼 관련...?]
+	bool isInputHeadbutt = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
 
-	//[???]
+	//[적 관련...???]
 	UPROPERTY()
-	class AActor* currEnemy;
+	class AActor* currEnemy; //★★★ 완벽하게 이해하지 못 함
 
 	//[에너미가 공격하면 플레이어가 데미지를 받는 함수] 플레이어의 데미지니까 플레이어에서 구현
 	UFUNCTION()
 	void OnDamageProcess();
 	
-	//[플레이어 풀 HP 변수]
+	//[플레이어 HP 변수]
 	int32 HP = 5;
 
 	//[현재시간]
 	float currentTime = 0;
 
-	UPROPERTY()
-	TSubclassOf<class ARIM_Gun> Gun;
+ 	//[바닥에 총 생성(무기버리기 관련)]
+// 	UPROPERTY(EditAnywhere)
+//  TSubclassOf<class AGunWeapon> weaponGun;
 
-	
+	//[바닥에 롤리팝 생성(무기버리기 관련)]
+// 	UPROPERTY(EditAnywhere)
+// 	TSubclassOf<class ALollipopWeapon> weaponLol;
+
 
 };
