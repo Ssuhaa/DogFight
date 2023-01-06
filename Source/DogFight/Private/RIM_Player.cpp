@@ -308,11 +308,11 @@ void ARIM_Player::InputPunchGrab()
 		}
 		
 		//플레이어 애니메이션 몽타주 중 '펀치' 애니메이션 재생
-		URIM_PlayerAnim* animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
-		//animPlayer->PlayPlayerAnim(TEXT("Punch"), 0);
-	
 
 	}
+	URIM_PlayerAnim* animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
+	animPlayer->PlayPlayerAnim(TEXT("Punch"), 0);
+
 }
 
 //[BeginOverlap 플레이어 오른주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
