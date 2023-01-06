@@ -13,6 +13,7 @@
 #include "SH_EnemyFSM.h"
 #include "RIM_Gun.h"
 #include "RIM_PlayerAnim.h"
+#include <Components/StaticMeshComponent.h>
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -32,7 +33,7 @@ ARIM_Player::ARIM_Player() //생성자
 
 	//[스프링암 컴포넌트 추가. USpringArmComponent]
 	compSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	compSpringArm->SetupAttachment(RootComponent);
+	compSpringArm->SetupAttachment(RootComponent); //루트컴포넌트에 자식으로 붙임
 	compSpringArm->SetRelativeLocation(FVector(0, 0, 0)); //★★★추후 필요시 변경
 	compSpringArm->SetRelativeRotation(FRotator(0, 0, 0)); //★★★추후 필요시 변경
 	compSpringArm->TargetArmLength = 500; //★★★추후 필요시 변경
@@ -48,32 +49,32 @@ ARIM_Player::ARIM_Player() //생성자
 
 	bUseControllerRotationYaw = true; //입력에 따른 회전 설정
 
-
 	
-	//[총 컴포넌트 추가] --->스켈레탈 무기
+	//[총 컴포넌트 추가]
 	compMeshGun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GunMeshComp"));
 	compMeshGun->SetupAttachment(GetMesh(), TEXT("Gun")); //부모 컴포넌트를 Mesh 컴포넌트로 설정. 총을 캐릭터 손 소켓에 붙임...?
-	
-	//[총 스켈레탈메시 추가. 옷 추가]
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempGunMesh(TEXT("StaticMesh'/Game/Geometry/Gun.Gun'"));
+		
+	//[총 스태틱메시 추가. 옷 추가] 
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempGunMesh(TEXT("StaticMesh'/Game/Geometry/Gun.Gun'")); 
 	if (tempGunMesh.Succeeded())
 	{
 		compMeshGun->SetStaticMesh(tempGunMesh.Object);
-// 		compMeshGun->SetRelativeLocation(FVector(5.759851f, -0.573986f, 26.993545f)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
-// 		compMeshGun->SetRelativeRotation(FRotator(0, -159, - 90)); //★★★총 회전. 임시로 세팅. 추후 변경 필요
-// 		compMeshGun->SetRelativeScale3D(FVector(0.5f)); //★★★총 크기. 임시로 세팅. 추후 변경 필요
+		compMeshGun->SetRelativeLocation(FVector(-8.280492f, 21.242059f, 5.475584f)); //★★★총 위치. 임시로 세팅. 추후 변경 필요
+		compMeshGun->SetRelativeRotation(FRotator(60.000000f, -339.000000f, -270.000000f)); //★★★총 회전. 임시로 세팅. 추후 변경 필요
 	}
 	
-	//[롤리팝 컴포넌트 추가] --->스태틱 무기
-	//compMeshLollipop->CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LollipopMeshComp"));
-	//compMeshLollipop->SetupAttachment(GetMesh(), TEXT("Lollipop")); //부모 컴포넌트를 Mesh 컴포넌트로 설정. 롤리팝을 캐릭터 손 소켓에 붙임...?
+	//[롤리팝 스태틱메시 추가]
+	compMeshLollipop = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LollipopMeshComp"));
+	compMeshLollipop->SetupAttachment(GetMesh(), TEXT("Lollipop")); //부모 컴포넌트를 Mesh 컴포넌트로 설정. 롤리팝을 캐릭터 손 소켓에 붙임...?
 
 	//[롤리팝 스테틱메시 추가. 옷 추가]
-	//ConstructorHelpers::FObjectFinder<UStaticMesh> tempLollipopMesh(TEXT("StaticMesh'/Game/Geometry/Lollipop.Lollipop'"));
-	//if (tempLollipopMesh.Succeeded())
-	//{
-	//	compMeshLollipop->SetStaticMesh(tempLollipopMesh.Object);
-	//}
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempLollipopMesh(TEXT("StaticMesh'/Game/Geometry/Lollipop.Lollipop'"));
+	if (tempLollipopMesh.Succeeded())
+	{
+		compMeshLollipop->SetStaticMesh(tempLollipopMesh.Object);
+		compMeshLollipop->SetRelativeLocation(FVector(0.686449f, -9.618860f, 2.343055f));
+		compMeshLollipop->SetRelativeRotation(FRotator(0, 0, -20));
+	}
 
 
 
@@ -85,38 +86,39 @@ ARIM_Player::ARIM_Player() //생성자
 	compCollisionPunchR->SetupAttachment(GetMesh(), TEXT("Prop_RSocket")); //오른손. 충돌 컴포넌트를 캐릭터 소켓에 붙임
 	compCollisionPunchL->SetupAttachment(GetMesh(), TEXT("Prop_LSocket")); //왼손. 충돌 컴포넌트를 캐릭터 소켓에 붙임
 
-// 	//[플레이어 킥 충돌 컴포넌트 추가]
-// 	compCollisionKick = CreateDefaultSubobject<UBoxComponent>(TEXT("KickMeshComp"));
-// 	//compCollisionKick->SetRelativeLocation(FVector());
-// 	//compCollisionKick->SetRelativeScale3D(FVector(0.5f));
-// 	compCollisionKick->SetupAttachment(GetMesh(), TEXT("ball_lSocket"));
-// 
-// 	//[플레이어 헤딩 충돌 컴포넌트 추가]
-// 	compCollisionHeadbutt = CreateDefaultSubobject<UBoxComponent>(TEXT("HeadbuttMechComp"));
-// 	//compCollisionHeadbutt->SetRelativeScale3D(FVector(0.5f));
-// 	compCollisionHeadbutt->SetupAttachment(GetMesh(), TEXT("headSocket"));
+ 	//[플레이어 킥 충돌 컴포넌트 추가]
+ 	compCollisionKick = CreateDefaultSubobject<UBoxComponent>(TEXT("KickMeshComp"));
+	compCollisionKick->SetRelativeLocation(FVector(26, 10, 6));
+	compCollisionKick->SetRelativeScale3D(FVector(0.8f, 0.8f, 0.8f));
+ 	compCollisionKick->SetupAttachment(GetMesh(), TEXT("ball_lSocket")); //왼발. 충돌 컴포넌트를 캐릭터 소켓에 붙임
+ 
+	//[플레이어 헤딩 충돌 컴포넌트 추가]
+ 	compCollisionHeadbutt = CreateDefaultSubobject<UBoxComponent>(TEXT("HeadbuttMechComp"));
+	compCollisionHeadbutt->SetRelativeLocation(FVector(0, 29, 188));
+ 	compCollisionHeadbutt->SetRelativeScale3D(FVector(1.5f, 0.8f, 1));
+ 	compCollisionHeadbutt->SetupAttachment(GetMesh(), TEXT("headSocket")); //머리. 충돌 컴포넌트를 캐릭터 소켓에 붙임
 
 
-	//불렛팩토리 안에 불렛 디폴트로 추가 ★★★왜 이 작업이 필요한지 궁금
+	//[불렛팩토리 안에 불렛 디폴트로 추가] ★★★왜 이 작업이 필요한지 궁금
 	ConstructorHelpers::FClassFinder<ARIM_Bullet> tempBul(TEXT("Blueprint'/Game/BluePrint/BP_RIM_Bullet.BP_RIM_Bullet_C'")); //오류. C++ 파일 찾을 수 없다고하여 블루프린트 파일로 진행
 	if(tempBul.Succeeded())
 	{
 		bulletFactory = tempBul.Class;
 	}
 
-	//애니메이션...?
-// 	ConstructorHelpers::FClassFinder<URIM_PlayerAnim> tempAnim(TEXT("AnimBlueprint'/Game/BluePrint/ABP_RIM_PlayerAnim.ABP_RIM_PlayerAnim_C'"));
-// 	if (tempAnim.Succeeded())
-// 	{
-// 		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
-// 	}
-
-	//무기 버리기 관련
-	ConstructorHelpers::FClassFinder<ARIM_Gun> TempGun(TEXT("Blueprint'/Game/BluePrint/BP_RIM_Gun.BP_RIM_Gun_c'"));
-	if (TempGun.Succeeded())
+	//[애니메이션 적용]
+	ConstructorHelpers::FClassFinder<URIM_PlayerAnim> tempAnim(TEXT("AnimBlueprint'/Game/BluePrint/ABP_Player.ABP_Player_C'"));
+	if (tempAnim.Succeeded())
 	{
-		Gun = TempGun.Class;
+		GetMesh()->SetAnimInstanceClass(tempAnim.Class);
 	}
+
+// 	//무기 버리기 관련...?
+// 	ConstructorHelpers::FClassFinder<AWeapon> tempWeapon(TEXT("StaticMesh'/Game/Geometry/Gun.Gun_C'"));
+// 	if (tempWeapon.Succeeded())
+// 	{
+// 		weapon = tempWeapon.Class;
+// 	}
 
 
 }
@@ -130,10 +132,10 @@ void ARIM_Player::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
 
 	//[총이 디폴트로 안보이게 설정]
-	compMeshGun->SetVisibility(false);
+	compMeshGun->SetVisibility(false); //시작할 때 플레이어가 총을 들고 있지 않는다. 총이 안 보인다. 
 
 	//[롤리팝이 디폴트로 안 보이게 설정]
-	//compMeshLollipop->SetVisibility(false);
+	compMeshLollipop->SetVisibility(false); //시작할 때 플레이어가 롤리팝을 들고 있지 않는다. 롤리팝이 안 보인다.
 
 
 	//[[1]플레이어 주먹 콜리전과 에너미가 충돌 시 실행 될 함수 호출]
@@ -144,12 +146,12 @@ void ARIM_Player::BeginPlay()
 	compCollisionPunchL->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionPunchLEndOverlap);
 
 	//[1]플레이어 킥 콜리전과 에너미가 출돌 시 실행 될 함수 호출
-// 	compCollisionKick->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionKickBeginOverlap);
-// 	compCollisionKick->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionKickEndOverlap);
+	compCollisionKick->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionKickBeginOverlap);
+	compCollisionKick->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionKickEndOverlap);
 
 	//[1]플레이어 박치기 콜리전과 에너미가 충돌 시 실행 될 함수 호출
-// 	compCollisionHeadbutt->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionHeadbuttBeginOverlap);
-// 	compCollisionHeadbutt->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionHeadbuttEndOverlap);
+	compCollisionHeadbutt->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisionHeadbuttBeginOverlap);
+	compCollisionHeadbutt->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisionHeadbuttEndOverlap);
 
 
 
@@ -209,17 +211,15 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사 + 펀치
 	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
-
-	//[무기 버리기 이벤트 처리 함수 바인딩/호출]
-	PlayerInputComponent->BindAction(TEXT("DropWeapon"), IE_Pressed, this, &ARIM_Player::InputDropWeapon);
 	
 	//[드롭킥/던지기 이벤트 처리 함수 바인딩/호출]
-	//PlayerInputComponent->BindAction(TEXT("KickToss"), IE_Pressed, this, &ARIM_Player::InputKickToss);
-
+	PlayerInputComponent->BindAction(TEXT("KickToss"), IE_Pressed, this, &ARIM_Player::InputKickToss);
 	
 	//[박치기 이벤트 처리 함수 바인딩/호출]
-	//PlayerInputComponent->BindAction(TEXT("Headbutt"), IE_Pressed, this, &ARIM_Player::InputHeadbutt);
+	PlayerInputComponent->BindAction(TEXT("Headbutt"), IE_Pressed, this, &ARIM_Player::InputHeadbutt);
 
+	//[무기 버리기 이벤트 처리 함수 바인딩/호출]
+	//PlayerInputComponent->BindAction(TEXT("DropWeapon"), IE_Pressed, this, &ARIM_Player::InputDropWeapon);
 
 
 }
@@ -266,46 +266,87 @@ void ARIM_Player::InputRun()
 }
 
 
-
+//############### 펀치, 총알 발사 ###############
 //[공격/잡기 이벤트 처리 함수 구현] = 총알 발사 + 펀치
 void ARIM_Player::InputPunchGrab()
 {	
-	//만약 플레이어가 총을 들고 있으면
-	//총의 총구에서 총알을 발사한다.
-	if (compMeshGun->IsVisible() == true)
+	if (compMeshGun->IsVisible() == true) //만약 플레이어가 총을 들고 있으면(플레이어가 든 총이 보이면) -> 총에서 총알을 발사한다
 	{
-		FTransform trFire = compMeshGun->GetSocketTransform(TEXT("FirPos")); //총 스켈레톤에서 소켓 추가
-		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, trFire); //월드에서 ARIM_Bullet(총알) 가져온다
+		UE_LOG(LogTemp, Warning, TEXT("Fire!!!")); //임시로 텍스트 출력
 
-		//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation());
+		//FTransform trFire = compMeshGun->GetSocketTransform(TEXT("FirPos")); //총 스켈레톤에서 소켓 추가 ---> 처음에 총 스켈레톤메시일 때 사용 했던 코드
+		//GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, trFire); ////총의 총구에서 총알을 발사한다. 월드에서 ARIM_Bullet(총알) 가져온다 ---> 처음에 총 스켈레톤메시일 때 사용 했던 코드
 
+		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation());
+
+// 		ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy);//에너미 형변환 했을 때 널인지 아닌지 꼭 체크해야함
+// 		if(Enemy != nullptr)
+// 		{
+// 			Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출 -----> 총알에서 데미지 들어가야함!!!★★★★★★★★
+// 		}
 	}
-	else //만약 플레이어가 총을 들고 있지 않을 때
-	{
-		if (isInputPunchGrab == true) //isInputPunchGrab 키를 누르면
+	else if (compMeshLollipop->IsVisible() == true) //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있으면(플레이어가 든 롤리팝이 보이면) -> 롤리팝으로 공격한다
+	{	
+		if (isInputPunchGrab == true) //플레이어가 롤리팝을 든 상태로 isInputPunchGrab 키를 누르면
 		{
-			//펀치 애니메이션을 플레이한다
+			UE_LOG(LogTemp, Warning, TEXT("Lollipop!!")); //롤리팝 애니메이션을 플레이한다. 임시로 텍스트 출력
 
 			ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
 			Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
 		}
 	}
+	else  //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 
+	{
+		//만약에 
+		if (isInputPunchGrab == true) //isInputPunchGrab 키를 누르면
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Punch!!")); //임시로 텍스트 출력
+
+			ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
+			Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+
+		}
+		
+		//플레이어 애니메이션 몽타주 중 '펀치' 애니메이션 재생
+		URIM_PlayerAnim* animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
+		//animPlayer->PlayPlayerAnim(TEXT("Punch"), 0);
+	
+
+	}
 }
 
-
-
-//[무기 버리기 이벤트 처리 함수 구현]
-void ARIM_Player::InputDropWeapon()
+//[BeginOverlap 플레이어 오른주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//스켈무기, 스태틱무기 2개 필요
-	
-	//플레이어가 가지고 있는 무기 컴포넌트가 안보이게한다
-	if (compMeshGun->IsVisible())
+	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
+	if (OtherActor->GetName().Contains(TEXT("Enemy")))
 	{
-		GetWorld()->SpawnActor<ARIM_Gun>(Gun, GetActorLocation(), GetActorRotation());	
+		isInputPunchGrab = true;
+		currEnemy = OtherActor; //부딛힌 OtherActor 이름이 enemy를 포함하고 있는 액터를 currEnemy라고 함
 	}
-	compMeshGun->SetVisibility(false);
-	//무기가 플레이어 위치(바닥)에 스폰된다
+}
+
+//[BeginOverlap 플레이어 왼주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
+	if (OtherActor->GetName().Contains(TEXT("Enemy")))
+	{
+		isInputPunchGrab = true;
+		currEnemy = OtherActor; //부딛힌 OtherActor 이름이 enemy를 포함하고 있는 액터를 currEnemy라고 함
+	}
+}
+
+//[EndOverlap 플레이어 오른주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	isInputPunchGrab = false;
+}
+
+//[EndOverlap 플레이어 왼주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	isInputPunchGrab = false;
 }
 
 
@@ -313,38 +354,19 @@ void ARIM_Player::InputDropWeapon()
 //[플레이어가 들고 있는 총이 안 보였다 보이는 함수 구현]
 void ARIM_Player::VisibleGun()
 {
-	//GetMesh()->SetSkeletalMesh(상호작용한)
+	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+}
 
-	compMeshGun->SetVisibility(true);
-	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-
+//[플레이어가 들고 있는 롤리팝이 안 보였다 보인은 함수 구현]
+void ARIM_Player::VisibleLollipop()
+{
+	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
 }
 
 
-
-// [드롭킥/던지기 이벤트 처리 함수 구현]
-// void ARIM_Player::InputKickToss()
-// {
-// 	//드롭킥 에니메이션을 플레이한다
-//  
-// 	ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
-// 	Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
-// }
-
-
-
-// [박치기 이벤트 처리 함수 구현]
-// void ARIM_Player::InputHeadbutt()
-// {
-// 	//박치기 애니메이션을 플레이한다.
-// 
-// 	ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
-// 	Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
-// }
-
-
-
-//[???]
+//[총, 롤리팝 관련 ??? 함수 구현] //★★★ 잘 모르겠음. 왜 만들어야 할까?
 void ARIM_Player::EnableInput(APlayerController* PlayerController)
 {
 	Super::EnableInput(PlayerController);
@@ -355,104 +377,118 @@ void ARIM_Player::EnableInput(APlayerController* PlayerController)
 
 
 
-//[플레이어 주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//############### 킥 ###############
+// [드롭킥/던지기 이벤트 처리 함수 구현]
+void ARIM_Player::InputKickToss()
+{
+	if(isInputKickToss == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Kick!!!")); //드롭킥 에니메이션을 플레이한다. 임시로 텍스트 출력
+
+		ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
+		Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+	}
+}
+
+//[플레이어 킥 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
 	if (OtherActor->GetName().Contains(TEXT("Enemy")))
 	{
-
-		isInputPunchGrab = true;
-		currEnemy = OtherActor;
+		isInputKickToss = true;
+		currEnemy = OtherActor; //부딛힌 OtherActor 이름이 enemy를 포함하고 있는 액터를 currEnemy라고 함
 	}
 }
 
-//[플레이어 주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-void ARIM_Player::collisionPunchLBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//[플레이어 킥 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionKickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	isInputKickToss = false; 
+}
+
+
+//############### 박치기 ###############
+// [박치기 이벤트 처리 함수 구현]
+void ARIM_Player::InputHeadbutt()
+{
+	if (isInputHeadbutt == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Headbutt!!!")); //박치기 애니메이션을 플레이한다. 임시로 텍스트 출력
+
+		ASH_Enemy* Enemy = Cast<ASH_Enemy>(currEnemy); //에너미 형변환
+		Enemy->fsm->OnDamageProcess(); //에너미(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+	}
+}
+
+//[플레이어 박치기 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionHeadbuttBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
 	if (OtherActor->GetName().Contains(TEXT("Enemy")))
 	{
-		isInputPunchGrab = true;
-		currEnemy = OtherActor;
+		isInputHeadbutt = true;
+		currEnemy = OtherActor; //부딛힌 OtherActor 이름이 enemy를 포함하고 있는 액터를 currEnemy라고 함
 	}
 }
 
-//[플레이어 주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-void ARIM_Player::collisionPunchREndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//[플레이어 박치기 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
+void ARIM_Player::collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	isInputPunchGrab = false;
-}
-
-//[플레이어 주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-void ARIM_Player::collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	isInputPunchGrab = false;
+	isInputHeadbutt = false;
 }
 
 
 
-//[플레이어 킥 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-// void ARIM_Player::collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//############### 무기 바닥에 버리기 ###############
+// [무기 버리기 이벤트 처리 함수 구현]
+// void ARIM_Player::InputDropWeapon()
 // {
-// 	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
-// 	if (OtherActor->GetName().Contains(TEXT("Enemy")))
+// 	//플레이어가 총을 들고 있을 때 --->위에 InputPunchGrab 함수 구현부에 추가해야 하나?
+// 	//InputDropWeapon 키를 누르면...? --->위에 InputPunchGrab 함수 구현부에 추가해야 하나?
+// 	if (compMeshGun->SetVisibility(false)) //플레이어가 들고 있는 총 컴포넌트가 안보이게한다
 // 	{
-// 		isInputKickToss = true;
-// 		currEnemy = OtherActor;
-// 
+// 		//총이 플레이어 위치(바닥)에 스폰된다
+// 		GetWorld()->SpawnActor<AGunWeapon>(weaponGun, GetActorLocation(), GetActorRotation());
+// 	}
+// 	//플레이어가 롤리팝을 들고 있을 때 --->위에 InputPunchGrab 함수 구현부에 추가해야 하나?
+// 	//InputDropWeapon 키를 누르면...? --->위에 InputPunchGrab 함수 구현부에 추가해야 하나?
+// 	else if(compMeshLollipop->SetVisibility(false)) //플레이어가 들고 있는 롤리팝 컴포넌트가 안보이게 한다
+// 	{
+// 		//롤리팝이 플레이어 위치(바닥)에 스폰된다
+// 		GetWorld()->SpawnActor<ALollipopWeapon>(weaponLol, GetActorLocation(), GetActorRotation());
+// 	}
+// 	else
+// 	{
+// 		return false;
 // 	}
 // }
+		
 
-//[플레이어 킥 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-// void ARIM_Player::collisionKickEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-// {
-// 	isInputKickToss = false;
-// }
-
-
-
-//[플레이어 박치기 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-// void ARIM_Player::collisionHeadbuttBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-// {
-// 	//만약에 부딛힌 OtherActor의 이름이 enemy를 포함하고있으면
-// 	if (OtherActor->GetName().Contains(TEXT("Enemy")))
-// 	{
-// 		isInputHeadbutt = true;
-// 		currEnemy = OtherActor;
-//  
-// 	}
-// }
-
-//[플레이어 박치기 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
-// void ARIM_Player::collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-// {
-// 	isInputHeadbutt = false;
-// }
-
-
-
+//############### 플레이어 HP, 데미지 ###############
 //[플레이어가 공격 당하면 에너미에서 호출하는 함수] 플레이어의 데미지니까 플레이어에서 구현
 void ARIM_Player::OnDamageProcess()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Damaged!!!")); //임시로 텍스트 출력
+	UE_LOG(LogTemp, Warning, TEXT("Player Damaged!!!")); //임시로 텍스트 출력
 	
-	if (HP > 0)
+	HP--; //플레이어 HP 1씩 감소
+	
+	if (HP <= 0) //만약 에너미한테 5번 공격 받으면(HP가 5이고 공격 받을때마다 HP가 1씩 줄어드니까 5번 공격 받는 것은 HP가 0이 되는 것과 동일하다)
 	{
-		HP--; //플레이어 HP 1씩 감소
-	}
-	else //플레이어가 에너미한테 5번 공격 받으면(HP가 5이고 공격 받을때마다 HP가 1씩 줄어드니까 5번 공격 받는 것은 HP가 0이 되는 것과 동일하다)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("I'll be back!")); //플레이어가 기절한다(애니메이션). 임시로 텍스트 출력
-		
-		//기절하면 대미지 않들어감
+		UE_LOG(LogTemp, Warning, TEXT("Player down!")); //플레이어가 기절한다(애니메이션). 임시로 텍스트 출력
+
+		//에너미의 데미지가 들어가지 않는다. HP가 감소하지 않는다?
 
 		currentTime += GetWorld()->GetDeltaSeconds(); //현재시간 + 델타타임 = 현재 누적시간
 		if (currentTime > 5) //플레이어가 기절한 시간(5초)가 지나면
 		{	
-			UE_LOG(LogTemp, Warning, TEXT("Hello!")); //플레이어가 일어난다(애니메이션). 임시로 텍스트 출력
+			UE_LOG(LogTemp, Warning, TEXT("Player up!")); //플레이어가 일어난다(애니메이션). 임시로 텍스트 출력
 			currentTime = 0; //현재 시간을 0초로 초기화 한다
 			HP = 5; //플레이어의 HP를 5초로 초기화 한다
 		}
 	}
 }
+
+//int a = 10;
+//int* b = &a;
+//*b = 20;
