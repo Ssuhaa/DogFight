@@ -81,6 +81,18 @@ void ASH_Enemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
+	if (bplayerAttack == true)
+	{
+		currentTime +=DeltaTime;
+		if (currentTime > delayTime)
+		{
+			player->OnDamageProcess();
+			currentTime = 0;
+			bplayerAttack = false;
+		}
+	}
+
+
 }
 
 // Called to bind functionality to input
@@ -117,10 +129,15 @@ void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		}
 		else if (OtherActor->GetName().Contains(TEXT("Player")))
 		{
+			player = Cast<ARIM_Player>(OtherActor);
+			if(player != nullptr)
+			{
+				bplayerAttack = true;
+
+				player->DamagePlay();
+			}
 			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
 			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
-			player = Cast<ASH_Player>(OtherActor);
-			player->OnDamageProcess();
 		}
 	}
 }

@@ -37,12 +37,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAir = false;
 
-	//플레이어 애니메이션 몽타주
+	//"섞인 애니메이션" 플레이어 애니메이션 몽타주
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* playerMontage;
-// 
-// 	//플레이어 애니메이션 재생 함수
- 	//UFUNCTION(BlueprintImplementableEvent)
+
+	//"섞이지 않은 애니메이션" 플레이어 애니메이션 몽타주
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* playerMontageTwo;
+ 
+ 	//"섞인 애니메이션" 플레이어 공격 애니메이션 재생 함수
+ 	UFUNCTION()
  	void PlayPlayerAnim(FString Name,int32 index); //저장할 섹션 이름을 받을 FName 타입 sectionName을 매개변수로 갖는 함수
+
+	//"섞이지 않은 애니메이션" 플레이어 공격 애니메이션 재생 함수
+	UFUNCTION()
+	void PlayPlayerTwoAnim(FString Name, int32 index); //저장할 섹션 이름을 받을 FName 타입 sectionName을 매개변수로 갖는 함수
+
+
 
 };

@@ -38,11 +38,11 @@ public:
 public:
 	//걷기 속도
 	UPROPERTY(EditAnywhere)
-	float walkSpeed = 800; //★★★필요 시 수치 변경
+	float walkSpeed = 800; //▶필요 시 수치 변경
 
 	//달리기 속도 
 	UPROPERTY(EditAnywhere)
-	float runSpeed = 1500; //★★★추후 필요시 변경
+	float runSpeed = 1500; //▶추후 필요시 변경
 
 	//이동 방향
 	FVector direction;
@@ -81,13 +81,17 @@ public:
 
 
 public:
-	//[총 스태틱메시 컴포넌트 멤버 변수 추가]
+	//[총 스태틱메시 컴포넌트 추가]
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMeshGun;
 
 	//[롤리팝 스태틱메시 컴포넌트 추가]
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMeshLollipop;
+
+	//[롤리팝 충돌 컴포넌트(충돌체) 추가]
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* compCollisionLollipop;
 
 public:
 	//[BulletFactory 총알 공장 속성 추가]
@@ -105,7 +109,7 @@ public:
 	void VisibleLollipop();
 
 	//[총, 롤리팝 관련 ??? 함수 선언]
-	virtual void EnableInput(class APlayerController* PlayerController) override; //★★★ 잘 모르겠음..
+	virtual void EnableInput(class APlayerController* PlayerController) override; //★★★ 잘 모르겠음...
 
 public:
 	//[플레이어 오른손 펀치 충돌 컴포넌트 변수 추가]
@@ -138,7 +142,7 @@ public:
 	UFUNCTION()
 	void collisionPunchLEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	//[[2]플레이어	킥 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
+	//[[2]플레이어 킥 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
 	//킥 콜리전 컴포넌트 변수의 멤버 함수 OnComponentBeginOverlap과 OnComponentEndOverlap 델리케이트 호출
 	UFUNCTION()
 	void collisionKickBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -151,6 +155,11 @@ public:
 	UFUNCTION()
 	void collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	//[2]플레이어가 든 롤리팝과 에너미가 충도로 시 실행 될 함수 선언]
+	UFUNCTION()
+	void collisonLollipopBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void collisonLollipopEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
 	//[PunchGrab 버튼 관련...?] 
 	bool isInputPunchGrab = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
@@ -160,6 +169,9 @@ public:
 
 	//[Headbutt 버튼 관련...?]
 	bool isInputHeadbutt = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
+
+	//[DropWeapon 버튼 관려...?]
+	bool isInputDropWeapon = false; //★★★ 잘 모르겠음. 왜 만들어야 할까?
 
 	//[적 관련...???]
 	UPROPERTY()
@@ -175,13 +187,22 @@ public:
 	//[현재시간]
 	float currentTime = 0;
 
- 	//[바닥에 총 생성(무기버리기 관련)]
-// 	UPROPERTY(EditAnywhere)
-//  TSubclassOf<class AGunWeapon> weaponGun;
+  	//[바닥에 총 생성(무기버리기 관련)]
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AGunWeapon> weaponGun;
 
 	//[바닥에 롤리팝 생성(무기버리기 관련)]
-// 	UPROPERTY(EditAnywhere)
-// 	TSubclassOf<class ALollipopWeapon> weaponLol;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ALollipopWeapon> weaponLollipop;
 
+	//int32 rand=0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDown;
+
+	void DamagePlay();
+
+	UPROPERTY()
+	class URIM_PlayerAnim* animPlayer;
 
 };

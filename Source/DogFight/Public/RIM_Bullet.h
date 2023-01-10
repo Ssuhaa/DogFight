@@ -37,7 +37,8 @@ public:
 	class UProjectileMovementComponent* compMovement;
 
 public:
-	//[총알 콜리전과 에너미가 충돌 시 함수]
+	//[델리케이트] ★★★ 완벽하게 이해하지 못 함
+	//[[2]총알 콜리전과 에너미가 충돌 시 실행 될 함수 선언]
 	UFUNCTION()
 	void collisionBulletBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

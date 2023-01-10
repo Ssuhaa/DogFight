@@ -48,11 +48,16 @@ void URIM_PlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-//[플레이어 애니메이션 몽타주]
-
+//[섞인 애니메이션 ---> 플레이어 공격 몽타주 애니메이션 재생 함수 구현] //★★★???
 void URIM_PlayerAnim::PlayPlayerAnim(FString Name, int32 index)
 {
-	//Montage_Play();
-	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, index);
-	player->PlayAnimMontage(playerMontage, 1.0f, FName(*sectionName));
+	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, index); //섹션네임(한글+숫자 조합)
+	player->PlayAnimMontage(playerMontage, 1.0f, FName(*sectionName)); //플레이어에서 몽타주를 가져 온다???
+}
+
+//[섞이지 않는 애니메이션 ---> 플레이어 공격 몽타주 애니메이션 재생 함수 구현] //★★★???
+void URIM_PlayerAnim::PlayPlayerTwoAnim(FString Name, int32 index)
+{
+	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, index); //섹션네임(한글+숫자 조합)
+	player->PlayAnimMontage(playerMontageTwo, 1.0f, FName(*sectionName)); //플레이어에서 몽타주를 가져 온다???
 }

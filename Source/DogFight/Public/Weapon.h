@@ -50,4 +50,5 @@ public:
 	class AActor* overlapActor;
 	
 	FString Soketname;
+
 };
