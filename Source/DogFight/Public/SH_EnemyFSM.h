@@ -78,7 +78,10 @@ public:
 	class ASH_Enemy* me; //소유액터 변수 
 
 	UPROPERTY(EditAnywhere,Category=FSM)
-	float attackRange = 160.0f; // 공격범위 변수 
+	float attackRange = 150.0f; // 공격범위 변수 
+	float GunRange = 400.0f;
+	float LollipopRange = 120.0f;
+	float defaultRange = 150.0;
 
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float attackDelayTime = 2.0f; //공격대기시간 변수
@@ -129,4 +132,8 @@ public:
 	TSubclassOf<class ALollipopWeapon> Lollipop;
 
 	void removeDieTarget();
+
+	UPROPERTY()
+	class AAIController* AI;
+
 };

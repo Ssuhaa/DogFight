@@ -34,6 +34,9 @@ public:
 	UPROPERTY()
 	class ASH_Enemy* Enemy;
 
+	UPROPERTY()
+	class AWeapon* weapon;
+
 	float delayDieTime;
 
 };
