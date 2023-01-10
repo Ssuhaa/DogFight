@@ -6,6 +6,7 @@
 #include "SH_Enemy.h"
 #include "SH_Player.h"
 #include "SH_EnemyFSM.h"
+#include "Weapon.h"
 
 
 // Sets default values
@@ -15,7 +16,7 @@ AKillZone::AKillZone()
 	PrimaryActorTick.bCanEverTick = true;
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box")); 
 	SetRootComponent(compBox);
-	compBox->SetBoxExtent(FVector(2000, 500, 100));
+	compBox->SetBoxExtent(FVector(2500, 2500, 200));
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +48,11 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 		Enemy->fsm->stateChangeMontage(EEnemyState::Die,TEXT("Die"));
 	
+	}
+	weapon = Cast<AWeapon>(OtherActor);
+	if (weapon != nullptr)
+	{
+		weapon->Destroy();
 	}
 	
 

@@ -10,6 +10,7 @@
 #include "Weapon.h"
 #include "GunWeapon.h"
 #include "LollipopWeapon.h"
+#include <AIModule/Classes/AIController.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -41,7 +42,7 @@ void USH_EnemyFSM::BeginPlay()
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	addarray();
 	RandomTarget();
-
+	AI = Cast<AAIController>(me->GetController());
 }
 
 // Called every frame
@@ -94,28 +95,41 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 	{
 		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
 		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
+		EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
 		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{
+// 			if (Aireuslt == EPathFollowingRequestResult::AlreadyAtGoal)
+// 			{
+// 				stateChange(EEnemyState::Attack);
+// 
+// 			}
+// 
 			if (P.Length() < attackRange)
 			{
-				stateChange(EEnemyState::Attack);
+				 stateChange(EEnemyState::Attack);
 			}
-			else
-			{
-				me->AddMovementInput(P.GetSafeNormal());
-			}
+// 			else
+// 			{
+// 				me->AddMovementInput(P.GetSafeNormal());
+// 			}
 		}
 		else if (target->GetName().Contains(TEXT("Weapon")))
 		{
-
+			/*EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());*/
+// 			if (Aireuslt == EPathFollowingRequestResult::AlreadyAtGoal)
+// 			{
+// 				RandomTarget();
+// 
+// 			}
+// 
 			if (P.Length() < 120.0)
 			{
 				RandomTarget();
 			}
-			else
-			{
-				me->AddMovementInput(P.GetSafeNormal());
-			}
+// 			else
+// 			{
+// 				me->AddMovementInput(P.GetSafeNormal());
+// 			}
 
 
 		}
@@ -256,7 +270,7 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s-------->%s"), *enumPtr->GetNameStringByIndex((int32)mState), *enumPtr->GetNameStringByIndex((int32)state));
 	}
-
+	AI->StopMovement();
 	mState = state;
 	anim->animState = mState;
 	switch (state)
@@ -269,17 +283,17 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		if (anim->isGunget)
 		{
 			anim->bAttackPlay = false;
-			attackRange = 400;
+			attackRange = GunRange;
 		}
 		else if (anim->isLollipopget)
 		{
 			anim->bAttackPlay = false;
-			attackRange = 120;
+			attackRange = LollipopRange;
 		}
 		else
 		{
 			anim->bAttackPlay = true;
-			attackRange = 160.0;
+			attackRange = defaultRange;
 		}
 		break;
 	case EEnemyState::Attack:
@@ -287,17 +301,17 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		if (anim->isGunget)
 		{
 			anim->bAttackPlay = false;
-			attackRange = 400.0;
+			attackRange = GunRange;
 		}
 		else if (anim->isLollipopget)
 		{
 			anim->bAttackPlay = false;
-			attackRange = 120.0;
+			attackRange = LollipopRange;
 		}
 		else
 		{
 			anim->bAttackPlay = true;
-			attackRange = 160.0;
+			attackRange = defaultRange;
 		}
 		break;
 	case EEnemyState::Pickup:
@@ -313,7 +327,7 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s-------->%s"), *enumPtr->GetNameStringByIndex((int32)mState), *enumPtr->GetNameStringByIndex((int32)State));
 	}
-
+	AI->StopMovement();
 	mState = State;
 	anim->animState = mState;
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
