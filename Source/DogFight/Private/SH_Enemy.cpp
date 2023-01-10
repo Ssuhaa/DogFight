@@ -10,6 +10,7 @@
 #include "SH_Player.h"
 #include "EnemyAnim.h"
 #include <Components/CapsuleComponent.h>
+#include <NavigationInvokerComponent.h>
 
 
 // Sets default values
@@ -63,6 +64,9 @@ ASH_Enemy::ASH_Enemy()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	Navi = CreateDefaultSubobject<UNavigationInvokerComponent> (TEXT("NavigationInvoker"));
+	Navi->SetGenerationRadii(1000,2000);
 
 }
 

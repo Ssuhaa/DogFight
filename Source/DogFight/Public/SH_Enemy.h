@@ -52,6 +52,9 @@ public:
 	UPROPERTY()
 	class ARIM_Player* player;
 
+	UPROPERTY()
+	class UNavigationInvokerComponent* Navi;
+
 	float currentTime = 0;
 	float delayTime = 2.0f;
 
