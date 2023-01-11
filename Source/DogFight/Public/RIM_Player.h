@@ -77,7 +77,7 @@ public:
 	void InputHeadbutt();
 
 	//무기 버리기 이벤트 처리 함수
-	//void InputDropWeapon();
+	void InputDropWeapon();
 
 
 public:
@@ -94,8 +94,7 @@ public:
 	class USphereComponent* compCollisionLollipop;
 
 public:
-	//[BulletFactory 총알 공장 속성 추가]
-	//총알 공장
+	//[총알 공장]
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ARIM_Bullet> bulletFactory;
 
@@ -187,22 +186,34 @@ public:
 	//[현재시간]
 	float currentTime = 0;
 
-  	//[바닥에 총 생성(무기버리기 관련)]
+	//[플레이어 데미지, 기절 함수]
+	UFUNCTION()
+	void DamagePlay();
+
+	//[플레이어가 서있을 때 false, 누워있을 때 true]
+	bool isplayerDown = false;
+
+public:
+	//[애니메이션 관련...] ★★★ 무엇인지 모르겠다
+	UPROPERTY()
+	class URIM_PlayerAnim* animPlayer;
+
+	//[애니메이션 랜덤 재생 변수]
+	int32 rand;
+
+public:
+  	//[바닥에 총 생성 추가]
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AGunWeapon> weaponGun;
 
-	//[바닥에 롤리팝 생성(무기버리기 관련)]
+	//[바닥에 롤리팝 생성 추가]
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ALollipopWeapon> weaponLollipop;
 
-	//int32 rand=0;
+	//에너미
+	UPROPERTY(EditAnywhere)
+	class ASH_Enemy* Enemy;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bDown;
 
-	void DamagePlay();
-
-	UPROPERTY()
-	class URIM_PlayerAnim* animPlayer;
 
 };

@@ -54,5 +54,4 @@ public:
 	void PlayPlayerTwoAnim(FString Name, int32 index); //저장할 섹션 이름을 받을 FName 타입 sectionName을 매개변수로 갖는 함수
 
 
-
 };
