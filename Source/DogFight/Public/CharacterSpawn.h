@@ -32,6 +32,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* Root;
 
+	UPROPERTY(EditAnywhere)
+	float SpawnCircleSize = 600;
 
 	float currTime = 0;
 	

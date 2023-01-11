@@ -58,7 +58,7 @@ public:
 	float currentTime = 0;
 	float delayTime = 2.0f;
 
-	bool bplayerAttack = false;
+	//bool bplayerAttack = false;
 
 	UFUNCTION()
 	void GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname);

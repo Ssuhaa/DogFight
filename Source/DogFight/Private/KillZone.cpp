@@ -45,9 +45,7 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 	Enemy = Cast<ASH_Enemy>(OtherActor);
 	if (Enemy != nullptr)
 	{
-	
 		Enemy->fsm->stateChangeMontage(EEnemyState::Die,TEXT("Die"));
-	
 	}
 	weapon = Cast<AWeapon>(OtherActor);
 	if (weapon != nullptr)

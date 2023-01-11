@@ -85,16 +85,16 @@ void ASH_Enemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	if (bplayerAttack == true)
-	{
-		currentTime +=DeltaTime;
-		if (currentTime > delayTime)
-		{
-			player->OnDamageProcess();
-			currentTime = 0;
-			bplayerAttack = false;
-		}
-	}
+// 	if (fsm->bplayerAttack == true)
+// 	{
+// 		currentTime +=DeltaTime;
+// 		if (currentTime > delayTime)
+// 		{
+// 			player->OnDamageProcess();
+// 			currentTime = 0;
+// 			fsm->bplayerAttack = false;
+// 		}
+// 	}
 
 
 }
@@ -109,41 +109,41 @@ void ASH_Enemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != fsm->me)
-	{
-		if (OtherActor->GetName().Contains(TEXT("Enemy")))
-		{
-			currEnemy = Cast<ASH_Enemy>(OtherActor);
-			if(fsm->target == currEnemy)
-			{
-				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Damage) return;
-				if (currEnemy->fsm->mState != EEnemyState::Down && currEnemy->fsm->mState != EEnemyState::Die && currEnemy->fsm->mState != EEnemyState::Damage)
-				{
-					currEnemy->fsm->OnDamageProcess();
-				}
-				else
-				{
-					fsm->RandomTarget();
-					fsm->stateChange(EEnemyState::Idle);
-				}
-
-
-			}
-
-		}
-		else if (OtherActor->GetName().Contains(TEXT("Player")))
-		{
-			player = Cast<ARIM_Player>(OtherActor);
-			if(player != nullptr)
-			{
-				bplayerAttack = true;
-
-				player->DamagePlay();
-			}
-			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
-			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
-		}
-	}
+// 	if (OtherActor != fsm->me)
+// 	{
+// 		if (OtherActor->GetName().Contains(TEXT("Enemy")))
+// 		{
+// 			currEnemy = Cast<ASH_Enemy>(OtherActor);
+// 			if(fsm->target == currEnemy)
+// 			{
+// 				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Damage) return;
+// 				if (currEnemy->fsm->mState != EEnemyState::Down && currEnemy->fsm->mState != EEnemyState::Die && currEnemy->fsm->mState != EEnemyState::Damage)
+// 				{
+// 					currEnemy->fsm->OnDamageProcess();
+// 				}
+// 				else
+// 				{
+// 					fsm->RandomTarget();
+// 					fsm->stateChange(EEnemyState::Idle);
+// 				}
+// 
+// 
+// 			}
+// 
+// 		}
+// 		else if (OtherActor->GetName().Contains(TEXT("Player")))
+// 		{
+// 			player = Cast<ARIM_Player>(OtherActor);
+// 			if(player != nullptr)
+// 			{
+// 				bplayerAttack = true;
+// 
+// 				player->DamagePlay();
+// 			}
+// 			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
+// 			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
+// 		}
+// 	}
 }
 
 void ASH_Enemy::GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname)

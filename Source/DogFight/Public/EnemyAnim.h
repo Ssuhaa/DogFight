@@ -28,4 +28,10 @@ public:
 	bool isLollipopget =false;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	bool isGunget = false;
+
+	UFUNCTION()
+	void AnimNotify_Attack();
+	
+	UPROPERTY()
+	class ASH_Enemy* me;
 };

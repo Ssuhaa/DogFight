@@ -57,7 +57,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category=FSM)
 	class AActor* target; // 플레이어 타겟 변수 선언
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TArray<class AActor*> targets; //모든 액터 배열 받을 변수
 
 	UPROPERTY()
@@ -67,12 +67,10 @@ public:
 	class ASH_Enemy* enemy; // 내가아닌 에너미 변수
 
 	UPROPERTY(BlueprintReadOnly)
-	class ASH_Player* player; //플레이어 변수
+	class ARIM_Player* player; //플레이어 변수
 
 	UPROPERTY(BlueprintReadOnly)
 	class AWeapon* weapon;
-
-	float dir = 2000.0f; // 나와 타겟의 거리
 
 	UPROPERTY()
 	class ASH_Enemy* me; //소유액터 변수 
@@ -121,6 +119,15 @@ public:
 	void addWeaponArray();
 	void DropWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void TargetDotAttack();
+
+	UPROPERTY(EditAnywhere)
+	float traceRange = 200;
+	UPROPERTY(EditAnywhere)
+	float EnemyAngle = 30;
+
+
 	bool isDelay(float delaytime);
 
 	FVector P;
@@ -136,4 +143,5 @@ public:
 	UPROPERTY()
 	class AAIController* AI;
 
+	bool bplayerAttack = false;
 };

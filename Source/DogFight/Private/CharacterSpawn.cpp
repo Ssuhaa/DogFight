@@ -31,7 +31,7 @@ ACharacterSpawn::ACharacterSpawn()
 		SpawnPosition[i]->SetupAttachment(RootComponent);
 		FVector V = FVector::ForwardVector;
 		V = V.RotateAngleAxis(i * (360 / 7), FVector::UpVector);
-		SpawnPosition[i]->SetRelativeLocation(V * 800);
+		SpawnPosition[i]->SetRelativeLocation(V * SpawnCircleSize);
 	}
 	
 }
@@ -42,7 +42,7 @@ void ACharacterSpawn::BeginPlay()
 	Super::BeginPlay();
 	for (int32 i = 0; i < 6; i++)
 	{
-		GetWorld()->SpawnActor<ASH_Enemy>(EnemyArray[i], SpawnPosition[i]->GetComponentTransform());
+		GetWorld()->SpawnActor<ASH_Enemy>(EnemyArray[i], SpawnPosition[i]->GetComponentLocation(), SpawnPosition[i]->GetComponentRotation());
 	}
 }
 

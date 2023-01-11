@@ -2,7 +2,6 @@
 
 
 #include "SH_EnemyFSM.h"
-#include <SH_Player.h>
 #include <SH_Enemy.h>
 #include <Kismet/GameplayStatics.h>
 #include <EnemyAnim.h>
@@ -11,6 +10,7 @@
 #include "GunWeapon.h"
 #include "LollipopWeapon.h"
 #include <AIModule/Classes/AIController.h>
+#include "RIM_Player.h"
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -89,49 +89,24 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 
 void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
-
-	// 목적지를 타겟의 액터 로케이션으로 설정
 	if (target != nullptr)
 	{
+		EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
 		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
 		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
-		EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
 		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{
-// 			if (Aireuslt == EPathFollowingRequestResult::AlreadyAtGoal)
-// 			{
-// 				stateChange(EEnemyState::Attack);
-// 
-// 			}
-// 
 			if (P.Length() < attackRange)
 			{
-				 stateChange(EEnemyState::Attack);
+				stateChange(EEnemyState::Attack);
 			}
-// 			else
-// 			{
-// 				me->AddMovementInput(P.GetSafeNormal());
-// 			}
 		}
 		else if (target->GetName().Contains(TEXT("Weapon")))
 		{
-			/*EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());*/
-// 			if (Aireuslt == EPathFollowingRequestResult::AlreadyAtGoal)
-// 			{
-// 				RandomTarget();
-// 
-// 			}
-// 
 			if (P.Length() < 120.0)
 			{
 				RandomTarget();
 			}
-// 			else
-// 			{
-// 				me->AddMovementInput(P.GetSafeNormal());
-// 			}
-
-
 		}
 	}
 	else
@@ -144,12 +119,10 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 
 void USH_EnemyFSM::PickupState()
 {
-
 	if (isDelay(PickupDelayTime))
 	{
 		stateChange(EEnemyState::Idle);
 	}
-
 }
 
 void USH_EnemyFSM::AttackState()//공격 상태 함수정의
@@ -158,14 +131,12 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수정의
 	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));
 	if (isDelay(attackDelayTime))
 	{
-
 		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 		if (distance > attackRange)
 		{
 			stateChange(EEnemyState::Move);
 		}
 	}
-
 }
 
 void USH_EnemyFSM::DamageState() //피격 상태 함수정의
@@ -277,6 +248,11 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	{
 	case EEnemyState::Idle:
 		anim->Montage_Stop(damageDelayTime);
+		addarray();
+		if (me->compMesh != nullptr)
+		{
+			removeWeaponArray();
+		}
 		RandomTarget();
 		break;
 	case EEnemyState::Move:
@@ -389,7 +365,39 @@ void USH_EnemyFSM::removeDieTarget() // 죽은 타겟 지우기
 		{
 			currentenemy->fsm->targets.Remove(me);
 			currentenemy->fsm->RandomTarget();
-
 		}
 	}
+}
+
+void USH_EnemyFSM::TargetDotAttack()
+{
+	for (int32 i = 0; i < targets.Num(); i++)
+	{
+		FVector dir = targets[i]->GetActorLocation() - me->GetActorLocation();
+		float dotValue = FVector::DotProduct(me->GetActorForwardVector(), dir.GetSafeNormal());
+		float angle = UKismetMathLibrary::DegAcos(dotValue);
+		if (angle < EnemyAngle && dir.Length() < traceRange)
+		{
+			enemy = Cast<ASH_Enemy>(targets[i]);
+			if (enemy != nullptr)
+			{
+				if (enemy->fsm->mState != EEnemyState::Down && enemy->fsm->mState != EEnemyState::Die && enemy->fsm->mState != EEnemyState::Damage)
+				{
+					enemy->fsm->OnDamageProcess();
+				}
+				else
+				{
+					RandomTarget();
+					stateChange(EEnemyState::Idle);
+				}
+			}
+			player = Cast<ARIM_Player>(targets[i]);
+			if (player != nullptr)
+			{
+				bplayerAttack = true;
+				player->DamagePlay();
+			}
+		}
+	}
+
 }
