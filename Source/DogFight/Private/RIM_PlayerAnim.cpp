@@ -15,7 +15,7 @@ void URIM_PlayerAnim::NativeBeginPlay()
 	//2.플레이어로 캐스팅하기
 	 player = Cast<ARIM_Player>(pawn); //인클루드
 
-	
+
 }
 
 void URIM_PlayerAnim::NativeUpdateAnimation(float DeltaSeconds)

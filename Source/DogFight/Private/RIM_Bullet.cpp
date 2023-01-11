@@ -96,8 +96,12 @@ void ARIM_Bullet::collisionBulletBeginOverlap(UPrimitiveComponent* OverlappedCom
 		
 		if (Enemy != nullptr) //에너미가 아니다 = 에너미이다. 플레이어 총알에 맞은 것이 에너미가 아닐 수도 있기 때문에 에너미인지 확인 필요
 		{
-			Enemy->fsm->OnDamageProcess(); //SH_Enemy 클래스 Enemy(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
-			Destroy(); //총알 콜리전이 에너미와 충돌하면 파괴 된다
+			//에너미가 대기, 이동, 공격, 무기 들기 상태 일 때
+			if (Enemy->fsm->mState == EEnemyState::Idle || Enemy->fsm->mState == EEnemyState::Move || Enemy->fsm->mState == EEnemyState::Attack || Enemy->fsm->mState == EEnemyState::Pickup)
+			{
+				Enemy->fsm->OnDamageProcess(); //SH_Enemy 클래스 Enemy(액터 상속 받음)에서 fsm(액터 컴포넌트 상속 받음)에서 데미지프로세스 호출
+				Destroy(); //총알 콜리전이 에너미와 충돌하면 파괴 된다
+			}
 		}
 	}
 }
