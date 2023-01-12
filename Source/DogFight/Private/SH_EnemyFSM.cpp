@@ -38,11 +38,10 @@ void USH_EnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
-	// UEnemyAnim할당
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
-	addarray();
-	RandomTarget();
 	AI = Cast<AAIController>(me->GetController());
+	addTargetarray();
+	RandomTarget();
 }
 
 // Called every frame
@@ -189,7 +188,7 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 }
 
 
-void USH_EnemyFSM::addarray() //캐릭터와 웨폰 어레이 수집
+void USH_EnemyFSM::addTargetarray() //캐릭터와 웨폰 어레이 수집
 {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets);
 	addWeaponArray();
@@ -230,7 +229,7 @@ void USH_EnemyFSM::RandomTarget() //랜덤 타겟 찾기
 	}
 
 
-	me->SetActorRotation(FRotator::ZeroRotator);
+	//me->SetActorRotation(FRotator::ZeroRotator);
 }
 
 
@@ -248,8 +247,7 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	{
 	case EEnemyState::Idle:
 		anim->Montage_Stop(damageDelayTime);
-		addarray();
-		if (me->compMesh != nullptr)
+		if (anim->isLollipopget == true||anim->isGunget == true)
 		{
 			removeWeaponArray();
 		}
@@ -258,36 +256,32 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	case EEnemyState::Move:
 		if (anim->isGunget)
 		{
-			anim->bAttackPlay = false;
-			attackRange = GunRange;
+			WeaponAnimChange(false, GunRange);
+
 		}
 		else if (anim->isLollipopget)
 		{
-			anim->bAttackPlay = false;
-			attackRange = LollipopRange;
+			WeaponAnimChange(false, LollipopRange);
 		}
 		else
 		{
-			anim->bAttackPlay = true;
-			attackRange = defaultRange;
+			WeaponAnimChange(true, defaultRange);
 		}
 		break;
 	case EEnemyState::Attack:
 		currentTime = attackDelayTime;
 		if (anim->isGunget)
 		{
-			anim->bAttackPlay = false;
-			attackRange = GunRange;
+			WeaponAnimChange(false, GunRange);
+
 		}
 		else if (anim->isLollipopget)
 		{
-			anim->bAttackPlay = false;
-			attackRange = LollipopRange;
+			WeaponAnimChange(false, LollipopRange);
 		}
 		else
 		{
-			anim->bAttackPlay = true;
-			attackRange = defaultRange;
+			WeaponAnimChange(true, defaultRange);
 		}
 		break;
 	case EEnemyState::Pickup:
@@ -394,10 +388,25 @@ void USH_EnemyFSM::TargetDotAttack()
 			player = Cast<ARIM_Player>(targets[i]);
 			if (player != nullptr)
 			{
-				bplayerAttack = true;
-				player->DamagePlay();
+				if (player->isplayerDown != true)
+				{
+					bplayerAttack = true;
+					player->DamagePlay();
+					player->OnDamageProcess();
+				}
+				else
+				{
+					RandomTarget();
+					stateChange(EEnemyState::Idle);
+				}
 			}
 		}
 	}
 
+}
+
+void  USH_EnemyFSM::WeaponAnimChange(bool bAttackPlay, float Range)
+{
+	anim->bAttackPlay = bAttackPlay;
+	attackRange = Range;
 }

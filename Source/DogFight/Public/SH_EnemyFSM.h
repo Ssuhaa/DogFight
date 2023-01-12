@@ -114,7 +114,7 @@ public:
 
 	void stateChange(EEnemyState State); //mState 변경
 	void stateChangeMontage(EEnemyState State, FString Name);//mstate변경 및 몽타주 변경
-	void addarray();
+	void addTargetarray();
 	void removeWeaponArray();
 	void addWeaponArray();
 	void DropWeapon();
@@ -144,4 +144,6 @@ public:
 	class AAIController* AI;
 
 	bool bplayerAttack = false;
+
+	void WeaponAnimChange(bool bAttackPlay, float Range);
 };

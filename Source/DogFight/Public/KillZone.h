@@ -29,7 +29,7 @@ public:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	UPROPERTY()
-	class ASH_Player* Player;
+	class ARIM_Player* Player;
 
 	UPROPERTY()
 	class ASH_Enemy* Enemy;

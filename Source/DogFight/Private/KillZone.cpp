@@ -4,9 +4,9 @@
 #include "KillZone.h"
 #include <Components/BoxComponent.h>
 #include "SH_Enemy.h"
-#include "SH_Player.h"
 #include "SH_EnemyFSM.h"
 #include "Weapon.h"
+#include "RIM_Player.h"
 
 
 // Sets default values
@@ -17,6 +17,7 @@ AKillZone::AKillZone()
 	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box")); 
 	SetRootComponent(compBox);
 	compBox->SetBoxExtent(FVector(2500, 2500, 200));
+	compBox->SetCollisionProfileName(TEXT("OverlapAll"));
 }
 
 // Called when the game starts or when spawned
@@ -37,7 +38,7 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
-	Player = Cast<ASH_Player>(OtherActor);
+	Player = Cast<ARIM_Player>(OtherActor);
 	if (Player != nullptr)
 	{
 		//킬존에 플레이어가 닿이면 죽는 코드
