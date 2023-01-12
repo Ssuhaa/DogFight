@@ -99,11 +99,17 @@ public:
 	TSubclassOf<class ARIM_Bullet> bulletFactory;
 
 public:
-	//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 선언]
-	UFUNCTION()
-	void VisibleGun();
+	//플레이어에 총이 안 보이면 false, 보이면 true
+	bool isPlayerVisibleGun = false;
 
-	//[플레어이어가 들고 있는 롤리팝이 안 보였다 보이는 함수 선언]
+	//플레이어에 롤리팝이 안 보이면 false, 보이면 true
+	bool isPlayerVisibleLollipop = false;
+
+	//[플레이어에 총이 보이게 하는 함수 선언]
+ 	UFUNCTION()
+ 	void VisibleGun();
+
+	//[플레어이어에 롤리팝이 보이게 하는 함수 선언]
 	UFUNCTION()
 	void VisibleLollipop();
 
@@ -214,6 +220,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ASH_Enemy* Enemy;
 
+	//
+	class AWeapon* weapon;
 
 
 };

@@ -185,6 +185,7 @@ void ARIM_Player::BeginPlay()
 
 	//
 	animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
+
 }
 
 // Called every frame
@@ -438,20 +439,24 @@ void ARIM_Player::collisonLollipopEndOverlap(UPrimitiveComponent* OverlappedComp
 
 
 
-//[플레이어가 들고 있는 총이 안 보였다 보이는 함수 구현]
+//[플레이어에 총이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleGun()
 {
 	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
-
-
+	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
 	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+
+	isPlayerVisibleGun = true;
 }
 
-//[플레이어가 들고 있는 롤리팝이 안 보였다 보이는 함수 구현]
+//[플레이어에 롤리팝이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleLollipop()
 {
 	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
+	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
 	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+
+	isPlayerVisibleLollipop = true;
 }
 
 //[총, 롤리팝 관련 ??? 함수 구현] //★★★ 잘 모르겠음. 왜 만들어야 할까?
@@ -561,19 +566,25 @@ void ARIM_Player::collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedCom
 // [무기 버리기 이벤트 처리 함수 구현]
 void ARIM_Player::InputDropWeapon()
 {	
-		if (compMeshGun->IsVisible() == true) //만약 플레이어의 총이 보이면(플레이어가 총을 들고 있을 때)
+		if (isPlayerVisibleGun == true) //만약 플레이어의 총이 보이면(플레이어가 총을 들고 있을 때)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
-			//무기 Drop 애니메이션
 			compMeshGun->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 			GetWorld()->SpawnActor<AGunWeapon>(weaponGun, GetActorLocation() + FVector(-200,0,0), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다
-		}
-		else if (compMeshLollipop->IsVisible() == true) //만약 플레이어의 롤리팝이 보이면(플레이어가 롤리팝을 들고 있을 때)
-		{	
-			UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
+
+			UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
 			//무기 Drop 애니메이션
+
+			isPlayerVisibleGun = false;
+		}
+		else if (isPlayerVisibleLollipop == true) //만약 플레이어의 롤리팝이 보이면(플레이어가 롤리팝을 들고 있을 때)
+		{	
 			compMeshLollipop->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 			GetWorld()->SpawnActor<ALollipopWeapon>(weaponLollipop, GetActorLocation() + FVector(-200, 0, 0), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
+
+			UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
+			//무기 Drop 애니메이션
+
+			isPlayerVisibleLollipop = false;
 		}
 }
 
