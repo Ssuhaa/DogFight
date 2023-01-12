@@ -42,7 +42,7 @@ ASH_Enemy::ASH_Enemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// AnimInstance
-	ConstructorHelpers::FClassFinder<UAnimInstance> tempclass(TEXT("AnimBlueprint'/Game/BluePrint/ABP_EnemyAnim.ABP_EnemyAnim_C'")); //끝에 C를 써줘야 오류가 나지않음
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempclass(TEXT("AnimBlueprint'/Game/BluePrint/ABP_EnemyAnim.ABP_EnemyAnim_C'")); 
 	if (tempclass.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempclass.Class);
@@ -52,21 +52,13 @@ ASH_Enemy::ASH_Enemy()
 	compMesh->SetupAttachment(GetMesh(), TEXT("Prop_RSocket"));
 	compMesh->SetCollisionProfileName("Enemy");
 
-	//AttackCollision Hand
-	compAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
-	compAttack->SetupAttachment(GetMesh(), TEXT("Prop_RSocket"));
-	compAttack->SetBoxExtent(FVector(25));
-	//AttackCollision Foot
-	compAttack2 = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollisionfoot"));
-	compAttack2->SetupAttachment(GetMesh(), TEXT("Foot_Socket"));
-	compAttack2->SetBoxExtent(FVector(25));
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	Navi = CreateDefaultSubobject<UNavigationInvokerComponent> (TEXT("NavigationInvoker"));
-	Navi->SetGenerationRadii(1000,2000);
+	Navi->SetGenerationRadii(1000,1200);
 
 }
 
@@ -74,8 +66,6 @@ ASH_Enemy::ASH_Enemy()
 void ASH_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
-	compAttack->OnComponentBeginOverlap.AddDynamic(this, &ASH_Enemy::attackBoxBeginOverlap);
-	compAttack2->OnComponentBeginOverlap.AddDynamic(this, &ASH_Enemy::attackBoxBeginOverlap);//컴포넌트 비긴오버랩 델리게이트 바인딩
 	
 }
 
@@ -83,19 +73,6 @@ void ASH_Enemy::BeginPlay()
 void ASH_Enemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-// 	if (fsm->bplayerAttack == true)
-// 	{
-// 		currentTime +=DeltaTime;
-// 		if (currentTime > delayTime)
-// 		{
-// 			player->OnDamageProcess();
-// 			currentTime = 0;
-// 			fsm->bplayerAttack = false;
-// 		}
-// 	}
-
 
 }
 
@@ -107,48 +84,8 @@ void ASH_Enemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 
-void ASH_Enemy::attackBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-// 	if (OtherActor != fsm->me)
-// 	{
-// 		if (OtherActor->GetName().Contains(TEXT("Enemy")))
-// 		{
-// 			currEnemy = Cast<ASH_Enemy>(OtherActor);
-// 			if(fsm->target == currEnemy)
-// 			{
-// 				if (fsm->mState == EEnemyState::Down || fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Damage) return;
-// 				if (currEnemy->fsm->mState != EEnemyState::Down && currEnemy->fsm->mState != EEnemyState::Die && currEnemy->fsm->mState != EEnemyState::Damage)
-// 				{
-// 					currEnemy->fsm->OnDamageProcess();
-// 				}
-// 				else
-// 				{
-// 					fsm->RandomTarget();
-// 					fsm->stateChange(EEnemyState::Idle);
-// 				}
-// 
-// 
-// 			}
-// 
-// 		}
-// 		else if (OtherActor->GetName().Contains(TEXT("Player")))
-// 		{
-// 			player = Cast<ARIM_Player>(OtherActor);
-// 			if(player != nullptr)
-// 			{
-// 				bplayerAttack = true;
-// 
-// 				player->DamagePlay();
-// 			}
-// 			//!!!!!!!!if 플레이어가 맞았는지 유무 판단. 멀쩡한 상태면
-// 			//!!!!!!!!시간 지난 후 데미지 들어가는게 필요함.
-// 		}
-// 	}
-}
-
 void ASH_Enemy::GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname)
 {
 	compMesh->SetStaticMesh(WeaponMesh);
 	compMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform ,FName(*soketname));
-	//compMesh->SetupAttachment(compMesh, FName(*soketname));
 }
