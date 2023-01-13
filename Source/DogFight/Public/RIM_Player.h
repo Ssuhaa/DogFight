@@ -185,6 +185,10 @@ public:
 	//[에너미가 공격하면 플레이어가 데미지를 받는 함수] 플레이어의 데미지니까 플레이어에서 구현
 	UFUNCTION()
 	void OnDamageProcess();
+
+	//[플레이어 죽음]
+	UFUNCTION()
+	void Die();
 	
 	//[플레이어 HP 변수]
 	int32 HP = 5;
@@ -220,8 +224,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class ASH_Enemy* Enemy;
 
-	//
+	//바닥에 떨어진 무기
 	class AWeapon* weapon;
+
 
 
 };
