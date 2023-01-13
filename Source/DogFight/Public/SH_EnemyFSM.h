@@ -54,13 +54,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category=FSM)
 	class AActor* target; // 타겟 변수
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	TArray<class AActor*> targets; //타겟 변수 어레이
+	TArray<class AActor*> targets;//타겟 변수 어레이
 	UPROPERTY(BlueprintReadOnly)
 	class ASH_Enemy* enemy; // 내가 아닌 에너미
 	UPROPERTY(BlueprintReadOnly)
 	class ARIM_Player* player; //플레이어 변수
-	UPROPERTY(BlueprintReadOnly)
-	class AWeapon* weapon; // 무기 변수
 	UPROPERTY(BlueprintReadOnly)
 	class ASH_Enemy* me; //소유 에너미
 
@@ -102,7 +100,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	class UEnemyAnim* anim; //에너미 애니메이션
 	int32 randindex; //애니메이션 몽타주 인덱스
-	void WeaponAnimChange(bool bAttackPlay, float Range); //들고있는 웨폰에 따른 애님 전환 함수
+	void WeaponAnimChange(bool AttackPlay, float Range); //들고있는 웨폰에 따른 애님 전환 함수
 
 	void stateChange(EEnemyState State); //mState 변경
 	void stateChangeMontage(EEnemyState State, FString Name);//mstate 변경 및 몽타주 변경

@@ -80,7 +80,7 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 			else
 			{
 				SuccessMintime--;
-				SuccessSectime = 60;
+				SuccessSectime = 59;
 				currenttime = 0;
 			}
 
