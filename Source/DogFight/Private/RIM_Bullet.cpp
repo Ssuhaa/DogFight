@@ -32,6 +32,7 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	//충돌 비활성화
 	compMeshWeaponBullet = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponBulletMeshComp"));
 	compMeshWeaponBullet->SetupAttachment(compCollision);
+	compMeshWeaponBullet->SetRelativeLocation(FVector(10.260604f, 0, -28.190779f));
 	compMeshWeaponBullet->SetRelativeScale3D(FVector(0.25f)); //▶추후 필요시 변경. 블루프린트에서 조정 시 삭제
 	compMeshWeaponBullet->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -58,11 +59,11 @@ ARIM_Bullet::ARIM_Bullet() //생성자
 	//반동여부. bShouldBounce 속성 이용. true 할당
 	//반동 값. 반동이 있다면 탄성은 어느 정도 될지 Bounciness 속성 이용
 	//생명 시간 주기
-	compMovement->InitialSpeed = 1000; //▶추후 필요시 변경
-	compMovement->MaxSpeed = 1000; //▶추후 필요시 변경
+	compMovement->InitialSpeed = 2000; //▶추후 필요시 변경
+	compMovement->MaxSpeed = 5000; //▶추후 필요시 변경
 	compMovement->bShouldBounce = true;
-	compMovement->Bounciness = 0.8f; //▶추후 필요시 변경
-	InitialLifeSpan = 5.0f; //▶추후 필요시 변경
+	compMovement->Bounciness = 0.2f; //▶추후 필요시 변경
+	InitialLifeSpan = 1.0f; //▶추후 필요시 변경
 }
 
 // Called when the game starts or when spawned

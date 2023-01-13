@@ -186,7 +186,7 @@ void ARIM_Player::BeginPlay()
 	compCollisionLollipop->OnComponentBeginOverlap.AddDynamic(this, &ARIM_Player::collisonLollipopBeginOverlap);
 	compCollisionLollipop->OnComponentEndOverlap.AddDynamic(this, &ARIM_Player::collisonLollipopEndOverlap);
 
-	//
+	//애니메이션 관련 ★★★???
 	animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
 
 }
@@ -200,7 +200,7 @@ void ARIM_Player::Tick(float DeltaTime)
 	Move();
 
 	//[플레이어 기절 후 일어나는 코드]
-	if (isplayerDie == false && isplayerDown == true) //플레이어가 살아있고 + 플레이어가 넉다운되면
+	if (isplayerDie == false && isplayerDown == true) //플레이어가 살아있고 + 플레이어가 누워있으면
 	{
 		currentTime += GetWorld()->DeltaTimeSeconds; //현재시간 + 델타타임 = 현재 누적시간
 
@@ -211,19 +211,19 @@ void ARIM_Player::Tick(float DeltaTime)
 			animPlayer->PlayPlayerTwoAnim(TEXT("WakeUp"), rand);
 
 			UE_LOG(LogTemp, Error, TEXT("Player Wake up!")); // 확인용 텍스트 출력
-
-			isplayerDown = false; //플레이어를 일어나게한다
+						
 			currentTime = 0; //현재 시간을 0초로 초기화 한다
 			HP = 5; //플레이어의 HP를 5초로 초기화 한다
 
-			//기절할 때 무기 버리기 ★★★inputDropWeapon 은 F 버튼 눌렀을 때 무기 버리는 건데, 버튼 안 눌러도 버려지게 해야하는데 뭔가 더 필요해 보이는 느낌...
-			InputDropWeapon();
+			isplayerDown = false; //플레이어를 일어나게한다. 키 누르면 움직이게 하기 위해 추가
 		}
 	}
 
-	if (isplayerDie == true)
+	//[실패 위젯 띄운다]
+	if (isplayerDie == true) //플레이어가 죽은 상태일 때
 	{
 		currentTime += DeltaTime;
+
 		if (currentTime > 2)
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), "Result"); //결과 레벨(화면)을 연다.
@@ -285,8 +285,6 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		//[무기 버리기 이벤트 처리 함수 바인딩/호출]
 		PlayerInputComponent->BindAction(TEXT("DropWeapon"), IE_Pressed, this, &ARIM_Player::InputDropWeapon);
-
-
 }
 
 
@@ -403,7 +401,6 @@ void ARIM_Player::InputPunchGrab()
 	}
 }
 
-
 //[[3]BeginOverlap 플레이어 오른주먹 콜리전과 에너미가 충돌 시 실행할 내용/함수 구현]
 void ARIM_Player::collisionPunchRBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -451,43 +448,6 @@ void ARIM_Player::collisonLollipopBeginOverlap(UPrimitiveComponent* OverlappedCo
 void ARIM_Player::collisonLollipopEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	isInputPunchGrab = false;
-}
-
-
-
-//[플레이어에 총이 보이게 하는 함수 구현]
-void ARIM_Player::VisibleGun()
-{
-	//if (isPlayerVisibleGun == false || isPlayerVisibleLollipop == false) //플레이어가 아무것도 안 들었을 때 = 플레이어의 총이 안 보일 때 또는 플레이어의 롤리팝이 안 보일 때
-	//{
-		compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
-		//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
-		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
-
-		isPlayerVisibleGun = true;
-	//}
-}
-
-//[플레이어에 롤리팝이 보이게 하는 함수 구현]
-void ARIM_Player::VisibleLollipop()
-{
-	//if (isPlayerVisibleGun == false || isPlayerVisibleLollipop == false) //플레이어가 아무것도 안 들었을 때 = 플레이어의 총이 안 보일 때 또는 플레이어의 롤리팝이 안 보일 때
-	//{
-		compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
-		//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
-		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
-
-		isPlayerVisibleLollipop = true;
-	//}	
-}
-
-//[총, 롤리팝 관련 ??? 함수 구현] //★★★ 잘 모르겠음. 왜 만들어야 할까?
-void ARIM_Player::EnableInput(APlayerController* PlayerController)
-{
-	Super::EnableInput(PlayerController);
-
-	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사. Weapon에 바인딩 넘겼다가 플레이어가 가져옴
-	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
 }
 
 
@@ -584,6 +544,39 @@ void ARIM_Player::collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedCom
 
 
 
+//[플레이어에 총이 보이게 하는 함수 구현]
+void ARIM_Player::VisibleGun()
+{
+	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
+	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+
+	isPlayerVisibleGun = true;
+
+}
+
+//[플레이어에 롤리팝이 보이게 하는 함수 구현]
+void ARIM_Player::VisibleLollipop()
+{
+	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
+	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+
+	isPlayerVisibleLollipop = true;
+
+}
+
+//[총, 롤리팝 관련 ??? 함수 구현] //★★★ 잘 모르겠음. 왜 만들어야 할까?
+void ARIM_Player::EnableInput(APlayerController* PlayerController)
+{
+	Super::EnableInput(PlayerController);
+
+	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사. Weapon에 바인딩 넘겼다가 플레이어가 가져옴
+	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
+}
+
+
+
 //############### 무기 바닥에 버리기 ###############
 // [무기 버리기 이벤트 처리 함수 구현]
 void ARIM_Player::InputDropWeapon()
@@ -595,7 +588,6 @@ void ARIM_Player::InputDropWeapon()
 			//GetWorld()->SpawnActor<AGunWeapon>(weaponGun, GetActorLocation() + FVector(-200,0,0), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다
 			ItemSpawn->CreateWeapon(int32(EWeaponType::Gun), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
 			UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
-			//무기 Drop 애니메이션
 
 			isPlayerVisibleGun = false;
 		}
@@ -605,7 +597,6 @@ void ARIM_Player::InputDropWeapon()
 			//GetWorld()->SpawnActor<ALollipopWeapon>(weaponLollipop, GetActorLocation() + FVector(-200, 0, 0), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
 			ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
 			UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
-			//무기 Drop 애니메이션
 
 			isPlayerVisibleLollipop = false;
 		}
@@ -621,7 +612,7 @@ void ARIM_Player::OnDamageProcess()
 	UE_LOG(LogTemp, Error, TEXT("%d"),HP); //확인용 텍스트 출력
 }
 
-//[플레이어 데미지, 기절 함수] 플레이어가 공격 당하면 에너미에서 호출하는 함수. 플레이어의 데미지니까 플레이어에서 구현
+//[플레이어 데미지, 넉다운 함수] 플레이어가 공격 당하면 에너미에서 호출하는 함수. 플레이어의 데미지니까 플레이어에서 구현
 void ARIM_Player::DamagePlay()
 {
 	if (isplayerDown == false) //서있을 때
@@ -642,13 +633,11 @@ void ARIM_Player::DamagePlay()
 
 			UE_LOG(LogTemp, Error, TEXT("Player Knockdown!")); //확인용 텍스트 출력
 
+			//넉다운 할 때 무기 버리기 ★★★inputDropWeapon 은 F 버튼 눌렀을 때 무기 버리는 건데, 버튼 안 눌러도 버려지게 해야하는데 뭔가 더 필요해 보이는 느낌...
+			InputDropWeapon();
+
 			//플레이어 누움. 기절 함
 			isplayerDown = true;
-
-		
-
-			//기절할 때 무기 버리기 ★★★inputDropWeapon 은 F 버튼 눌렀을 때 무기 버리는 건데, 버튼 안 눌러도 버려지게 해야하는데 뭔가 더 필요해 보이는 느낌...
-			InputDropWeapon();
 
 			//5초 후 일어나는 코드는 Tick에서 구현한다. 시간이 흘러야 하니까
 		}
@@ -662,12 +651,11 @@ void ARIM_Player::Die()
 		rand = FMath::RandRange(0, 1);
 		animPlayer->PlayPlayerTwoAnim(TEXT("Die"), rand);
 		
-		ADogFightGameModeBase* gamemodefail = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>(); //가져옴
+		ADogFightGameModeBase* gamemodefail = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>(); //가져온다
 		gamemodefail->addtoViewfail(); //함수 호출
 
-		isplayerDown = true;
-		isplayerDie = true;
-
+		isplayerDown = true; //플레이어 누웠다. 키 눌렀을 때 안 움직이게 하기 위해 추가 함
+		isplayerDie = true; //플레이어 죽었다
 }
 
 

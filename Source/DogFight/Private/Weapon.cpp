@@ -51,7 +51,7 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::EnableInput(class APlayerController* PlayerController)
 {
 	Super::EnableInput(PlayerController);
-	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &AWeapon::BindGetWeapon);
+	PlayerController->InputComponent->BindAction(TEXT("Pickup"), IE_Pressed, this, &AWeapon::BindGetWeapon);
 }
 
 void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -61,7 +61,7 @@ void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	if (OtherActor->GetName().Contains(TEXT("Player")))
 	{
 		player = Cast<ARIM_Player>(OtherActor);
-		if (player->isPlayerVisibleGun == true || player->isPlayerVisibleLollipop == true) return; //함수를 나간다. 실행하지 않는다.
+		//if (player->isPlayerVisibleGun == true || player->isPlayerVisibleLollipop == true) return; //함수를 나간다. 실행하지 않는다.
 		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	}
