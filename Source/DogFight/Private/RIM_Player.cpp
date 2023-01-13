@@ -20,6 +20,7 @@
 #include "LollipopWeapon.h"
 #include "CharacterSpawn.h"
 #include "ItemSpawn.h"
+#include "../DogFightGameModeBase.h"
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -199,7 +200,7 @@ void ARIM_Player::Tick(float DeltaTime)
 	Move();
 
 	//[플레이어 기절 후 일어나는 코드]
-	if (isplayerDown == true) //플레이어가 넉다운 되면
+	if (isplayerDie == false && isplayerDown == true) //플레이어가 살아있고 + 플레이어가 넉다운되면
 	{
 		currentTime += GetWorld()->DeltaTimeSeconds; //현재시간 + 델타타임 = 현재 누적시간
 
@@ -220,13 +221,20 @@ void ARIM_Player::Tick(float DeltaTime)
 		}
 	}
 
-
+	if (isplayerDie == true)
+	{
+		currentTime += DeltaTime;
+		if (currentTime > 2)
+		{
+			UGameplayStatics::OpenLevel(GetWorld(), "Result"); //결과 레벨(화면)을 연다.
+		}
+	}
 }
 
 //[Move(플레이어 이동) 함수 구현]
 void ARIM_Player::Move()
 {
-	if (isplayerDown == false) //플레이어가 서있을 때
+	if (isplayerDown == false) //플레이어가 서있을 때만 이동 가능하게 한다
 	{
 		//[플레이어 이동 구현 코드]
 
@@ -308,11 +316,8 @@ void ARIM_Player::InputJump()
 	Jump();
 
 // 	ACharacterSpawn* spawn = Cast<ACharacterSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), ACharacterSpawn::StaticClass()));
-// 
 // 	ASH_Enemy* enemy = spawn->spawnedEnemy[spawn->spawnedEnemy.Num() - 1];
-// 
 // 	enemy->fsm->stateChangeMontage(EEnemyState::Die, TEXT("Die"));
-// 
 // 	spawn->spawnedEnemy.Remove(enemy);
 }
 
@@ -332,8 +337,8 @@ void ARIM_Player::InputRun()
 }
 
 
-//############### 펀치, 총알 발사 ###############
-//[공격/잡기 이벤트 처리 함수 구현] = 총알 발사 + 펀치
+//############### 총알 발사, 롤리팝 + 펀치 ###############
+//[공격/잡기 이벤트 처리 함수 구현] = 총알 발사 + 롤리팝 + 펀치
 void ARIM_Player::InputPunchGrab()
 {	
 	if (isplayerDown == false) //플레이어가 서있을 때
@@ -453,21 +458,27 @@ void ARIM_Player::collisonLollipopEndOverlap(UPrimitiveComponent* OverlappedComp
 //[플레이어에 총이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleGun()
 {
-	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
-	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
-	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+	//if (isPlayerVisibleGun == false || isPlayerVisibleLollipop == false) //플레이어가 아무것도 안 들었을 때 = 플레이어의 총이 안 보일 때 또는 플레이어의 롤리팝이 안 보일 때
+	//{
+		compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
+		//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
+		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
 
-	isPlayerVisibleGun = true;
+		isPlayerVisibleGun = true;
+	//}
 }
 
 //[플레이어에 롤리팝이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleLollipop()
 {
-	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
-	//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
-	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
+	//if (isPlayerVisibleGun == false || isPlayerVisibleLollipop == false) //플레이어가 아무것도 안 들었을 때 = 플레이어의 총이 안 보일 때 또는 플레이어의 롤리팝이 안 보일 때
+	//{
+		compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
+		//바닥의 무기 콜리전과 닿으면 바닥의 무기가 파괴되지 않는다? 바닥의 무기 콜리전을 무시한다? 바닥의 무기 콜리전을 감지하지 못한다?
+		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0)); //★★★ 버튼(키) 관련...? 모르겠음. 궁금함
 
-	isPlayerVisibleLollipop = true;
+		isPlayerVisibleLollipop = true;
+	//}	
 }
 
 //[총, 롤리팝 관련 ??? 함수 구현] //★★★ 잘 모르겠음. 왜 만들어야 할까?
@@ -647,12 +658,16 @@ void ARIM_Player::DamagePlay()
 //[플레이어 죽음]
 void ARIM_Player::Die()
 {
-	if (isplayerDown == false) //플레이어가 서있을 때
-	{
 		//플레이어 애니메이션 몽타주 중 '죽음' 애니메이션 랜덤 재생
 		rand = FMath::RandRange(0, 1);
 		animPlayer->PlayPlayerTwoAnim(TEXT("Die"), rand);
-	}
+		
+		ADogFightGameModeBase* gamemodefail = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>(); //가져옴
+		gamemodefail->addtoViewfail(); //함수 호출
+
+		isplayerDown = true;
+		isplayerDie = true;
+
 }
 
 

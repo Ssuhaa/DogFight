@@ -34,8 +34,8 @@ public:
 	TSubclassOf<class UTimer> Timer;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class USuccessWidget> successUI;
-// 	UPROPERTY(EditAnywhere) //정림 추가. 실패
-// 	TSubclassOf<class UFailWidget> failUI; //정림 추가. 실패
+	UPROPERTY(EditAnywhere) //정림 추가
+	TSubclassOf<class UFailWidget> failUI; //정림 추가
 	
 	UPROPERTY()
 	TArray <class AActor*> enemyarray;
@@ -48,11 +48,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USuccessWidget* successWG;
 
-// 	UPROPERTY(EditAnywhere, BlueprintReadOnly) //정림 추가. 실패
-// 	class UFailWidget* failWG; //정림 추가. 실패
+	UPROPERTY(EditAnywhere, BlueprintReadOnly) //정림 추가
+	class UFailWidget* failWG; //정림 추가
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	class UTimer* TimeWG;
 
 	void checkEnemyState();
+
+	void addtoViewfail();
 };

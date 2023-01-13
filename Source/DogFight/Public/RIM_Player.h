@@ -203,6 +203,9 @@ public:
 	//[플레이어가 서있을 때 false, 누워있을 때 true]
 	bool isplayerDown = false;
 
+	//[true 플레이어가 죽어있을 때! false 플레이어가 살아있을 때!]
+	bool isplayerDie = false; 
+
 public:
 	//[애니메이션 관련...] ★★★ 무엇인지 모르겠다
 	UPROPERTY()
