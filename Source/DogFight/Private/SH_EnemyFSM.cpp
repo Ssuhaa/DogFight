@@ -41,8 +41,6 @@ void USH_EnemyFSM::BeginPlay()
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	AI = Cast<AAIController>(me->GetController());
-	// 	addTargetarray();
-	// 	RandomTarget();
 }
 
 // Called every frame
@@ -79,7 +77,7 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	}
 }
 
-void USH_EnemyFSM::IdleState()//대기 상태 함수정의
+void USH_EnemyFSM::IdleState()//대기 상태 함수
 {
 	if (isDelay(idleDalayTime))
 	{
@@ -87,32 +85,37 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 	}
 }
 
-void USH_EnemyFSM::MoveState()//이동 상태 함수정의
+void USH_EnemyFSM::MoveState()//이동 상태 함수
 {
-
-	EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
-	P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
-	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
-	if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
+	if (target != NULL)
 	{
-		if (P.Length() < attackRange)
+		EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
+		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
+		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
+		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{
-			stateChange(EEnemyState::Attack);
+			if (P.Length() < attackRange)
+			{
+				stateChange(EEnemyState::Attack);
+			}
+		}
+		else if (target->GetName().Contains(TEXT("Weapon")))
+		{
+			if (P.Length() < 120.0)
+			{
+				RandomTarget();
+			}
 		}
 	}
-	else if (target->GetName().Contains(TEXT("Weapon")))
+	else
 	{
-		if (P.Length() < 120.0)
-		{
-			RandomTarget();
-		}
+		targets.Remove(target);
+		RandomTarget();
 	}
-
 
 }
 
-
-void USH_EnemyFSM::PickupState()
+void USH_EnemyFSM::PickupState() // 줍기 상태 함수
 {
 	if (isDelay(PickupDelayTime))
 	{
@@ -120,7 +123,7 @@ void USH_EnemyFSM::PickupState()
 	}
 }
 
-void USH_EnemyFSM::AttackState()//공격 상태 함수정의
+void USH_EnemyFSM::AttackState()//공격 상태 함수
 {
 	P = target->GetActorLocation() - me->GetActorLocation();
 	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));
@@ -152,13 +155,14 @@ void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 	}
 }
 
-void  USH_EnemyFSM::WakeupState()
+void  USH_EnemyFSM::WakeupState() // 일어나는 상태 함수
 {
 	if (isDelay(WakeupDelayTime))
 	{
 		stateChange(EEnemyState::Idle);
 	}
 }
+
 void USH_EnemyFSM::DieState() // 죽음 상태 함수 정의.
 {
 
@@ -188,10 +192,20 @@ void USH_EnemyFSM::RandomTarget() //랜덤 타겟 찾기
 {
 	int32 randTargetindex = FMath::RandRange(0, targets.Num() - 1);
 	target = targets[randTargetindex];
+
 	ASH_Enemy* currentTarget = Cast <ASH_Enemy>(target);
 	if (currentTarget != nullptr)
 	{
 		if (currentTarget->fsm->mState == EEnemyState::Die || currentTarget->fsm->mState == EEnemyState::Down)
+		{
+			RandomTarget();
+		}
+	
+	}
+	AWeapon* CurrentWeaponTarget = Cast<AWeapon>(target);
+	if (CurrentWeaponTarget != nullptr)
+	{
+		if (anim->isGunget || anim->isLollipopget)
 		{
 			RandomTarget();
 		}
@@ -269,10 +283,10 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	switch (State)
 	{
 	case EEnemyState::Damage:
-		RandomTarget();
 		DropWeapon();
 		break;
 	case EEnemyState::Die:
+		DropWeapon();
 		removeDieTarget();
 		break;
 	case EEnemyState::Down:
@@ -360,9 +374,9 @@ void USH_EnemyFSM::TargetDotAttack()
 
 }
 
-void  USH_EnemyFSM::WeaponAnimChange(bool bAttackPlay, float Range)
+void  USH_EnemyFSM::WeaponAnimChange(bool AttackPlay, float Range) //웨폰
 {
-	anim->bAttackPlay = bAttackPlay;
+	anim->bAttackPlay = AttackPlay;
 	attackRange = Range;
 }
 

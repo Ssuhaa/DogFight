@@ -8,6 +8,7 @@
 #include "SH_EnemyFSM.h"
 #include "ItemSpawn.h"
 #include <Kismet/GameplayStatics.h>
+#include "RIM_Player.h"
 
 // Sets default values
 ACharacterSpawn::ACharacterSpawn()
@@ -45,6 +46,7 @@ void ACharacterSpawn::BeginPlay()
 	Super::BeginPlay();
 
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
+	ARIM_Player* Player = Cast<ARIM_Player>(UGameplayStatics::GetActorOfClass(GetWorld(), ARIM_Player::StaticClass()));
 
 	for (int32 i = 0; i < 6; i++) //스폰한 액터를 Tarray SpawnedEnemy에 담는다.
 	{
@@ -61,6 +63,7 @@ void ACharacterSpawn::BeginPlay()
 				spawnedEnemy[j]->fsm->dieDelegate.AddUObject(spawnedEnemy[i], &ASH_Enemy::RemoveTarget); // 타겟들의 dieDelegate에  해당 에너미 안에 있는 RemoveTarget함수를 바인딩한다.
 			}
 		}
+		spawnedEnemy[i]->AddTarget(Player);
 		ItemSpawn->createWeapon.AddUObject(spawnedEnemy[i], &ASH_Enemy::AddTarget); //아이템스폰액터의 createWeapon에 해당 에너미안에 있는 AddTarget함수를 바인딩한다.
 		ItemSpawn->deleteWeapon.AddUObject(spawnedEnemy[i], &ASH_Enemy::RemoveTarget);//아이템스폰액터의 deletWeapon에 해당 에너미안에 있는 RemoveTarget함수를 바인딩한다.
 		ASH_Enemy* currentenemy = Cast<ASH_Enemy>(spawnedEnemy[i]);

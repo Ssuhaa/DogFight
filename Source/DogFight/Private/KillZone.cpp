@@ -7,6 +7,8 @@
 #include "SH_EnemyFSM.h"
 #include "Weapon.h"
 #include "RIM_Player.h"
+#include "ItemSpawn.h"
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -37,7 +39,9 @@ void AKillZone::Tick(float DeltaTime)
 void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
+
+	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
+
 	Player = Cast<ARIM_Player>(OtherActor);
 	if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
 	{
@@ -52,6 +56,7 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 	weapon = Cast<AWeapon>(OtherActor);
 	if (weapon != nullptr)
 	{
+		ItemSpawn->DeleteWeapon(weapon);
 		weapon->Destroy();
 	}
 	
