@@ -69,7 +69,7 @@ void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 void AWeapon::EnableInput(class APlayerController* PlayerController)
 {
 	Super::EnableInput(PlayerController);
-	PlayerController->InputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &AWeapon::BindGetWeapon);
+	PlayerController->InputComponent->BindAction(TEXT("Pickup"), IE_Pressed, this, &AWeapon::BindGetWeapon);
 }
 
 void AWeapon::BindGetWeapon()
