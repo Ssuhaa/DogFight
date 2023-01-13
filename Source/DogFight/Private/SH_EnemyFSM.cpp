@@ -229,6 +229,7 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	case EEnemyState::Idle:
 		anim->Montage_Stop(damageDelayTime);
 		RandomTarget();
+		me->SetActorRotation(FRotator::ZeroRotator);
 		break;
 	case EEnemyState::Move:
 		if (anim->isGunget)

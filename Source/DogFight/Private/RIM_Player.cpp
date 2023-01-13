@@ -666,7 +666,7 @@ void ARIM_Player::Die()
 		gamemodefail->addtoViewfail(); //함수 호출
 
 		isplayerDown = true;
-		isplayerDie = true;
+		//isplayerDie = true;
 
 }
 
