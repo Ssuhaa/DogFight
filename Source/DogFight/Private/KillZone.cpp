@@ -39,10 +39,10 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	Player = Cast<ARIM_Player>(OtherActor);
-	if (Player != nullptr)
+	if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
 	{
 		//킬존에 플레이어가 닿이면 죽는 코드
-
+		Player->Die();
 	}
 	Enemy = Cast<ASH_Enemy>(OtherActor);
 	if (Enemy != nullptr)

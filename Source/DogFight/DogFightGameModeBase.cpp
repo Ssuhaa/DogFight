@@ -7,6 +7,7 @@
 #include "SuccessWidget.h"
 #include "SH_Enemy.h"
 #include "SH_EnemyFSM.h"
+#include "FailWidget.h"
 
 
 void ADogFightGameModeBase::BeginPlay()
@@ -15,6 +16,10 @@ void ADogFightGameModeBase::BeginPlay()
 	TimeWG = CreateWidget<UTimer>(GetWorld(), Timer);
 	successWG = CreateWidget<USuccessWidget>(GetWorld(), successUI);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASH_Enemy::StaticClass(), enemyarray);
+
+	//failWG = CreateWidget<UFailWidget>(GetWorld(), successUI); //정림 추가
+
+
 }
 
 ADogFightGameModeBase::ADogFightGameModeBase()
@@ -31,6 +36,11 @@ ADogFightGameModeBase::ADogFightGameModeBase()
 	{
 		successUI = tempSuccessWG.Class;
 	}
+// 	ConstructorHelpers::FClassFinder<UFailWidget> tempFailWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_Fail.BP_Fail_C'")); //정림 추가
+// 	if (tempFailWG.Succeeded()) //정림 추가
+// 	{
+// 		failUI = tempFailWG.Class; //정림 추가
+// 	}
 }
 
 void ADogFightGameModeBase::Tick(float DeltaTime)
@@ -47,7 +57,6 @@ void ADogFightGameModeBase::Tick(float DeltaTime)
 		}
 		else if (SuccessMintime >= 0)
 		{
-
 			if (SuccessMintime == 0)
 			{
 				if (successWG->IsInViewport() == false)

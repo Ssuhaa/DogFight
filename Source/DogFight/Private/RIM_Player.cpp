@@ -477,7 +477,7 @@ void ARIM_Player::InputKickToss()
 	if (isplayerDown == false) //플레이어가 서있을 때
 	{
 		//플레이어 애니메이션 몽타주 중 '킥' 애니메이션 재생
-		animPlayer->PlayPlayerAnim(TEXT("Kick"), 0);
+		animPlayer->PlayPlayerTwoAnim(TEXT("Kick"), 0);
 
 		UE_LOG(LogTemp, Error, TEXT("Player Kick!")); //확인용 텍스트 출력
 
@@ -607,7 +607,7 @@ void ARIM_Player::DamagePlay()
 		{
 			//플레이어 애니메이션 몽타주 중 '데미지' 애니메이션 랜덤 재생
 			rand = FMath::RandRange(0, 2);
-			animPlayer->PlayPlayerAnim(TEXT("Damaged"), rand);
+			animPlayer->PlayPlayerTwoAnim(TEXT("Damaged"), rand);
 
 			InputDropWeapon();
 		}
@@ -629,6 +629,17 @@ void ARIM_Player::DamagePlay()
 
 			//5초 후 일어나는 코드는 Tick에서 구현한다. 시간이 흘러야 하니까
 		}
+	}
+}
+
+//[플레이어 죽음]
+void ARIM_Player::Die()
+{
+	if (isplayerDown == false) //플레이어가 서있을 때
+	{
+		//플레이어 애니메이션 몽타주 중 '죽음' 애니메이션 랜덤 재생
+		rand = FMath::RandRange(0, 1);
+		animPlayer->PlayPlayerTwoAnim(TEXT("Die"), rand);
 	}
 }
 
