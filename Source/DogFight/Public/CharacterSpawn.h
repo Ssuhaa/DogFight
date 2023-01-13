@@ -36,5 +36,8 @@ public:
 	float SpawnCircleSize = 600;
 
 	float currTime = 0;
+
+	UPROPERTY(EditAnywhere)
+	TArray<class ASH_Enemy*> spawnedEnemy;
 	
 };

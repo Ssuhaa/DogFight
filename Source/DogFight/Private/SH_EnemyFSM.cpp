@@ -11,6 +11,7 @@
 #include "LollipopWeapon.h"
 #include <AIModule/Classes/AIController.h>
 #include "RIM_Player.h"
+#include "ItemSpawn.h"
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -40,8 +41,8 @@ void USH_EnemyFSM::BeginPlay()
 	me = Cast<ASH_Enemy>(GetOwner()); //소유 객체 가져오기
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	AI = Cast<AAIController>(me->GetController());
-	addTargetarray();
-	RandomTarget();
+	// 	addTargetarray();
+	// 	RandomTarget();
 }
 
 // Called every frame
@@ -88,30 +89,25 @@ void USH_EnemyFSM::IdleState()//대기 상태 함수정의
 
 void USH_EnemyFSM::MoveState()//이동 상태 함수정의
 {
-	if (target != nullptr)
+
+	EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
+	P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
+	me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
+	if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 	{
-		EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(target->GetActorLocation());
-		P = target->GetActorLocation() - me->GetActorLocation(); //타겟 방향
-		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
-		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
+		if (P.Length() < attackRange)
 		{
-			if (P.Length() < attackRange)
-			{
-				stateChange(EEnemyState::Attack);
-			}
-		}
-		else if (target->GetName().Contains(TEXT("Weapon")))
-		{
-			if (P.Length() < 120.0)
-			{
-				RandomTarget();
-			}
+			stateChange(EEnemyState::Attack);
 		}
 	}
-	else
+	else if (target->GetName().Contains(TEXT("Weapon")))
 	{
-		RandomTarget();
+		if (P.Length() < 120.0)
+		{
+			RandomTarget();
+		}
 	}
+
 
 }
 
@@ -188,48 +184,19 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 }
 
 
-void USH_EnemyFSM::addTargetarray() //캐릭터와 웨폰 어레이 수집
-{
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), targets);
-	addWeaponArray();
-}
-
-void USH_EnemyFSM::removeWeaponArray()
-{
-	for (int32 i = 0; i < Weaponarray.Num(); i++)
-	{
-		targets.Remove(Weaponarray[i]);
-	}
-
-}
-void USH_EnemyFSM::addWeaponArray()
-{
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeapon::StaticClass(), Weaponarray);
-	targets.Append(Weaponarray);
-}
-
 void USH_EnemyFSM::RandomTarget() //랜덤 타겟 찾기
 {
 	int32 randTargetindex = FMath::RandRange(0, targets.Num() - 1);
 	target = targets[randTargetindex];
-	if (target != me)
+	ASH_Enemy* currentTarget = Cast <ASH_Enemy>(target);
+	if (currentTarget != nullptr)
 	{
-		ASH_Enemy* currentTarget = Cast <ASH_Enemy>(target);
-		if (currentTarget != nullptr)
+		if (currentTarget->fsm->mState == EEnemyState::Die || currentTarget->fsm->mState == EEnemyState::Down)
 		{
-			if (currentTarget->fsm->mState == EEnemyState::Die || currentTarget->fsm->mState == EEnemyState::Down)
-			{
-				RandomTarget();
-			}
+			RandomTarget();
 		}
 	}
-	else
-	{
-		RandomTarget();
-	}
 
-
-	//me->SetActorRotation(FRotator::ZeroRotator);
 }
 
 
@@ -247,10 +214,6 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 	{
 	case EEnemyState::Idle:
 		anim->Montage_Stop(damageDelayTime);
-		if (anim->isLollipopget == true||anim->isGunget == true)
-		{
-			removeWeaponArray();
-		}
 		RandomTarget();
 		break;
 	case EEnemyState::Move:
@@ -335,45 +298,34 @@ bool USH_EnemyFSM::isDelay(float delaytime) // 딜레이 함수
 
 void USH_EnemyFSM::DropWeapon() //무기 해제
 {
+	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 	if (anim->isGunget == true)
 	{
-		GetWorld()->SpawnActor<AGunWeapon>(Gun, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
+		ItemSpawn->CreateWeapon(0, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
 		anim->isGunget = false;
 
 	}
 	else if (anim->isLollipopget == true)
 	{
-		GetWorld()->SpawnActor<ALollipopWeapon>(Lollipop, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
+		ItemSpawn->CreateWeapon(1, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
 		anim->isLollipopget = false;
 	}
 	me->compMesh->SetStaticMesh(nullptr);
-	addWeaponArray();
 }
 
 void USH_EnemyFSM::removeDieTarget() // 죽은 타겟 지우기
 {
-	for (int32 i = 0; i < targets.Num(); i++)
-	{
-		ASH_Enemy* currentenemy = Cast<ASH_Enemy>(targets[i]);
-		if (currentenemy != nullptr)
-		{
-			currentenemy->fsm->targets.Remove(me);
-			currentenemy->fsm->RandomTarget();
-		}
-	}
+	dieDelegate.Broadcast(me); //내가 죽으면 딜리게이트의 바인딩된 removeTarget 함수에 나를 전달한다.
 }
 
 void USH_EnemyFSM::TargetDotAttack()
 {
 	for (int32 i = 0; i < targets.Num(); i++)
 	{
-		FVector dir = targets[i]->GetActorLocation() - me->GetActorLocation();
-		float dotValue = FVector::DotProduct(me->GetActorForwardVector(), dir.GetSafeNormal());
-		float angle = UKismetMathLibrary::DegAcos(dotValue);
-		if (angle < EnemyAngle && dir.Length() < traceRange)
+		enemy = Cast<ASH_Enemy>(targets[i]);
+		if (enemy != nullptr)
 		{
-			enemy = Cast<ASH_Enemy>(targets[i]);
-			if (enemy != nullptr)
+			if (isTargetinAttackRange(targets[i]))
 			{
 				if (enemy->fsm->mState != EEnemyState::Down && enemy->fsm->mState != EEnemyState::Die && enemy->fsm->mState != EEnemyState::Damage)
 				{
@@ -384,13 +336,16 @@ void USH_EnemyFSM::TargetDotAttack()
 					RandomTarget();
 					stateChange(EEnemyState::Idle);
 				}
+
 			}
-			player = Cast<ARIM_Player>(targets[i]);
-			if (player != nullptr)
+		}
+		player = Cast<ARIM_Player>(targets[i]);
+		if (player != nullptr)
+		{
+			if (isTargetinAttackRange(targets[i]))
 			{
 				if (player->isplayerDown != true)
 				{
-					bplayerAttack = true;
 					player->DamagePlay();
 					player->OnDamageProcess();
 				}
@@ -409,4 +364,16 @@ void  USH_EnemyFSM::WeaponAnimChange(bool bAttackPlay, float Range)
 {
 	anim->bAttackPlay = bAttackPlay;
 	attackRange = Range;
+}
+
+bool USH_EnemyFSM::isTargetinAttackRange(AActor* Target)
+{
+	FVector dir = Target->GetActorLocation() - me->GetActorLocation();
+	float dotValue = FVector::DotProduct(me->GetActorForwardVector(), dir.GetSafeNormal());
+	float angle = UKismetMathLibrary::DegAcos(dotValue);
+	if (angle < EnemyAngle && dir.Length() < traceRange)
+	{
+		return true;
+	}
+	return false;
 }

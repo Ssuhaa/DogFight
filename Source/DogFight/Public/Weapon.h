@@ -6,6 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
+enum class EWeaponType : uint8
+{
+	Gun,
+	Lollipop,
+};
+
 UCLASS()
 class DOGFIGHT_API AWeapon : public AActor
 {
@@ -51,5 +57,5 @@ public:
 	
 	FString Soketname;
 
-
+	EWeaponType WeaponType;
 };

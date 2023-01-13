@@ -14,4 +14,5 @@ ALollipopWeapon::ALollipopWeapon()
 	compMesh->SetRelativeLocation(FVector(0, 0, -20));
 	compMesh->SetRelativeRotation(FRotator(0, 0, 80));
 	Soketname = TEXT("Lollipop");
+	WeaponType = EWeaponType::Lollipop;
 }

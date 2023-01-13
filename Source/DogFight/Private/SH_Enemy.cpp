@@ -89,3 +89,14 @@ void ASH_Enemy::GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname)
 	compMesh->SetStaticMesh(WeaponMesh);
 	compMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform ,FName(*soketname));
 }
+
+
+void ASH_Enemy::AddTarget(AActor* actor) //타겟 어레이에 액터를 추가한다.
+{
+	fsm->targets.AddUnique(actor);
+}
+
+void ASH_Enemy::RemoveTarget(AActor* actor) // 타겟 어레이에 액터를 제거한다.
+{
+	fsm->targets.Remove(actor);
+}

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "LollipopWeapon.h"
+#include "SH_EnemyFSM.h"
 #include "ItemSpawn.generated.h"
 
 UCLASS()
@@ -33,5 +34,10 @@ public:
 	float CurrentTime =10;
 	float SpawnTime = 10;
 
+	void CreateWeapon(int32 index, FVector SpwanLocation, FRotator SpwanRotation);
+	void DeleteWeapon(AActor* actor);
+
+	FTargetinterfaceDel createWeapon;
+	FTargetinterfaceDel deleteWeapon;
 
 };

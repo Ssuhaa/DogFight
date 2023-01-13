@@ -16,15 +16,15 @@ AItemSpawn::AItemSpawn()
 	itemSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("ItemSpawnLocation"));
 	RootComponent = itemSpawnLocation;
 
+	ConstructorHelpers::FClassFinder <AGunWeapon> tempGun(TEXT("Class'/Script/DogFight.GunWeapon'"));
+	if (tempGun.Succeeded())
+	{
+		ItemArray.Add(tempGun.Class);
+	}
 	ConstructorHelpers::FClassFinder <ALollipopWeapon> tempLollipop(TEXT("Class'/Script/DogFight.LollipopWeapon'"));
 	if (tempLollipop.Succeeded())
 	{
 		ItemArray.Add(tempLollipop.Class);
-	}
-	ConstructorHelpers::FClassFinder <AGunWeapon> tempGun(TEXT("Class'/Script/DogFight.GunWeapon'"));
-	if (tempLollipop.Succeeded())
-	{
-		ItemArray.Add(tempGun.Class);
 	}
 	
 }
@@ -44,9 +44,18 @@ void AItemSpawn::Tick(float DeltaTime)
 	if (CurrentTime > SpawnTime)
 	{
 		int32 index = FMath::RandRange(0, ItemArray.Num()-1);
-		GetWorld()->SpawnActor<AWeapon>(ItemArray[index], itemSpawnLocation->GetRelativeTransform());
-		CurrentTime = 0;
+		CreateWeapon(index, itemSpawnLocation->GetComponentLocation(), itemSpawnLocation->GetComponentRotation());
+		CurrentTime = 0;		
 	}
-
 }
 
+void AItemSpawn::CreateWeapon(int32 index, FVector SpwanLocation, FRotator SpwanRotation) //웨폰 스폰 하고 스폰된 웨폰을 에너미타겟의 addTarget에 전달. 
+{
+	AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(ItemArray[index], SpwanLocation, SpwanRotation);
+	createWeapon.Broadcast(weapon);
+}
+
+void AItemSpawn::DeleteWeapon(AActor* actor) // 받은액터를 에너미타겟의 removeTarget에 전달.
+{
+	deleteWeapon.Broadcast(actor);
+}

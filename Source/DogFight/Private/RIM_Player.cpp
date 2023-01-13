@@ -18,6 +18,8 @@
 #include <Components/SphereComponent.h>
 #include "GunWeapon.h"
 #include "LollipopWeapon.h"
+#include "CharacterSpawn.h"
+#include "ItemSpawn.h"
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -302,7 +304,16 @@ void ARIM_Player::InputVertical(float value)
 //[점프 입력 함수 구현]
 void ARIM_Player::InputJump()
 {
+
 	Jump();
+
+// 	ACharacterSpawn* spawn = Cast<ACharacterSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), ACharacterSpawn::StaticClass()));
+// 
+// 	ASH_Enemy* enemy = spawn->spawnedEnemy[spawn->spawnedEnemy.Num() - 1];
+// 
+// 	enemy->fsm->stateChangeMontage(EEnemyState::Die, TEXT("Die"));
+// 
+// 	spawn->spawnedEnemy.Remove(enemy);
 }
 
 //[달리기 입력 함수 구현]
@@ -566,11 +577,12 @@ void ARIM_Player::collisionHeadbuttEndOverlap(UPrimitiveComponent* OverlappedCom
 // [무기 버리기 이벤트 처리 함수 구현]
 void ARIM_Player::InputDropWeapon()
 {	
+	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 		if (isPlayerVisibleGun == true) //만약 플레이어의 총이 보이면(플레이어가 총을 들고 있을 때)
 		{
 			compMeshGun->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
-			GetWorld()->SpawnActor<AGunWeapon>(weaponGun, GetActorLocation() + FVector(-200,0,0), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다
-
+			//GetWorld()->SpawnActor<AGunWeapon>(weaponGun, GetActorLocation() + FVector(-200,0,0), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다
+			ItemSpawn->CreateWeapon(int32(EWeaponType::Gun), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
 			UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
 			//무기 Drop 애니메이션
 
@@ -579,8 +591,8 @@ void ARIM_Player::InputDropWeapon()
 		else if (isPlayerVisibleLollipop == true) //만약 플레이어의 롤리팝이 보이면(플레이어가 롤리팝을 들고 있을 때)
 		{	
 			compMeshLollipop->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
-			GetWorld()->SpawnActor<ALollipopWeapon>(weaponLollipop, GetActorLocation() + FVector(-200, 0, 0), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
-
+			//GetWorld()->SpawnActor<ALollipopWeapon>(weaponLollipop, GetActorLocation() + FVector(-200, 0, 0), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
+			ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
 			UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
 			//무기 Drop 애니메이션
 

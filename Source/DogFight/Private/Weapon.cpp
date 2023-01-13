@@ -11,6 +11,7 @@
 #include <Engine/SkeletalMeshSocket.h>
 #include "SH_Player.h"
 #include <Engine/SkeletalMesh.h>
+#include "ItemSpawn.h"
 
 
 // Sets default values
@@ -79,21 +80,24 @@ void AWeapon::BindGetWeapon()
 
 void AWeapon::GetWeapon()
 {
+	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 	//player = Cast<ARIM_Player>(overlapActor);
 	if (player != nullptr)
 	{
-			if (Soketname == TEXT("Gun")) //소켓 이름의 텍스트가 Gun 이면
+			if (WeaponType == EWeaponType::Gun) //소켓 이름의 텍스트가 Gun 이면
 			{		
 				player->VisibleGun(); //플레이어의 Gun 메시가 보이게 한다. 플레이어가 Gun 을 들고 있게 한다. ---> 플레이어 Gun 비저블 함수 호출
+				ItemSpawn->DeleteWeapon(this);
 				Destroy(); //바닥의 Gun 은 파괴한다
 
 				UE_LOG(LogTemp, Error, TEXT("Player Gun Pickup!")); //확인용 텍스트 출력
 
 				return;
 			}
-			else if (Soketname == TEXT("Lollipop")) //소켓 이름의 텍스트가 Lollipop 이면
+			else if (WeaponType == EWeaponType::Lollipop) //소켓 이름의 텍스트가 Lollipop 이면
 			{
 				player->VisibleLollipop(); //플레이어의 Lollipop 메시가 보이게 한다. 플레이어가 Lollipop 을 들고 있게 한다. ---> 플레이어 Lollipop 비저블 함수 호출
+				ItemSpawn->DeleteWeapon(this);
 				Destroy(); //바닥의 Lollipop 은 파괴한다
 
 				UE_LOG(LogTemp, Error, TEXT("Player Lollipop Pickup!")); //확인용 텍스트 출력
@@ -106,14 +110,16 @@ void AWeapon::GetWeapon()
 		if (Enemy->fsm->mState == EEnemyState::Damage || Enemy->fsm->mState == EEnemyState::Down || Enemy->fsm->mState == EEnemyState::Die|| Enemy->fsm->mState == EEnemyState::Attack) return;
 		if(Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false)
 		{
+			
+			ItemSpawn->DeleteWeapon(this);
+
 			Enemy->GetEnemyWeapon(compMesh->GetStaticMesh(), Soketname);
-			Enemy->fsm->removeWeaponArray();
 			Enemy->fsm->stateChange(EEnemyState::Pickup);
-			if (Soketname == TEXT("Lollipop"))
+			if (WeaponType == EWeaponType::Lollipop)
 			{
 				Enemy->fsm->anim->isLollipopget = true;
 			}
-			else if(Soketname == TEXT("Gun"))
+			else if(WeaponType == EWeaponType::Gun)
 			{
 				Enemy->fsm->anim->isGunget = true;
 			}

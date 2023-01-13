@@ -56,4 +56,8 @@ public:
 
 	UFUNCTION()
 	void GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname);
+
+
+	void AddTarget(AActor* actor);
+	void RemoveTarget(AActor* actor);
 };

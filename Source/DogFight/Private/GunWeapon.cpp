@@ -12,4 +12,5 @@ AGunWeapon::AGunWeapon()
 	}
 
 	Soketname = TEXT("Gun");
+	WeaponType = EWeaponType::Gun;
 }
