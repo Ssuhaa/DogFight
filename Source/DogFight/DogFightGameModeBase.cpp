@@ -134,5 +134,6 @@ void ADogFightGameModeBase::checkEnemyState() //에너미가 다 죽었는지 체크하는 함
 //실패로직 만들기
 void ADogFightGameModeBase::addtoViewfail()
 {	
+	if(failWG->IsVisible()) return;
 	failWG->AddToViewport(); //만든 그 위젯 띄우기
 }

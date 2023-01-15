@@ -359,15 +359,15 @@ void USH_EnemyFSM::TargetDotAttack()
 		{
 			if (isTargetinAttackRange(targets[i]))
 			{
-				if (player->isplayerDown != true)
-				{
-					player->DamagePlay();
-					player->OnDamageProcess();
-				}
-				else
+				if(player->isplayerDown == true || player->isplayerDie == true)
 				{
 					RandomTarget();
 					stateChange(EEnemyState::Idle);
+				}
+				else
+				{
+					player->DamagePlay();
+					player->OnDamageProcess();
 				}
 			}
 		}
