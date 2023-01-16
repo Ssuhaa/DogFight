@@ -56,5 +56,5 @@ public:
 
 	void checkEnemyState();
 
-	void addtoViewfail();
+	void addtoViewfail(); //
 };
