@@ -25,5 +25,6 @@ public:
 	FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 DownCount;
+	//
 
 };
