@@ -40,6 +40,11 @@ USH_EnemyFSM::USH_EnemyFSM()
 	{
 		downUI = tempDownWG.Class;
 	}
+	ConstructorHelpers::FClassFinder<UDownWidget> tempDieWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_die.BP_die_C'"));
+	if (tempDieWG.Succeeded())
+	{
+		dieUI = tempDieWG.Class;
+	}
 }
 
 
@@ -103,6 +108,14 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 		me->SetActorRotation(UKismetMathLibrary::MakeRotFromXZ(P, FVector::UpVector));// 타겟방향을 바라보게
 		if (target->GetName().Contains(TEXT("Player")) || target->GetName().Contains(TEXT("Enemy")))
 		{
+			ASH_Enemy* currTE = Cast<ASH_Enemy>(target);
+			if (currTE != nullptr)
+			{
+				if (currTE->fsm->mState == EEnemyState::Die || currTE->fsm->mState == EEnemyState::Down)
+				{
+					RandomTarget();
+				}
+			}
 			if (P.Length() < attackRange)
 			{
 				stateChange(EEnemyState::Attack);
@@ -141,7 +154,7 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수
 		float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation()); //타깃과의 거리 변수 담기
 		if (distance > attackRange)
 		{
-			stateChange(EEnemyState::Move);
+			stateChange(EEnemyState::Idle);
 		}
 	}
 }
@@ -156,11 +169,14 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 
 void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 {
+	if (hp < 1 && downCount < 1)
+	{
+		stateChangeMontage(EEnemyState::Idle, TEXT("Die"));
+	}
 	if (isDelay(downDelayTime))
 	{
 		stateChangeMontage(EEnemyState::Wakeup, TEXT("Wakeup"));
-		downCount--;
-		hp = 5;
+		hp = 3;
 	}
 }
 
@@ -185,11 +201,13 @@ void  USH_EnemyFSM::OnDamageProcess() //피격알림 이벤트 함수 정의
 		randindex = FMath::RandRange(0, 1); //몽타주 인덱스 뽑기
 		stateChangeMontage(EEnemyState::Damage, TEXT("Damage"));
 	}
-	else if (hp < 1 && downCount > 0)
+	else if (hp <= 0 && downCount > 0)
 	{
+		downCount--;
+		currDown++;
 		stateChangeMontage(EEnemyState::Down, TEXT("Down"));
 	}
-	else
+	else 
 	{
 		stateChangeMontage(EEnemyState::Die, TEXT("Die"));
 	}
@@ -298,6 +316,7 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	case EEnemyState::Die:
 		DropWeapon();
 		removeDieTarget();
+		SstDieUl();
 		break;
 	case EEnemyState::Down:
 		SetDownUI();
@@ -376,7 +395,7 @@ void USH_EnemyFSM::TargetDotAttack()
 				}
 				else
 				{
-					//player->DamagePlay();
+					
 					player->OnDamageProcess();
 				}
 			}
@@ -409,8 +428,17 @@ void USH_EnemyFSM::SetDownUI()
 {
 	class UDownWidget* DownWG = CreateWidget<UDownWidget>(GetWorld(), downUI);
 	DownWG->Name = me->GetName();
-	DownWG->DownCount = downCount;
+	DownWG->DownCount = currDown;
 	
 	ADogFightGameModeBase* gamemode = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>();
 	gamemode->TimeWG->VerticalDown->AddChildToVerticalBox(DownWG);
+}
+
+void USH_EnemyFSM::SstDieUl()
+{
+	class UDownWidget* DieWG = CreateWidget<UDownWidget>(GetWorld(), dieUI);
+	DieWG->Name = me->GetName();
+
+	ADogFightGameModeBase* gamemode = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>();
+	gamemode->TimeWG->VerticalDown->AddChildToVerticalBox(DieWG);
 }

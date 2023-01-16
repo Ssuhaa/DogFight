@@ -79,6 +79,7 @@ public:
 	int32 hp = 3; // 에너미 HP 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	int32 downCount  = 3; //넉백 카운트
+	int32 currDown = 0;
 
 	UPROPERTY(BlueprintReadOnly)
 	float currentTime = 0; //경과시간
@@ -87,11 +88,11 @@ public:
 	UPROPERTY(EditAnywhere, Category=FSM)
 	float attackDelayTime = 2.0f; //공격 대기시간 
 	UPROPERTY(EditAnywhere, Category=FSM)
-	float damageDelayTime = 3.0f; //피격 대기시간 
+	float damageDelayTime = 1.0f; //피격 대기시간 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category=FSM)
 	float downDelayTime = 10.0f; //넉백 대기시간 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
-	float WakeupDelayTime = 2.0f; //깨어남 대기시간
+	float WakeupDelayTime = 1.0f; //깨어남 대기시간
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
 	float PickupDelayTime = 0.2f; //잡기 대기시간
 	bool isDelay(float delaytime); //딜레이 함수
@@ -125,8 +126,12 @@ public:
 	class AAIController* AI; //AI컨트롤러
 
 	void SetDownUI();
+	void SstDieUl();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UDownWidget> downUI;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UDownWidget> dieUI;
 
 };

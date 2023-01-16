@@ -53,8 +53,6 @@ void AWeapon::collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		player = Cast<ARIM_Player>(OtherActor);
 		EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-		
-
 	}
 	else if (OtherActor->GetName().Contains(TEXT("Enemy")))
 	{
@@ -82,7 +80,9 @@ void AWeapon::GetWeapon()
 {
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 	if (player != nullptr)
-	{
+	{	
+		FVector dir = this->GetActorLocation() - player->GetActorLocation(); // 방향
+		if(dir.Length() > 200) return;
 		if(player->compMeshLollipop->IsVisible() || player->compMeshGun->IsVisible()) return;
 			if (WeaponType == EWeaponType::Gun) //소켓 이름의 텍스트가 Gun 이면
 			{		
