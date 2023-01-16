@@ -8,6 +8,8 @@
 #include "SH_Enemy.h"
 #include "SH_EnemyFSM.h"
 #include "FailWidget.h"
+#include "DownWidget.h"
+#include <Components/Overlay.h>
 
 ADogFightGameModeBase::ADogFightGameModeBase()
 {
@@ -28,6 +30,7 @@ ADogFightGameModeBase::ADogFightGameModeBase()
 	{
 		failUI = tempFailWG.Class; //정림 추가
 	}
+
 }
 
 void ADogFightGameModeBase::BeginPlay()
@@ -38,7 +41,7 @@ void ADogFightGameModeBase::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASH_Enemy::StaticClass(), enemyarray);
 
 	failWG = CreateWidget<UFailWidget>(GetWorld(), failUI); //정림 추가
-
+	
 
 }
 
@@ -137,3 +140,4 @@ void ADogFightGameModeBase::addtoViewfail()
 	if(failWG->IsVisible()) return;
 	failWG->AddToViewport(); //만든 그 위젯 띄우기
 }
+
