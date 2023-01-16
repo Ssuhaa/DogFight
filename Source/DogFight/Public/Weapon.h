@@ -30,7 +30,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void EnableInput(class APlayerController* PlayerController) override;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* compCollision;
 
@@ -39,12 +38,10 @@ public:
 
 	UFUNCTION()
 	void collisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void collisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	UFUNCTION()
 	virtual void GetWeapon();
-
-	UFUNCTION()
-	void BindGetWeapon();
 
 	UPROPERTY()
 	class ARIM_Player* player;
@@ -58,4 +55,6 @@ public:
 	FString Soketname;
 
 	EWeaponType WeaponType;
+
+	bool isinPlayerWeaponRange = false;
 };

@@ -12,6 +12,10 @@
 #include <AIModule/Classes/AIController.h>
 #include "RIM_Player.h"
 #include "ItemSpawn.h"
+#include "../DogFightGameModeBase.h"
+#include "DownWidget.h"
+#include "Timer.h"
+#include <Components/VerticalBox.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -31,6 +35,11 @@ USH_EnemyFSM::USH_EnemyFSM()
 		Lollipop = tempLolli.Class;
 	}
 	// ...
+	ConstructorHelpers::FClassFinder<UDownWidget> tempDownWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_down.BP_down_C'"));
+	if (tempDownWG.Succeeded())
+	{
+		downUI = tempDownWG.Class;
+	}
 }
 
 
@@ -291,6 +300,7 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 		removeDieTarget();
 		break;
 	case EEnemyState::Down:
+		SetDownUI();
 		DropWeapon();
 		break;
 	}
@@ -359,15 +369,15 @@ void USH_EnemyFSM::TargetDotAttack()
 		{
 			if (isTargetinAttackRange(targets[i]))
 			{
-				if (player->isplayerDown != true)
-				{
-					player->DamagePlay();
-					player->OnDamageProcess();
-				}
-				else
+				if(player->isplayerDown == true || player->isplayerDie == true)
 				{
 					RandomTarget();
 					stateChange(EEnemyState::Idle);
+				}
+				else
+				{
+					//player->DamagePlay();
+					player->OnDamageProcess();
 				}
 			}
 		}
@@ -375,11 +385,6 @@ void USH_EnemyFSM::TargetDotAttack()
 
 }
 
-void  USH_EnemyFSM::WeaponAnimChange(bool AttackPlay, float Range) //웨폰
-{
-	anim->bAttackPlay = AttackPlay;
-	attackRange = Range;
-}
 
 bool USH_EnemyFSM::isTargetinAttackRange(AActor* Target)
 {
@@ -391,4 +396,21 @@ bool USH_EnemyFSM::isTargetinAttackRange(AActor* Target)
 		return true;
 	}
 	return false;
+}
+
+
+void  USH_EnemyFSM::WeaponAnimChange(bool AttackPlay, float Range) //웨폰
+{
+	anim->bAttackPlay = AttackPlay;
+	attackRange = Range;
+}
+
+void USH_EnemyFSM::SetDownUI()
+{
+	class UDownWidget* DownWG = CreateWidget<UDownWidget>(GetWorld(), downUI);
+	DownWG->Name = me->GetName();
+	DownWG->DownCount = downCount;
+	
+	ADogFightGameModeBase* gamemode = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>();
+	gamemode->TimeWG->VerticalDown->AddChildToVerticalBox(DownWG);
 }

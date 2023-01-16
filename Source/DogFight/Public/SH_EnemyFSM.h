@@ -124,4 +124,9 @@ public:
 	UPROPERTY()
 	class AAIController* AI; //AI컨트롤러
 
+	void SetDownUI();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UDownWidget> downUI;
+
 };

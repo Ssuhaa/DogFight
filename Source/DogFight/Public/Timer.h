@@ -24,5 +24,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* Sec;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UVerticalBox* VerticalDown;
+
 	void UpdateSetText(int32 min, int32 sec);
 };

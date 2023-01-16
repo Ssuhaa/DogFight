@@ -26,8 +26,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	float currenttime = 0;
-	int32 SuccessMintime = 5;
-	float SuccessSectime = 0;
+	int32 SuccessMintime = 4;
+	float SuccessSectime = 59;
 	float openleveltime = 0;
 
 	UPROPERTY(EditAnywhere)
@@ -36,6 +36,7 @@ public:
 	TSubclassOf<class USuccessWidget> successUI;
 	UPROPERTY(EditAnywhere) //정림 추가
 	TSubclassOf<class UFailWidget> failUI; //정림 추가
+
 	
 	UPROPERTY()
 	TArray <class AActor*> enemyarray;
@@ -54,7 +55,9 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	class UTimer* TimeWG;
 
+
 	void checkEnemyState();
 
-	void addtoViewfail(); //
+	void addtoViewfail();
+
 };
