@@ -113,7 +113,7 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 			{
 				if (currTE->fsm->mState == EEnemyState::Die || currTE->fsm->mState == EEnemyState::Down)
 				{
-					RandomTarget();
+					stateChange(EEnemyState::Idle);
 				}
 			}
 			if (P.Length() < attackRange)
