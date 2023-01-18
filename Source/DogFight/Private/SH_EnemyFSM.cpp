@@ -388,7 +388,8 @@ void USH_EnemyFSM::TargetDotAttack()
 		{
 			if (isTargetinAttackRange(targets[i]))
 			{
-				if(player->isplayerDown == true || player->isplayerDie == true)
+				//if(player->isplayerDown == true || player->isplayerDie == true)
+				if(player->playerState == EPlayerState::KnockDown || player->playerState == EPlayerState::Die)
 				{
 					RandomTarget();
 					stateChange(EEnemyState::Idle);

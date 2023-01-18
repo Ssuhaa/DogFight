@@ -6,6 +6,14 @@
 #include "GameFramework/Character.h"
 #include "RIM_Player.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerState: uint8
+{
+	Idle,
+	KnockDown,
+	Die,
+};
+
 UCLASS()
 class DOGFIGHT_API ARIM_Player : public ACharacter
 {
@@ -124,11 +132,12 @@ public:
 	//[현재시간]
 	float currentTime = 0;
 
-	//[플레이어가 서있을 때 false, 누워있을 때 true]
-	bool isplayerDown = false; //디폴트로 플레이어 서있다
+// 	//[플레이어가 서있을 때 false, 누워있을 때 true]
+// 	bool isplayerDown = false; //디폴트로 플레이어 서있다
+// 
+// 	//[플레이어가 죽어있을 때 true, 살아있을 때 false]
+// 	bool isplayerDie = false; //디폴트로 플레이어 살아있다
 
-	//[플레이어가 죽어있을 때 true, 살아있을 때 false]
-	bool isplayerDie = false; //디폴트로 플레이어 살아있다
 
 public:
 	//[애니메이션 관련...] ★★★ 무엇인지 모르겠다
@@ -163,5 +172,8 @@ public:
 	TArray<class AActor*> enemyActor;
 	UPROPERTY()
 	TArray<class ASH_Enemy*> enemyarray;
+
+	//enum. bool 대신 사용
+	EPlayerState playerState = EPlayerState::Idle;
 
 };

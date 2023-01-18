@@ -144,7 +144,7 @@ void ARIM_Player::Tick(float DeltaTime)
 	Move();
 
 	//[플레이어 넉다운(기절) 후 일어나는 코드]
-	if (isplayerDown == true) //플레이어가 누워있으면
+	if (playerState == EPlayerState::KnockDown) //플레이어가 누워있으면
 	{
 		currentTime += DeltaTime; //현재시간 + 델타타임 = 현재 누적시간
 
@@ -159,12 +159,13 @@ void ARIM_Player::Tick(float DeltaTime)
 			currentTime = 0; //현재 시간을 0초로 초기화 한다
 			HP = 5; //플레이어의 HP를 5초로 초기화 한다
 
-			isplayerDown = false; //플레이어가 쓰러져있는지 확인하는 변수 초기화. 플레이어 일어난다 
+			//isplayerDown = false;//플레이어가 쓰러져있는지 확인하는 변수 초기화. 플레이어 일어난다 
+			playerState = EPlayerState::Idle;
 		}
 	}
 
 	//[실패 위젯 띄운다]
-	if (isplayerDie == true) //플레이어가 죽은 상태일 때
+	if (playerState == EPlayerState::Die) //플레이어가 죽은 상태일 때
 	{
 		currentTime += DeltaTime;
 
@@ -214,7 +215,8 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 //[Move(플레이어 이동) 함수 구현]
 void ARIM_Player::Move()
 {
-	if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을 때 만 이동 가능하게 한다. 플레이어가 누워 있거나, 죽어있으면 Move 함수를 실행하지 않는다.
+	//if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을 때 만 이동 가능하게 한다. 플레이어가 누워 있거나, 죽어있으면 Move 함수를 실행하지 않는다.
+	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
 
 	//[플레이어 이동 구현 코드]
 	direction = FTransform(GetControlRotation()).TransformVector(direction); //이동 방향을 컨트롤 방향 기준으로 변환
@@ -265,7 +267,8 @@ void ARIM_Player::InputJump()
 //[공격 이벤트 처리 함수 구현] = 총알 발사 + 롤리팝 + 펀치
 void ARIM_Player::InputPunchGrab()
 {
-	if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputPunchGrab 함수를 실행하지 않는다.
+	//if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputPunchGrab 함수를 실행하지 않는다.
+	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
 
 	if (compMeshGun->IsVisible()) //만약 플레이어가 총을 들고 있으면(플레이어가 든 총이 보이면) -> 총에서 총알을 발사한다
 	{
@@ -295,7 +298,8 @@ void ARIM_Player::InputPunchGrab()
 // [드롭킥/던지기 이벤트 처리 함수 구현]
 void ARIM_Player::InputKickToss()
 {
-	if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputKickToss 함수를 실행하지 않는다.
+	//if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputKickToss 함수를 실행하지 않는다.
+	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
 
 	//플레이어 애니메이션 몽타주 중 '킥' 애니메이션 재생
 	animPlayer->PlayPlayerTwoAnim(TEXT("Kick"), 0);
@@ -308,8 +312,9 @@ void ARIM_Player::InputKickToss()
 // [박치기 이벤트 처리 함수 구현]
 void ARIM_Player::InputHeadbutt() 
 {
-	if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputKickToss 함수를 실행하지 않는다.
-	
+	//if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputKickToss 함수를 실행하지 않는다.
+	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
+
 	//플레이어 애니메이션 몽타주 중 '헤딩' 애니메이션 재생
 	animPlayer->PlayPlayerAnim(TEXT("Headbutt"), 0);
 	//
@@ -344,8 +349,7 @@ void ARIM_Player::InputDropWeapon()
 	else if (compMeshLollipop->IsVisible()) //만약 플레이어의 롤리팝이 보이면(플레이어가 롤리팝을 들고 있을 때)
 	{
 		compMeshLollipop->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
-		//LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
-		ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
+		ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
 		UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
 	}
 }
@@ -373,8 +377,10 @@ void ARIM_Player::OnDamageProcess()
 		animPlayer->PlayPlayerTwoAnim(TEXT("Knockdown"), rand); //5초 후 일어나는 코드는 Tick에서 구현한다. 시간이 흘러야 하니까
 		//무기 떨어트리는 함수 호출
 		InputDropWeapon();
+
 		//플레이어 누움. 기절 함
-		isplayerDown = true;
+		//isplayerDown = true;
+		playerState = EPlayerState::KnockDown;
 
 		UE_LOG(LogTemp, Error, TEXT("Player Knockdown!")); //확인용 텍스트 출력
 	}
@@ -391,7 +397,8 @@ void ARIM_Player::Die()
 	ADogFightGameModeBase* gamemodefail = GetWorld()->GetAuthGameMode<ADogFightGameModeBase>(); //게임모드를 가져온다.
 	gamemodefail->addtoViewfail(); //게임모드의 Fail 위젯 띄우는 함수를 호출한다.
 
-	isplayerDie = true; //플레이어 죽음 
+	//isplayerDie = true; //플레이어 죽음 
+	playerState = EPlayerState::Die;
 }
 
 //[플레이어의 시야안에서 보이는 에너미의 거리를 재서 가까우면 맞게하는 함수] 
@@ -399,14 +406,14 @@ void ARIM_Player::TargetDotAttack()
 {
 	for (int32 i = 0; i < enemyarray.Num(); i++)
 	{
-		FVector dir = enemyarray[i]->GetActorLocation() - GetActorLocation(); // 방향
-		float dotValue = FVector::DotProduct(GetActorForwardVector(), dir.GetSafeNormal()); //내적
-		float angle = UKismetMathLibrary::DegAcos(dotValue); //내적각도 구하기
+		FVector dir = enemyarray[i]->GetActorLocation() - GetActorLocation(); // 방향. 플레이어에서 에너미를 향하는 방향 구하기
+		float dotValue = FVector::DotProduct(GetActorForwardVector(), dir.GetSafeNormal()); //내적. 플레이어의 앞방향과 위에서 구한 벡터(노멀라이즈 필요)의 내적
+		float angle = UKismetMathLibrary::DegAcos(dotValue); //내적각도 구하기. 위에서 나온 값을 Acos 하기
 		if (angle < 30 && dir.Length() < 300) //플레이어 시야 60도 사이에 에너미 거리가 300이면
-		{
-			if (enemyarray[i]->fsm->mState != EEnemyState::Down && enemyarray[i]->fsm->mState != EEnemyState::Die && enemyarray[i]->fsm->mState != EEnemyState::Damage) //에너미의 상태를 확인하고
+		{	
+			if (enemyarray[i]->fsm->mState != EEnemyState::Down && enemyarray[i]->fsm->mState != EEnemyState::Die && enemyarray[i]->fsm->mState != EEnemyState::Damage) //에너미의 상태를 확인하고(넉다운+죽음+데미지 상태가 아니면)
 			{
-				enemyarray[i]->fsm->OnDamageProcess(); // 데미지를 준다.
+				enemyarray[i]->fsm->OnDamageProcess(); //에너미에게 데미지를 준다.
 			}
 		}
 	}
