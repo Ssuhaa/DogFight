@@ -83,8 +83,8 @@ void AWeapon::GetWeapon()
 	{	
 		FVector dir = this->GetActorLocation() - player->GetActorLocation(); // 방향
 		if(dir.Length() > 200) return;
-		if(player->compMeshLollipop->IsVisible() || player->compMeshGun->IsVisible()) return;
-			if (WeaponType == EWeaponType::Gun) //소켓 이름의 텍스트가 Gun 이면
+		if(player->compMeshLollipop->IsVisible() || player->compMeshGun->IsVisible() || player->compMeshShovel->IsVisible()) return;
+			if (WeaponType == EWeaponType::Gun)
 			{		
 				UGameplayStatics::GetPlayerController(GetWorld(), 0)->InputComponent->RemoveActionBinding("Pickup", IE_Pressed);
 				player->VisibleGun(); //플레이어의 Gun 메시가 보이게 한다. 플레이어가 Gun 을 들고 있게 한다. ---> 플레이어 Gun 비저블 함수 호출
@@ -93,13 +93,29 @@ void AWeapon::GetWeapon()
 				Destroy(); //바닥의 Gun 은 파괴한다
 	
 			}
-			else if (WeaponType == EWeaponType::Lollipop) //소켓 이름의 텍스트가 Lollipop 이면
+			else if (WeaponType == EWeaponType::Lollipop)
 			{
 				UGameplayStatics::GetPlayerController(GetWorld(), 0)->InputComponent->RemoveActionBinding("Pickup", IE_Pressed);
 				player->VisibleLollipop(); //플레이어의 Lollipop 메시가 보이게 한다. 플레이어가 Lollipop 을 들고 있게 한다. ---> 플레이어 Lollipop 비저블 함수 호출
 				ItemSpawn->DeleteWeapon(this);
 				UE_LOG(LogTemp, Error, TEXT("Player Lollipop Pickup!")); //확인용 텍스트 출력
 				Destroy(); //바닥의 Lollipop 은 파괴한다
+			}
+			else if (WeaponType == EWeaponType::Shovel)
+			{
+				UGameplayStatics::GetPlayerController(GetWorld(),0)->InputComponent->RemoveActionBinding("Pickup", IE_Pressed);
+				player->VisibleShovel();
+				ItemSpawn->DeleteWeapon(this);
+				UE_LOG(LogTemp, Error, TEXT("Player Shovel Pickup!"));
+				Destroy();
+			}
+			else if (WeaponType == EWeaponType::Tennis)
+			{
+				UGameplayStatics::GetPlayerController(GetWorld(), 0)->InputComponent->RemoveActionBinding("Pickup", IE_Pressed);
+				player->VisibleTennis();
+				ItemSpawn->DeleteWeapon(this);
+				UE_LOG(LogTemp, Error, TEXT("Player Tennis Pickup!"));
+				Destroy();
 			}
 	}
 	if (Enemy != nullptr)

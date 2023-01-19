@@ -10,6 +10,8 @@ enum class EWeaponType : uint8
 {
 	Gun,
 	Lollipop,
+	Shovel,
+	Tennis,
 };
 
 UCLASS()
