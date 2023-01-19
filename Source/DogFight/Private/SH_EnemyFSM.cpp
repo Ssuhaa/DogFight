@@ -68,7 +68,7 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		IdleState();
 		break;
 	case EEnemyState::Move:
-		MoveState();
+		//MoveState();
 		break;
 	case EEnemyState::Attack:
 		AttackState();
@@ -169,10 +169,6 @@ void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 
 void USH_EnemyFSM::DownState() //넉백 상태 함수 정의
 {
-	if (hp < 1 && downCount < 1)
-	{
-		stateChangeMontage(EEnemyState::Idle, TEXT("Die"));
-	}
 	if (isDelay(downDelayTime))
 	{
 		stateChangeMontage(EEnemyState::Wakeup, TEXT("Wakeup"));
@@ -249,12 +245,12 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		UE_LOG(LogTemp, Warning, TEXT("%s-------->%s"), *enumPtr->GetNameStringByIndex((int32)mState), *enumPtr->GetNameStringByIndex((int32)state));
 	}
 	AI->StopMovement();
+	anim->Montage_Stop(damageDelayTime);
 	mState = state;
 	anim->animState = mState;
 	switch (state)
 	{
 	case EEnemyState::Idle:
-		anim->Montage_Stop(damageDelayTime);
 		RandomTarget();
 		me->SetActorRotation(FRotator::ZeroRotator);
 		break;
@@ -290,7 +286,7 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		}
 		break;
 	case EEnemyState::Pickup:
-
+		
 		break;
 	}
 }
@@ -302,7 +298,7 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s-------->%s"), *enumPtr->GetNameStringByIndex((int32)mState), *enumPtr->GetNameStringByIndex((int32)State));
 	}
-	AI->StopMovement();
+
 	mState = State;
 	anim->animState = mState;
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
@@ -321,6 +317,9 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	case EEnemyState::Down:
 		SetDownUI();
 		DropWeapon();
+		break;
+	case EEnemyState::Wakeup:
+		
 		break;
 	}
 
