@@ -16,6 +16,7 @@
 #include "DownWidget.h"
 #include "Timer.h"
 #include <Components/VerticalBox.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -68,7 +69,7 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		IdleState();
 		break;
 	case EEnemyState::Move:
-		//MoveState();
+		MoveState();
 		break;
 	case EEnemyState::Attack:
 		AttackState();
@@ -88,6 +89,12 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	case EEnemyState::Wakeup:
 		WakeupState();
 		break;
+	}
+
+	if (me->GetVelocity().Length() > 650) //벨로시티가 650이상이면 강제로 600으로 맞춰준다.
+	{
+		FVector v = me->GetVelocity().GetSafeNormal();
+		me->GetCharacterMovement()->Velocity = v * 600;
 	}
 }
 
@@ -303,6 +310,8 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	anim->animState = mState;
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
 	anim->PlayDamagaAnim(FName(*sectionName));
+
+	AI->StopMovement();
 
 	switch (State)
 	{
