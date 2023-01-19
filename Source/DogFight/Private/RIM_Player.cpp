@@ -22,6 +22,8 @@
 #include "ItemSpawn.h"
 #include "../DogFightGameModeBase.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "ShovelWeapon.h"
+#include "TennisWeapon.h"
 
 // Sets default values
 ARIM_Player::ARIM_Player() //생성자
@@ -83,15 +85,26 @@ ARIM_Player::ARIM_Player() //생성자
 	//[삽 스태틱메시 컴포넌트 추가]
 	compMeshShovel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShovelMeshComp"));
 	compMeshShovel->SetupAttachment(GetMesh(), TEXT("Shovel"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempShovel(TEXT("Class'/Script/DogFight.LollipopWeapon'"));
-	if (tempShovel.Succeeded())
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempShoveMesh(TEXT("StaticMesh'/Game/Geometry/SM_shovel.SM_shovel'"));
+	if (tempShoveMesh.Succeeded())
 	{
-		compMeshShovel->SetStaticMesh(tempShovel.Object);
+		compMeshShovel->SetStaticMesh(tempShoveMesh.Object);
 	}
-	compMeshShovel->SetRelativeLocation(FVector(0));
-	compMeshShovel->SetRelativeRotation(FRotator(0));
+	compMeshShovel->SetRelativeLocation(FVector(-5, 11, 25));
+	compMeshShovel->SetRelativeRotation(FRotator(10, 1, -76));
 	compMeshShovel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	//[테니스라켓 스태틱메시 컴포넌트 추가]
+	compMeshTennis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TennisMeshComp"));
+	compMeshTennis->SetupAttachment(GetMesh(), TEXT("Tennis"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempTennisMesh(TEXT("StaticMesh'/Game/Geometry/SM_shovel.SM_shovel'"));
+	if (tempTennisMesh.Succeeded())
+	{
+		compMeshTennis->SetStaticMesh(tempTennisMesh.Object);
+	}
+	compMeshTennis->SetRelativeLocation(FVector(0));
+	compMeshTennis->SetRelativeRotation(FRotator(0));
+	compMeshTennis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[불렛팩토리 안에 불렛 디폴트로 추가] <불렛을 변수에 담아 놓고 내가 원하는 때에 스폰하려고 변수로 담아 놓는 것> //★★★아직도 왜 필요한지 이해 안됨 ㅠ ㅠ
 	ConstructorHelpers::FClassFinder<ARIM_Bullet> tempBul(TEXT("Blueprint'/Game/BluePrint/BP_RIM_Bullet.BP_RIM_Bullet_C'"));
@@ -114,6 +127,21 @@ ARIM_Player::ARIM_Player() //생성자
 		weaponLollipop = tempLollipop.Class; //플레이어에 추가. WeaponLollipop 에 드롭다운으로 LollipopWeapon 추가
 	}
 
+	//[무기 드랍할 때 스폰할 삽]
+	ConstructorHelpers::FClassFinder<AShovelWeapon> tempShovel(TEXT("Class'/Script/DogFight.ShovelWeapon'"));
+	if (tempShovel.Succeeded())
+	{
+		weaponShovel = tempShovel.Class;
+	}
+
+	//[무기 드랍할때 스폰할 테니스라켓]
+	ConstructorHelpers::FClassFinder<ATennisWeapon> tempTennis(TEXT("Class'/Script/DogFight.ShovelWeapon'"));
+	if (tempTennis.Succeeded())
+	{
+		weaponTennis = tempTennis.Class;
+	}
+
+
 	//[ABP_애니메이션 디폴트로 적용] //★★★아직도 왜 필요한지 이해 안됨 ㅠ ㅠ
 	ConstructorHelpers::FClassFinder<URIM_PlayerAnim> tempAnim(TEXT("AnimBlueprint'/Game/BluePrint/ABP_Player.ABP_Player_C'"));
 	if (tempAnim.Succeeded())
@@ -134,7 +162,13 @@ void ARIM_Player::BeginPlay()
 	compMeshGun->SetVisibility(false);
 
 	//[롤리팝이 시작할때 안 보이게 설정]
-	compMeshLollipop->SetVisibility(false); 
+	compMeshLollipop->SetVisibility(false);
+	
+	//[삽이 시작할때 안 보이게 설정]
+	compMeshShovel->SetVisibility(false);
+
+	//[테니스라켓 시작할때 안 보이게 설정]
+	compMeshTennis->SetVisibility(false);
 
 	//애니메이션 관련 <메쉬에 선택된 애니메이션을 변수에 담아 놓는 것>
 	animPlayer = Cast<URIM_PlayerAnim>(GetMesh()->GetAnimInstance());
@@ -273,7 +307,10 @@ void ARIM_Player::InputVertical(float value)
 //[점프 입력 함수 구현]
 void ARIM_Player::InputJump()
 {
-	Jump();
+	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
+	{
+		Jump();
+	}
 }
 
 
@@ -302,7 +339,12 @@ void ARIM_Player::InputPunchGrab()
 		TargetDotAttack();
 	
 	}
-	else //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 
+	else if (compMeshTennis->IsVisible())
+	{
+		//플레이어 애니메이션 몽타주 중 '테니스' 애니메이션 재생
+		TargetDotAttack();
+	}
+	else //플레이어가 총, 롤리팝, 삽 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 
 	{
 		//플레이어 애니메이션 몽타주 중 '펀치' 애니메이션 재생
 		animPlayer->PlayPlayerAnim(TEXT("Punch"), 0);
@@ -340,22 +382,31 @@ void ARIM_Player::InputHeadbutt()
 //[플레이어에 총이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleGun()
 {
-	if (compMeshLollipop->IsVisible() || compMeshShovel->IsVisible()) return; //총, 삽 들고 있을 때 롤리팝 못 들게 한다. 플레이어가 롤리팝을 들고 있으면 VisibleGun 함수를 실행하지 않는다.
+	if (compMeshLollipop->IsVisible() || compMeshShovel->IsVisible() || compMeshTennis->IsVisible()) return; //롤리팝, 삽, 테니스 들고 있을 때 롤리팝 못 들게 한다. 플레이어가 롤리팝을 들고 있으면 VisibleGun 함수를 실행하지 않는다.
 	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
 }
 
 //[플레이어에 롤리팝이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleLollipop()
 {
-	if (compMeshGun->IsVisible() || compMeshShovel->IsVisible()) return; //총, 삽 들고 있을 때 총 못 들게 한다. 플레이어가 총을 들고 있으면 VisibleLollipop 함수를 실행하지 않는다.
+	if (compMeshGun->IsVisible() || compMeshShovel->IsVisible() || compMeshTennis->IsVisible()) return; //총, 삽, 테니스 들고 있을 때 총 못 들게 한다. 플레이어가 총을 들고 있으면 VisibleLollipop 함수를 실행하지 않는다.
 	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
 }
 
 //[플레이어에 삽이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleShovel()
 {
-	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible()) return;
+	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible() || compMeshTennis->IsVisible()) return; //총, 롤리팝, 테니스 들고 있을 때 삽 못 들게 한다.
 	compMeshShovel->SetVisibility(true);
+}
+
+//[플레이어에 테니스가 보이게 하는 함수 구현]
+void ARIM_Player::VisibleTennis()
+{
+	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible() || compMeshShovel->IsVisible()) //총, 롤리팝, 삽 들고 있을 때 테니스 못 들게 한다.
+	{
+		compMeshTennis->SetVisibility(true);
+	}
 }
 
 
@@ -363,17 +414,29 @@ void ARIM_Player::VisibleShovel()
 void ARIM_Player::InputDropWeapon()
 {
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass())); //★★★???
-	if (compMeshGun->IsVisible()) //만약 플레이어의 총이 보이면(플레이어가 총을 들고 있을 때)
+	if (compMeshGun->IsVisible()) //플레이어가 총을 들고 있으면
 	{
 		compMeshGun->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Gun), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다
 		UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
 	}
-	else if (compMeshLollipop->IsVisible()) //만약 플레이어의 롤리팝이 보이면(플레이어가 롤리팝을 들고 있을 때)
+	else if (compMeshLollipop->IsVisible()) //플레이어가 롤리팝을 들고 있으면
 	{
 		compMeshLollipop->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //LollipopWeapon이 플레이어 위치의 바닥에 스폰된다
 		UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!")); //확인용 텍스트 출력
+	}
+	else if (compMeshShovel->IsVisible()) //플레이어가 삽을 들고 있으면
+	{
+		compMeshShovel->SetVisibility(false);
+		ItemSpawn->CreateWeapon(int32(EWeaponType::Shovel), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
+		UE_LOG(LogTemp, Error, TEXT("Player Shovel Drop!")); //확인용 텍스트 출력
+	}
+	else if (compMeshTennis->IsVisible())
+	{
+		compMeshTennis->SetVisibility(false);
+		ItemSpawn->CreateWeapon(int32(EWeaponType::Tennis), GetActorLocation() + FVector(0, 50, 50), GetActorRotation());
+		UE_LOG(LogTemp, Error, TEXT("Player Tennis Drop!")); //확인용 텍스트 출력
 	}
 }
 

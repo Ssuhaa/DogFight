@@ -116,6 +116,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* compCollisionShovel;
 
+	//[플레이어의 테니스 스태틱메시 컴포넌트 추가]
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* compMeshTennis;
+
+	//[플레이어의 테니스 스태틱 메시 컴포넌트(충돌체) 추가]
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* compCollisionTennis;
+
 public:
 	//[플레이어에 총이 보이게 하는 함수]
  	UFUNCTION()
@@ -128,6 +136,10 @@ public:
 	//[플레이어에 삽이 보이게 하는 함수]
 	UFUNCTION()
 	void VisibleShovel();
+
+	//[플레이어에 테니스 라켓 보이게 하는 함수]
+	UFUNCTION()
+	void VisibleTennis();
 
 public:
 	//[에너미가 공격하면 플레이어가 데미지를 받는 함수] 플레이어의 데미지니까 플레이어에서 구현
@@ -167,6 +179,14 @@ public:
 	//[바닥에 롤리팝 생성 등록]
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ALollipopWeapon> weaponLollipop;
+
+	//[바닥에 삽 생성 등록]
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AShovelWeapon> weaponShovel;
+
+	//[바닥에 테니스 생성 등록]
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ATennisWeapon> weaponTennis;
 
 	//에너미
 	UPROPERTY(EditAnywhere)
