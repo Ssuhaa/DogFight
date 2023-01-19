@@ -298,7 +298,7 @@ void USH_EnemyFSM::stateChangeMontage(EEnemyState State, FString Name) //스테�
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s-------->%s"), *enumPtr->GetNameStringByIndex((int32)mState), *enumPtr->GetNameStringByIndex((int32)State));
 	}
-	AI->StopMovement();
+
 	mState = State;
 	anim->animState = mState;
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, randindex);
