@@ -96,6 +96,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMeshGun;
 
+	//[총알 공장 등록]
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ARIM_Bullet> bulletFactory;
+
 	//[플레이어의 롤리팝 스태틱메시 컴포넌트 추가]
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* compMeshLollipop;
@@ -104,9 +108,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* compCollisionLollipop;
 
-	//[총알 공장 등록]
+	//[플레이어의 삽 스태틱메시 컴포넌트 추가]
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ARIM_Bullet> bulletFactory;
+	class UStaticMeshComponent* compMeshShovel;
+
+	//[플레이어의 삽 스태틱 메시 컴포넌트(충돌체) 추가]
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* compCollisionShovel;
 
 public:
 	//[플레이어에 총이 보이게 하는 함수]
@@ -116,6 +124,10 @@ public:
 	//[플레어이어에 롤리팝이 보이게 하는 함수]
 	UFUNCTION()
 	void VisibleLollipop();
+
+	//[플레이어에 삽이 보이게 하는 함수]
+	UFUNCTION()
+	void VisibleShovel();
 
 public:
 	//[에너미가 공격하면 플레이어가 데미지를 받는 함수] 플레이어의 데미지니까 플레이어에서 구현

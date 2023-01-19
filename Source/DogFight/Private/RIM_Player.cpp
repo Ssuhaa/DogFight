@@ -80,6 +80,19 @@ ARIM_Player::ARIM_Player() //생성자
 	compMeshLollipop->SetRelativeRotation(FRotator(0, 0, -20));
 	compMeshLollipop->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	//[삽 스태틱메시 컴포넌트 추가]
+	compMeshShovel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShovelMeshComp"));
+	compMeshShovel->SetupAttachment(GetMesh(), TEXT("Shovel"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempShovel(TEXT("Class'/Script/DogFight.LollipopWeapon'"));
+	if (tempShovel.Succeeded())
+	{
+		compMeshShovel->SetStaticMesh(tempShovel.Object);
+	}
+	compMeshShovel->SetRelativeLocation(FVector(0));
+	compMeshShovel->SetRelativeRotation(FRotator(0));
+	compMeshShovel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
 	//[불렛팩토리 안에 불렛 디폴트로 추가] <불렛을 변수에 담아 놓고 내가 원하는 때에 스폰하려고 변수로 담아 놓는 것> //★★★아직도 왜 필요한지 이해 안됨 ㅠ ㅠ
 	ConstructorHelpers::FClassFinder<ARIM_Bullet> tempBul(TEXT("Blueprint'/Game/BluePrint/BP_RIM_Bullet.BP_RIM_Bullet_C'"));
 	if (tempBul.Succeeded())
@@ -270,25 +283,29 @@ void ARIM_Player::InputPunchGrab()
 	//if (isplayerDown == true || isplayerDie == true)  return; //플레이어가 살아있을때만 공격할 수 있게 한다. 플레이어가 누워있거나, 죽어있으면 InputPunchGrab 함수를 실행하지 않는다.
 	if (playerState == EPlayerState::KnockDown || playerState == EPlayerState::Die) return;
 
-	if (compMeshGun->IsVisible()) //만약 플레이어가 총을 들고 있으면(플레이어가 든 총이 보이면) -> 총에서 총알을 발사한다
+	if (compMeshGun->IsVisible()) //플레이어가 총을 들고 있으면 -> 총에서 총알을 발사한다
 	{
 		//플레이어 애니메이션 몽타주 중 '파이어' 애니메이션 재생
 		animPlayer->PlayPlayerAnim(TEXT("Fire"), 0);
 		//총알 스폰
 		GetWorld()->SpawnActor<ARIM_Bullet>(bulletFactory, GetActorLocation() + GetActorForwardVector() * 200, GetActorRotation());
 	}
-	else if (compMeshLollipop->IsVisible()) //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있으면(플레이어가 든 롤리팝이 보이면) -> 롤리팝으로 공격한다
+	else if (compMeshLollipop->IsVisible()) //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있으면 -> 롤리팝으로 공격한다
  	{
 		//플레이어 애니메이션 몽타주 중 '롤리팝' 애니메이션 재생
 		animPlayer->PlayPlayerTwoAnim(TEXT("Lollipop"), 0);
-		//
 		TargetDotAttack();
+	}
+	else if (compMeshShovel->IsVisible()) //플레이어가 총, 롤리팝을 들고 있지 않고, 삽을 들고 있으면 -> 삽으로 공격한다
+	{
+		//플레이어 애니메이션 몽타주 중 '삽' 애니메이션 재생
+		TargetDotAttack();
+	
 	}
 	else //플레이어가 총을 들고 있지 않고, 롤리팝을 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 
 	{
 		//플레이어 애니메이션 몽타주 중 '펀치' 애니메이션 재생
 		animPlayer->PlayPlayerAnim(TEXT("Punch"), 0);
-		//
 		TargetDotAttack();
 	}
 }
@@ -303,7 +320,6 @@ void ARIM_Player::InputKickToss()
 
 	//플레이어 애니메이션 몽타주 중 '킥' 애니메이션 재생
 	animPlayer->PlayPlayerTwoAnim(TEXT("Kick"), 0);
-	//
 	TargetDotAttack();
 }
 
@@ -317,7 +333,6 @@ void ARIM_Player::InputHeadbutt()
 
 	//플레이어 애니메이션 몽타주 중 '헤딩' 애니메이션 재생
 	animPlayer->PlayPlayerAnim(TEXT("Headbutt"), 0);
-	//
 	TargetDotAttack();
 }
 
@@ -325,16 +340,24 @@ void ARIM_Player::InputHeadbutt()
 //[플레이어에 총이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleGun()
 {
-	if (compMeshLollipop->IsVisible()) return; //총 들고 있을 때 롤리팝 못 들게 한다. 플레이어가 롤리팝을 들고 있으면 VisibleGun 함수를 실행하지 않는다.
+	if (compMeshLollipop->IsVisible() || compMeshShovel->IsVisible()) return; //총, 삽 들고 있을 때 롤리팝 못 들게 한다. 플레이어가 롤리팝을 들고 있으면 VisibleGun 함수를 실행하지 않는다.
 	compMeshGun->SetVisibility(true); //플레이어가 든 총이 보이게 한다
 }
 
 //[플레이어에 롤리팝이 보이게 하는 함수 구현]
 void ARIM_Player::VisibleLollipop()
 {
-	if (compMeshGun->IsVisible()) return; //롤리팝 들고 있을 때 총 못 들게 한다. 플레이어가 총을 들고 있으면 VisibleLollipop 함수를 실행하지 않는다.
+	if (compMeshGun->IsVisible() || compMeshShovel->IsVisible()) return; //총, 삽 들고 있을 때 총 못 들게 한다. 플레이어가 총을 들고 있으면 VisibleLollipop 함수를 실행하지 않는다.
 	compMeshLollipop->SetVisibility(true); //플레이어가 든 롤리팝이 보이게 한다
 }
+
+//[플레이어에 삽이 보이게 하는 함수 구현]
+void ARIM_Player::VisibleShovel()
+{
+	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible()) return;
+	compMeshShovel->SetVisibility(true);
+}
+
 
 //[무기 버리기 이벤트 처리 함수 구현]
 void ARIM_Player::InputDropWeapon()
@@ -401,7 +424,7 @@ void ARIM_Player::Die()
 	playerState = EPlayerState::Die;
 }
 
-//[플레이어의 시야안에서 보이는 에너미의 거리를 재서 가까우면 맞게하는 함수] 
+//[도트. 플레이어의 시야안에서 보이는 에너미의 거리를 재서 가까우면 맞게하는 함수] 
 void ARIM_Player::TargetDotAttack()
 {
 	for (int32 i = 0; i < enemyarray.Num(); i++)
