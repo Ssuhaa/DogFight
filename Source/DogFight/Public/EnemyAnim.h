@@ -28,6 +28,11 @@ public:
 	bool isLollipopget =false;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 	bool isGunget = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	bool isShovel = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	bool isTennis = false;
+
 
 	UFUNCTION()
 	void AnimNotify_Attack();

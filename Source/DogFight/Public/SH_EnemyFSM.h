@@ -67,6 +67,8 @@ public:
 	float GunRange = 400.0f; //총들었을 때 거리
 	float LollipopRange = 120.0f; // 롤리팝 들었을 때 거리
 	float defaultRange = 150.0f; // 아무것도 들지않았을 때 거리
+	float ShovelRange = 120.0f;
+	float TennisRange = 120.0f;
 
 
 	void OnDamageProcess(); //피격알림

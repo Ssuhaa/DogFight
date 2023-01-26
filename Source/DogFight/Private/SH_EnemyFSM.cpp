@@ -235,7 +235,7 @@ void USH_EnemyFSM::RandomTarget() //랜덤 타겟 찾기
 	AWeapon* CurrentWeaponTarget = Cast<AWeapon>(target);
 	if (CurrentWeaponTarget != nullptr)
 	{
-		if (anim->isGunget || anim->isLollipopget)
+		if (anim->isGunget || anim->isLollipopget||anim->isTennis||anim->isShovel)
 		{
 			RandomTarget();
 		}
@@ -286,6 +286,14 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		else if (anim->isLollipopget)
 		{
 			WeaponAnimChange(false, LollipopRange);
+		}
+		else if(anim->isShovel)
+		{
+			WeaponAnimChange(false, ShovelRange);
+		}
+		else if(anim->isTennis)
+		{
+			WeaponAnimChange(false, TennisRange);
 		}
 		else
 		{
@@ -361,6 +369,16 @@ void USH_EnemyFSM::DropWeapon() //무기 해제
 	{
 		ItemSpawn->CreateWeapon(1, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
 		anim->isLollipopget = false;
+	}
+	else if(anim->isShovel == true)
+	{
+		ItemSpawn->CreateWeapon(2, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
+		anim->isShovel = false;
+	}
+	else if (anim->isTennis == true)
+	{
+		ItemSpawn->CreateWeapon(3, me->GetActorLocation() + FVector(0, 50, 50), me->GetActorRotation());
+		anim->isTennis = false;
 	}
 	me->compMesh->SetStaticMesh(nullptr);
 }

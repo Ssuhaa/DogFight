@@ -121,7 +121,7 @@ void AWeapon::GetWeapon()
 	if (Enemy != nullptr)
 	{
 		if (Enemy->fsm->mState == EEnemyState::Damage || Enemy->fsm->mState == EEnemyState::Down || Enemy->fsm->mState == EEnemyState::Die || Enemy->fsm->mState == EEnemyState::Attack) return;
-		if (Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false)
+		if (Enemy->fsm->anim->isGunget == false && Enemy->fsm->anim->isLollipopget == false&& Enemy->fsm->anim->isShovel == false&& Enemy->fsm->anim->isTennis == false)
 		{
 
 			Enemy->GetEnemyWeapon(compMesh->GetStaticMesh(), Soketname);
@@ -133,6 +133,14 @@ void AWeapon::GetWeapon()
 			else if (WeaponType == EWeaponType::Gun)
 			{
 				Enemy->fsm->anim->isGunget = true;
+			}
+			else if (WeaponType == EWeaponType::Shovel)
+			{
+				Enemy->fsm->anim->isShovel = true;
+			}
+			else if (WeaponType == EWeaponType::Tennis)
+			{
+				Enemy->fsm->anim->isTennis = true;
 			}
 			ItemSpawn->DeleteWeapon(this);
 			Destroy();
