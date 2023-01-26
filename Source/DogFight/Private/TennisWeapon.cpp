@@ -5,9 +5,9 @@
 
 ATennisWeapon::ATennisWeapon() //Ãß°¡
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT(""));
-	if (tempMesh.Succeeded())
-	{
-		compMesh->SetStaticMesh(tempMesh.Object);
-	}
+// 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT(""));
+// 	if (tempMesh.Succeeded())
+// 	{
+// 		compMesh->SetStaticMesh(tempMesh.Object);
+// 	}
 }
