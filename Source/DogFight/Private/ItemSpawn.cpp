@@ -7,6 +7,7 @@
 #include "GunWeapon.h"
 #include "LollipopWeapon.h"
 #include "ShovelWeapon.h"
+#include "TennisWeapon.h"
 
 // Sets default values
 AItemSpawn::AItemSpawn()
@@ -31,6 +32,11 @@ AItemSpawn::AItemSpawn()
 	if (tempShove.Succeeded())
 	{
 		ItemArray.Add(tempShove.Class);
+	}
+	ConstructorHelpers::FClassFinder <ATennisWeapon> tempTenis(TEXT("Class'/Script/DogFight.TennisWeapon'"));
+	if (tempTenis.Succeeded())
+	{
+		ItemArray.Add(tempTenis.Class);
 	}
 	
 }

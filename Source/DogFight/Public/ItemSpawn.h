@@ -32,6 +32,7 @@ public:
 	TArray<TSubclassOf<class AWeapon>> ItemArray;
 
 	float CurrentTime =10;
+	UPROPERTY(EditAnywhere)
 	float SpawnTime = 10;
 
 	void CreateWeapon(int32 index, FVector SpwanLocation, FRotator SpwanRotation);

@@ -102,6 +102,14 @@ void ASH_Enemy::Tick(float DeltaTime)
 		DeadBlock->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+	if (fsm->mState == EEnemyState::Down)
+	{
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_03"), false);
+	}
+	else
+	{
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_03"), true);
+	}
 
 }
 
