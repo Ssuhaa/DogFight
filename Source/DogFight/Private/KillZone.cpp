@@ -64,4 +64,5 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 			weapon->Destroy();
 		}
 	}
+
 }

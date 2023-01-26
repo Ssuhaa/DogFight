@@ -93,7 +93,7 @@ ARIM_Player::ARIM_Player() //생성자
 		compMeshShovel->SetStaticMesh(tempShoveMesh.Object);
 	}
 	compMeshShovel->SetRelativeLocation(FVector(-5, 5, 25));
-	compMeshShovel->SetRelativeRotation(FRotator(10, 1, -76));
+	compMeshShovel->SetRelativeRotation(FRotator(-6, 100, -85));
 	compMeshShovel->SetRelativeScale3D(FVector(0.8f));
 	compMeshShovel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -105,8 +105,8 @@ ARIM_Player::ARIM_Player() //생성자
 	{
 		compMeshTennis->SetStaticMesh(tempTennisMesh.Object);
 	}
-	compMeshTennis->SetRelativeLocation(FVector(-5, 11, 25));
-	compMeshTennis->SetRelativeRotation(FRotator(10, 1, -76));
+	compMeshTennis->SetRelativeLocation(FVector(-4, -2, 0));
+	compMeshTennis->SetRelativeRotation(FRotator(34, -73, 232));
 	compMeshTennis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[불렛 클래스 가져와서 등록. 불렛팩토리 안에 불렛 디폴트로 추가] <불렛을 변수에 담아 놓고 내가 원하는 때에 스폰하려고 변수로 담아 놓는 것>
@@ -447,7 +447,7 @@ void ARIM_Player::VisibleShovel()
 //[플레이어에 테니스가 보이게 하는 함수 구현]
 void ARIM_Player::VisibleTennis()
 {
-	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible() || compMeshShovel->IsVisible()) return //총 or 롤리팝 or 삽을 들고 있을 때 테니스라켓을 못 들게 한다.
+	if (compMeshGun->IsVisible() || compMeshLollipop->IsVisible() || compMeshShovel->IsVisible()) return; //총 or 롤리팝 or 삽을 들고 있을 때 테니스라켓을 못 들게 한다.
 	compMeshTennis->SetVisibility(true);
 }
 
