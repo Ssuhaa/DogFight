@@ -39,6 +39,7 @@ ARIM_Player::ARIM_Player() //생성자
 		GetMesh()->SetSkeletalMesh(tempMesh.Object); 
 	}
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0)); 
+	GetMesh()->SetCollisionProfileName(TEXT("Player")); //피짘스 사용해서 넣어야 함
 
 	//[플레이어 본체 충돌 컴포넌트 Collision 세팅]
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player")); //콜리전 프리셋을 Player 로 설정. Player 프리셋 엔진에서 만듬 
@@ -263,7 +264,14 @@ void ARIM_Player::Tick(float DeltaTime)
 		FVector v = GetVelocity().GetSafeNormal();
 		GetCharacterMovement()->Velocity = v * 600;
 	}
-
+	if (playerState == EPlayerState::KnockDown)
+	{
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_01"), false);
+	}
+	else
+	{
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_01"), true);
+	}
 }
 
 
@@ -380,7 +388,7 @@ void ARIM_Player::InputPunchGrab()
 	}
 	else if (compMeshTennis->IsVisible()) //플레이어가 총, 롤리팝, 삽을 들고 있지 않고, 테니스 라켓을 들고 있으면 -> 테니스 라켓으로 공격한다
 	{ 
-		//animPlayer->PlayPlayerAnim(TEXT("Tennis"), 0); //플레이어 애니메이션 몽타주 중 '테니스' 애니메이션 재생
+		animPlayer->PlayPlayerTwoAnim(TEXT("Lollipop"), 0); //플레이어 애니메이션 몽타주 중 '테니스' 애니메이션 재생
 		TargetDotAttack();
 	}
 	else //플레이어가 총, 롤리팝, 삽 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 
