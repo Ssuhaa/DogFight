@@ -12,7 +12,7 @@
 #include <Components/Overlay.h>
 
 ADogFightGameModeBase::ADogFightGameModeBase()
-{
+{ 
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FClassFinder<UTimer> tempTimeWG(TEXT("WidgetBlueprint'/Game/BluePrint/BP_Timer.BP_Timer_C'"));

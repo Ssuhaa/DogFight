@@ -57,7 +57,14 @@ public:
 	UFUNCTION()
 	void GetEnemyWeapon(UStaticMesh* WeaponMesh, FString soketname);
 
+	UPROPERTY(EditAnywhere)
+	class UPhysicalAnimationComponent* PhysicComp;
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* DeadBlock;
+
 
 	void AddTarget(AActor* actor);
 	void RemoveTarget(AActor* actor);
+	void setPhysicsData();
 };
