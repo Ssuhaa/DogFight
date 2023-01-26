@@ -208,4 +208,12 @@ public:
 	//enum. bool 대신 사용
 	EPlayerState playerState = EPlayerState::Idle;
 
+
+
+	/*UPROPERTY(EditAnywhere)
+	 TSubclassOf<class USkeletalMesh> aaa;
+
+	UPROPERTY(EditAnywhere)
+	class USkeletalMesh* bbb;*/
+
 };

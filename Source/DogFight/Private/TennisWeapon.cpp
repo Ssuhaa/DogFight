@@ -5,9 +5,11 @@
 
 ATennisWeapon::ATennisWeapon() //Ãß°¡
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT(""));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("StaticMesh'/Game/Geometry/SM_shovel.SM_shovel'"));
 	if (tempMesh.Succeeded())
 	{
 		compMesh->SetStaticMesh(tempMesh.Object);
 	}
+	Soketname = TEXT("Tennis");
+	WeaponType = EWeaponType::Tennis;
 }
