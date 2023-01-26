@@ -42,18 +42,9 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 	AFogManager* FogManager = Cast<AFogManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AFogManager::StaticClass())); //FogManager 이 무엇인지 알려줘야 한다
-
-	//[정림 추가]
-	//테스트1(XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)
-	//float moveDist = FVector::Distance(FogManager->GetActorLocation(), OtherActor->GetActorLocation()); //AliveZone 원점(위치)과 킬존에 부딪힌 액터들(위치)의 거리. 간격
-	//FVector moveDist = OtherActor->GetActorLocation() - FogManager->GetActorLocation(); //킬존에 부딪힌 액터 위치 - AliveZone 위치
-	//if (moveDist.Length() > FogManager->aliveRange) //액터들이 AliveZone 범위를 벗어나면
 	
-	//테스트2
-	if (FogManager->isAlive == false) //★★★이거 오류남. 멤버가 없다는데 뭐야!!!!!!!!!!!!!!!!!!!!!!
+	if (FogManager->isAlive == false)
 	{
-		UE_LOG(LogTemp, Error, TEXT("chicken111111111111111111111111111111111111111111111"));
-
 		//[수하님 코드]
 		Player = Cast<ARIM_Player>(OtherActor);
 		if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
@@ -72,7 +63,5 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 			ItemSpawn->DeleteWeapon(weapon);
 			weapon->Destroy();
 		}
-
-
 	}
 }

@@ -99,14 +99,14 @@ ARIM_Player::ARIM_Player() //생성자
 	//[테니스라켓 스태틱메시 컴포넌트 추가]
 	compMeshTennis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TennisMeshComp"));
 	compMeshTennis->SetupAttachment(GetMesh(), TEXT("Tennis"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempTennisMesh(TEXT("StaticMesh'/Game/Geometry/SM_shovel.SM_shovel'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempTennisMesh(TEXT("StaticMesh'/Game/Geometry/Tenis.Tenis'"));
 	if (tempTennisMesh.Succeeded())
 	{
 		compMeshTennis->SetStaticMesh(tempTennisMesh.Object);
 	}
-	compMeshShovel->SetRelativeLocation(FVector(-5, 11, 25));
-	compMeshShovel->SetRelativeRotation(FRotator(10, 1, -76));
-	compMeshShovel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	compMeshTennis->SetRelativeLocation(FVector(-5, 11, 25));
+	compMeshTennis->SetRelativeRotation(FRotator(10, 1, -76));
+	compMeshTennis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[불렛 클래스 가져와서 등록. 불렛팩토리 안에 불렛 디폴트로 추가] <불렛을 변수에 담아 놓고 내가 원하는 때에 스폰하려고 변수로 담아 놓는 것>
 	ConstructorHelpers::FClassFinder<ARIM_Bullet> tempBul(TEXT("Blueprint'/Game/BluePrint/BP_RIM_Bullet.BP_RIM_Bullet_C'"));
@@ -149,6 +149,21 @@ ARIM_Player::ARIM_Player() //생성자
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnim.Class); //플레이어->메시->애니메이션->애님클래스 에 추가. Anim Class 에 드롭다운으로 ABP_Player 추가
 	}
+
+	PhysicComp = CreateDefaultSubobject<UPhysicalAnimationComponent>(TEXT("PhysicalAnim"));
+
+	DeadBlock = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DeadBlock"));
+	ConstructorHelpers::FObjectFinder <UStaticMesh> tempCube(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	if (tempCube.Succeeded())
+	{
+		DeadBlock->SetStaticMesh(tempCube.Object);
+	}
+	DeadBlock->SetupAttachment(GetMesh());
+	DeadBlock->SetRelativeLocation(FVector(0, -30, 170));
+	DeadBlock->SetRelativeScale3D(FVector(0.75f, 1.5f, 2.0f));
+	DeadBlock->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DeadBlock->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
+	DeadBlock->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
@@ -181,6 +196,26 @@ void ARIM_Player::BeginPlay()
 		ASH_Enemy* currentenemy = Cast <ASH_Enemy>(enemyActor[i]);
 		enemyarray.Add(currentenemy);
 	}
+
+	setPhysicsData();
+}
+
+void ARIM_Player::setPhysicsData()
+{
+
+	FPhysicalAnimationData PhysicalAnimDate;
+	PhysicalAnimDate.bIsLocalSimulation = true;
+	PhysicComp->StrengthMultiplyer = 1.0f;
+	PhysicalAnimDate.OrientationStrength = 5000.0f;
+	PhysicalAnimDate.AngularVelocityStrength = 100.0f;
+	PhysicalAnimDate.PositionStrength = 5000.0f;
+	PhysicalAnimDate.VelocityStrength = 100.0f;
+	PhysicalAnimDate.MaxAngularForce = 100.0f;
+	PhysicalAnimDate.MaxLinearForce = 100.0f;
+
+	PhysicComp->SetSkeletalMeshComponent(GetMesh());
+	PhysicComp->ApplyPhysicalAnimationSettingsBelow(TEXT("spine_01"), PhysicalAnimDate, true);
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_01"), true);
 }
 
 // Called every frame
@@ -222,6 +257,13 @@ void ARIM_Player::Tick(float DeltaTime)
 			UGameplayStatics::OpenLevel(GetWorld(), "Result"); //결과 레벨(화면)을 연다
 		}
 	}
+
+	if (GetVelocity().Length() > 650) //벨로시티가 650이상이면 강제로 600으로 맞춰준다.
+	{
+		FVector v = GetVelocity().GetSafeNormal();
+		GetCharacterMovement()->Velocity = v * 600;
+	}
+
 }
 
 

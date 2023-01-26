@@ -216,4 +216,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USkeletalMesh* bbb;*/
 
+	UPROPERTY(EditAnywhere)
+	class UPhysicalAnimationComponent* PhysicComp;
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* DeadBlock;
+
+	void setPhysicsData();
+
 };
+

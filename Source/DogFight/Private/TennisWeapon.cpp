@@ -5,7 +5,7 @@
 
 ATennisWeapon::ATennisWeapon() //Ãß°¡
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("StaticMesh'/Game/Geometry/SM_shovel.SM_shovel'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("StaticMesh'/Game/Geometry/Tenis.Tenis'"));
 	if (tempMesh.Succeeded())
 	{
 		compMesh->SetStaticMesh(tempMesh.Object);
