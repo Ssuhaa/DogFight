@@ -139,8 +139,6 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 				if (me->GetCharacterMovement()->IsFalling() == false)
 				{	
 					stateChange(EEnemyState::Jump);
-					me->GetCharacterMovement()->JumpZVelocity = 600;
-					me->GetCharacterMovement()->AirControl = 1;
 					me->Jump();
 
 				}
@@ -157,8 +155,6 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 				if (me->GetCharacterMovement()->IsFalling() == false)
 				{
 					stateChange(EEnemyState::Jump);
-					me->GetCharacterMovement()->JumpZVelocity = 600;
-					me->GetCharacterMovement()->AirControl = 1;
 					me->Jump();
 				}
 			}
@@ -174,7 +170,7 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 }
 void USH_EnemyFSM::JumpState()
 {
-	if (me->GetActorLocation().Z < 5 || me->GetCharacterMovement()->IsFalling() == false)
+	if (me->GetCharacterMovement()->IsFalling() == false)
 	{
 		stateChange(EEnemyState::Move);
 	}

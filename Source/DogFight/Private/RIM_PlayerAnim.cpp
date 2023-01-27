@@ -68,7 +68,7 @@ void URIM_PlayerAnim::PlayPlayerTwoAnim(FString Name, int32 index)
 	player->PlayAnimMontage(playerMontageTwo, 1.0f, FName(*sectionName)); //플레이어에서 몽타주를 가져 온다???
 }
 
-// void URIM_PlayerAnim::AnimNotify_MovementStart()
-//{
-//	player->GetCharacterMovement()->
-//}
+void URIM_PlayerAnim::AnimNotify_MovementStart()
+{
+	player->GetCharacterMovement()->SetActive(true);
+}

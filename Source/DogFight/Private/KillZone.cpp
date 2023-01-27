@@ -14,9 +14,9 @@
 // Sets default values
 AKillZone::AKillZone()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box")); 
+	compBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	SetRootComponent(compBox);
 	compBox->SetBoxExtent(FVector(2500, 2500, 200));
 	compBox->SetCollisionProfileName(TEXT("OverlapAll"));
@@ -26,7 +26,7 @@ AKillZone::AKillZone()
 void AKillZone::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -42,29 +42,25 @@ void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
 	AFogManager* FogManager = Cast<AFogManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AFogManager::StaticClass())); //FogManager 이 무엇인지 알려줘야 한다
-	
-	if (FogManager->isAlive == false)
-	{
-		//[수하님 코드]
-		Player = Cast<ARIM_Player>(OtherActor);
-		if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
-		{
-			//킬존에 플레이어가 닿이면 죽는 코드
-			Player->Die();
-		}
-		Enemy = Cast<ASH_Enemy>(OtherActor);
-		if (Enemy != nullptr)
-		{
-			Enemy->fsm->stateChangeMontage(EEnemyState::Die,TEXT("Die"));
-		}
 
-		weapon = Cast<AWeapon>(OtherActor);
-		if (weapon != nullptr)
-		{
-			ItemSpawn->DeleteWeapon(weapon);
-			weapon->Destroy();
-		}
+		//[수하님 코드]
+	Player = Cast<ARIM_Player>(OtherActor);
+	if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
+	{
+		//킬존에 플레이어가 닿이면 죽는 코드
+		Player->Die();
 	}
-	
+	Enemy = Cast<ASH_Enemy>(OtherActor);
+	if (Enemy != nullptr)
+	{
+		Enemy->fsm->stateChangeMontage(EEnemyState::Die, TEXT("Die"));
+	}
+
+	weapon = Cast<AWeapon>(OtherActor);
+	if (weapon != nullptr)
+	{
+		ItemSpawn->DeleteWeapon(weapon);
+		weapon->Destroy();
+	}
 
 }

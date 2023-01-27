@@ -66,18 +66,18 @@ ASH_Enemy::ASH_Enemy()
 
 	PhysicComp = CreateDefaultSubobject<UPhysicalAnimationComponent>(TEXT("PhysicalAnim"));
 
-	DeadBlock = CreateDefaultSubobject<UStaticMeshComponent> (TEXT("DeadBlock"));
-	ConstructorHelpers::FObjectFinder <UStaticMesh> tempCube(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
-	if (tempCube.Succeeded())
-	{
-		DeadBlock->SetStaticMesh(tempCube.Object);
-	}
-	DeadBlock->SetupAttachment(GetMesh());
-	DeadBlock->SetRelativeLocation( FVector(0, -30,170));
-	DeadBlock->SetRelativeScale3D(FVector(0.75f, 1.5f, 2.0f));
-	DeadBlock->SetCollisionResponseToAllChannels(ECR_Ignore);
-	DeadBlock->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
-	DeadBlock->SetVisibility(false);
+// 	DeadBlock = CreateDefaultSubobject<UStaticMeshComponent> (TEXT("DeadBlock"));
+// 	ConstructorHelpers::FObjectFinder <UStaticMesh> tempCube(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+// 	if (tempCube.Succeeded())
+// 	{
+// 		DeadBlock->SetStaticMesh(tempCube.Object);
+// 	}
+// 	DeadBlock->SetupAttachment(GetMesh());
+// 	DeadBlock->SetRelativeLocation( FVector(0, -30,170));
+// 	DeadBlock->SetRelativeScale3D(FVector(0.75f, 1.5f, 2.0f));
+// 	DeadBlock->SetCollisionResponseToAllChannels(ECR_Ignore);
+// 	DeadBlock->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
+// 	DeadBlock->SetVisibility(false);
 
 // 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 // 	GetCharacterMovement()->bUseRVOAvoidance = true;
@@ -89,7 +89,8 @@ ASH_Enemy::ASH_Enemy()
 		AIControllerClass = tempcon.Class;
 
 	}
-
+	GetCharacterMovement()->JumpZVelocity = 600;
+	GetCharacterMovement()->AirControl = 1;
 }
 
 // Called when the game starts or when spawned

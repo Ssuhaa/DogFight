@@ -412,7 +412,7 @@ void ARIM_Player::InputKickToss()
 	animPlayer->PlayPlayerTwoAnim(TEXT("Kick"), 0); //플레이어 애니메이션 몽타주 중 '킥' 애니메이션 재생
 	TargetDotAttack();
 
-	//GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->SetActive(false);
 }
 
 
@@ -463,26 +463,26 @@ void ARIM_Player::InputDropWeapon()
 	AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass())); //★★★???
 	if (compMeshGun->IsVisible()) //플레이어가 총을 들고 있으면
 	{
-		compMeshGun->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Gun), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //GunWeapon이 플레이어 위치의 바닥에 스폰된다. //★★★어떤 원리???
+		compMeshGun->SetVisibility(false); //플레이어의 총 컴포넌트가 안보이게한다
 		UE_LOG(LogTemp, Error, TEXT("Player Gun Drop!")); //확인용 텍스트 출력
 	}
 	else if (compMeshLollipop->IsVisible()) //플레이어가 롤리팝을 들고 있으면
 	{
-		compMeshLollipop->SetVisibility(false);
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Lollipop), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //★★★어떤 원리???
+		compMeshLollipop->SetVisibility(false);
 		UE_LOG(LogTemp, Error, TEXT("Player Lollipop Drop!"));
 	}
 	else if (compMeshShovel->IsVisible()) //플레이어가 삽을 들고 있으면
 	{
-		compMeshShovel->SetVisibility(false);
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Shovel), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //★★★어떤 원리???
+		compMeshShovel->SetVisibility(false);
 		UE_LOG(LogTemp, Error, TEXT("Player Shovel Drop!"));
 	}
 	else if (compMeshTennis->IsVisible()) //플레이어가 테니스라켓을 들고 있으면
 	{
-		compMeshTennis->SetVisibility(false);
 		ItemSpawn->CreateWeapon(int32(EWeaponType::Tennis), GetActorLocation() + FVector(0, 50, 50), GetActorRotation()); //★★★어떤 원리???
+		compMeshTennis->SetVisibility(false);
 		UE_LOG(LogTemp, Error, TEXT("Player Tennis Drop!"));
 	}
 }
@@ -492,15 +492,13 @@ void ARIM_Player::InputDropWeapon()
 void ARIM_Player::OnDamageProcess()
 {
 	HP--; //플레이어 HP 1씩 감소
-	UE_LOG(LogTemp, Error, TEXT("%d"), HP); //확인용 텍스트 출력
-
+	UE_LOG(LogTemp, Error, TEXT("%d"), HP); //확인용 텍스트 출
+	InputDropWeapon();
 	if (HP > 0)
 	{
 		//플레이어 애니메이션 몽타주 중 '데미지' 애니메이션 랜덤 재생
 		rand = FMath::RandRange(0, 2);
 		animPlayer->PlayPlayerTwoAnim(TEXT("Damaged"), rand);
-		//무기 떨어트리는 함수 호출
-		InputDropWeapon();
 		UE_LOG(LogTemp, Error, TEXT("Player Damaged!")); //확인용 텍스트 출력
 	}
 	else if (HP <= 0) //만약 에너미한테 5번 공격 받으면(HP가 5이고 공격 받을때마다 HP가 1씩 줄어드니까 5번 공격 받는 것은 HP가 0이 되는 것과 동일하다)
@@ -508,9 +506,6 @@ void ARIM_Player::OnDamageProcess()
 		//플레이어 애니메이션 몽타주 중 '넉다운' 애니메이션 랜덤 재생
 		rand = FMath::RandRange(0, 1);
 		animPlayer->PlayPlayerTwoAnim(TEXT("Knockdown"), rand); //5초 후 일어나는 코드는 Tick에서 구현한다. 시간이 흘러야 하니까
-		//무기 떨어트리는 함수 호출
-		InputDropWeapon();
-
 		//플레이어 누움. 기절 함
 		//isplayerDown = true;
 		playerState = EPlayerState::KnockDown;

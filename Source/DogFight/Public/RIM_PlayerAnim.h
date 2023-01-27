@@ -54,7 +54,7 @@ public:
 	bool bAir = false; //공중에 있을 때 true
 
 public:
-// 	UFUNCTION()
-// 	void AnimNotify_MovementStart();
+	UFUNCTION()
+	void AnimNotify_MovementStart();
 
 };
