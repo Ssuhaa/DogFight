@@ -10,7 +10,7 @@
 #include "SH_Player.h"
 #include "EnemyAnim.h"
 #include <Components/CapsuleComponent.h>
-#include <NavigationInvokerComponent.h>
+#include <AIModule/Classes/AIController.h>
 
 
 // Sets default values
@@ -61,8 +61,8 @@ ASH_Enemy::ASH_Enemy()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	Navi = CreateDefaultSubobject<UNavigationInvokerComponent> (TEXT("NavigationInvoker"));
-	Navi->SetGenerationRadii(1000,1200);
+// 	Navi = CreateDefaultSubobject<UNavigationInvokerComponent> (TEXT("NavigationInvoker"));
+// 	Navi->SetGenerationRadii(1000,1500);
 
 	PhysicComp = CreateDefaultSubobject<UPhysicalAnimationComponent>(TEXT("PhysicalAnim"));
 
@@ -78,6 +78,17 @@ ASH_Enemy::ASH_Enemy()
 	DeadBlock->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DeadBlock->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
 	DeadBlock->SetVisibility(false);
+
+// 	GetCharacterMovement()->JumpZVelocity = 600.0f;
+// 	GetCharacterMovement()->bUseRVOAvoidance = true;
+// 	GetCharacterMovement()->AvoidanceConsiderationRadius = 100;
+
+	ConstructorHelpers::FClassFinder <AAIController> tempcon(TEXT("Class'/Script/AIModule.DetourCrowdAIController'"));
+	if (tempcon.Succeeded())
+	{
+		AIControllerClass = tempcon.Class;
+
+	}
 
 }
 
@@ -95,19 +106,12 @@ void ASH_Enemy::Tick(float DeltaTime)
 
 	if (fsm->mState == EEnemyState::Die || fsm->mState == EEnemyState::Down)
 	{
-		DeadBlock->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	}
-	else
-	{
-		DeadBlock->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-
-	if (fsm->mState == EEnemyState::Down)
-	{
+		/*DeadBlock->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);*/
 		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_03"), false);
 	}
 	else
 	{
+		/*DeadBlock->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
 		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_03"), true);
 	}
 

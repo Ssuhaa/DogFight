@@ -17,6 +17,7 @@
 #include "Timer.h"
 #include <Components/VerticalBox.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <NavigationSystem.h>
 
 // Sets default values for this component's properties
 USH_EnemyFSM::USH_EnemyFSM()
@@ -89,6 +90,12 @@ void USH_EnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	case EEnemyState::Wakeup:
 		WakeupState();
 		break;
+	case EEnemyState::Run:
+		RunState();
+		break;
+	case EEnemyState::Jump:
+		JumpState();
+		break;
 	}
 
 	if (me->GetVelocity().Length() > 650) //벨로시티가 650이상이면 강제로 600으로 맞춰준다.
@@ -127,6 +134,17 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 			{
 				stateChange(EEnemyState::Attack);
 			}
+			else if (me->GetActorLocation().Z < 0 &&  target->GetActorLocation().Z > 0)
+			{
+				if (me->GetCharacterMovement()->IsFalling() == false)
+				{	
+					stateChange(EEnemyState::Jump);
+					me->GetCharacterMovement()->JumpZVelocity = 600;
+					me->GetCharacterMovement()->AirControl = 1;
+					me->Jump();
+
+				}
+			}
 		}
 		else if (target->GetName().Contains(TEXT("Weapon")))
 		{
@@ -134,7 +152,18 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 			{
 				RandomTarget();
 			}
+			else if (me->GetActorLocation().Z < 0 && target->GetActorLocation().Z > -80)
+			{	
+				if (me->GetCharacterMovement()->IsFalling() == false)
+				{
+					stateChange(EEnemyState::Jump);
+					me->GetCharacterMovement()->JumpZVelocity = 600;
+					me->GetCharacterMovement()->AirControl = 1;
+					me->Jump();
+				}
+			}
 		}
+		
 	}
 	else
 	{
@@ -142,6 +171,17 @@ void USH_EnemyFSM::MoveState()//이동 상태 함수
 		RandomTarget();
 	}
 
+}
+void USH_EnemyFSM::JumpState()
+{
+	if (me->GetActorLocation().Z < 5 || me->GetCharacterMovement()->IsFalling() == false)
+	{
+		stateChange(EEnemyState::Move);
+	}
+	else
+	{	
+		me->SetActorLocation(me->GetActorLocation() + me->GetActorForwardVector() * GetWorld()->DeltaTimeSeconds * 500);
+	}
 }
 
 void USH_EnemyFSM::PickupState() // 줍기 상태 함수
@@ -169,6 +209,18 @@ void USH_EnemyFSM::AttackState()//공격 상태 함수
 void USH_EnemyFSM::DamageState() //피격 상태 함수정의
 {
 	if (isDelay(damageDelayTime))
+	{
+		stateChange(EEnemyState::Run);
+	}
+}
+void  USH_EnemyFSM::RunState()
+{
+	EPathFollowingRequestResult::Type Aireuslt = AI->MoveToLocation(randPos);
+	if (Aireuslt == EPathFollowingRequestResult::AlreadyAtGoal)
+	{
+		stateChange(EEnemyState::Idle);
+	}
+	if(isDelay(RunDelayTime))
 	{
 		stateChange(EEnemyState::Idle);
 	}
@@ -302,6 +354,12 @@ void USH_EnemyFSM::stateChange(EEnemyState state)//스테이트 변경 후 초�
 		break;
 	case EEnemyState::Pickup:
 		
+		break;
+	case EEnemyState::Run:
+		UNavigationSystemV1* ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+		FNavLocation loc;
+		ns->GetRandomReachablePointInRadius(me->GetActorLocation(), 1000, loc);
+		randPos = loc.Location;
 		break;
 	}
 }

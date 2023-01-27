@@ -40,7 +40,7 @@ public:
 
 	//AliveZone 원 줄어드는 시간
 	UPROPERTY(EditAnywhere)
-	float scaleSpeed = 0.1f; //0.008f
+	float scaleSpeed = 0.01f; //0.008f
 
 	//AliveZone 원 반지름
 	UPROPERTY(EditAnywhere)
