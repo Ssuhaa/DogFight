@@ -92,9 +92,9 @@ ARIM_Player::ARIM_Player() //생성자
 	{
 		compMeshShovel->SetStaticMesh(tempShoveMesh.Object);
 	}
-	compMeshShovel->SetRelativeLocation(FVector(-5, 5, 25));
-	compMeshShovel->SetRelativeRotation(FRotator(-6, 100, -85));
-	compMeshShovel->SetRelativeScale3D(FVector(0.8f));
+	compMeshShovel->SetRelativeLocation(FVector(0, 4, -5));
+	compMeshShovel->SetRelativeRotation(FRotator(3, 170, 89));
+	//compMeshShovel->SetRelativeScale3D(FVector(0.8f));
 	compMeshShovel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[테니스라켓 스태틱메시 컴포넌트 추가]
@@ -106,7 +106,7 @@ ARIM_Player::ARIM_Player() //생성자
 		compMeshTennis->SetStaticMesh(tempTennisMesh.Object);
 	}
 	compMeshTennis->SetRelativeLocation(FVector(-4, -2, 0));
-	compMeshTennis->SetRelativeRotation(FRotator(34, -73, 232));
+	compMeshTennis->SetRelativeRotation(FRotator(34, -73, -68));
 	compMeshTennis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//[불렛 클래스 가져와서 등록. 불렛팩토리 안에 불렛 디폴트로 추가] <불렛을 변수에 담아 놓고 내가 원하는 때에 스폰하려고 변수로 담아 놓는 것>
@@ -275,7 +275,6 @@ void ARIM_Player::Tick(float DeltaTime)
 }
 
 
-
 // Called to bind functionality to input
 void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -383,12 +382,12 @@ void ARIM_Player::InputPunchGrab()
 	}
 	else if (compMeshShovel->IsVisible()) //플레이어가 총, 롤리팝을 들고 있지 않고, 삽을 들고 있으면 -> 삽으로 공격한다
 	{
-		animPlayer->PlayPlayerAnim(TEXT("Swing"), 0); //플레이어 애니메이션 몽타주 중 '삽' 애니메이션 재생
+		animPlayer->PlayPlayerTwoAnim(TEXT("Lollipop"), 0); //플레이어 애니메이션 몽타주 중 '삽' 애니메이션 재생
 		TargetDotAttack();
 	}
 	else if (compMeshTennis->IsVisible()) //플레이어가 총, 롤리팝, 삽을 들고 있지 않고, 테니스 라켓을 들고 있으면 -> 테니스 라켓으로 공격한다
 	{ 
-		animPlayer->PlayPlayerTwoAnim(TEXT("Lollipop"), 0); //플레이어 애니메이션 몽타주 중 '테니스' 애니메이션 재생
+		animPlayer->PlayPlayerAnim(TEXT("Swing"), 0); //플레이어 애니메이션 몽타주 중 '테니스' 애니메이션 재생
 		TargetDotAttack();
 	}
 	else //플레이어가 총, 롤리팝, 삽 들고 있지 않고 InputPunchGrab 버튼을 누르면 -> 펀치한다 

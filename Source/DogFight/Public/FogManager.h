@@ -61,6 +61,7 @@ public:
 public:
 	void AliveZone();
 	void FindActorPos();
+	void DestroyObject(AActor* actor); //¡Ú¡Ú¡Ú Ãß°¡
 	
 	bool isAlive = true;
 	float delayTime = 0;

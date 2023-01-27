@@ -9,6 +9,10 @@
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/Character.h>
 #include "Weapon.h"
+#include "RIM_Player.h"
+#include "SH_Enemy.h"
+#include "SH_EnemyFSM.h"
+#include "ItemSpawn.h"
 
 // Sets default values
 AFogManager::AFogManager()
@@ -55,7 +59,7 @@ void AFogManager::AliveZone()
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	
-	if (scale < 15)
+	if (scale < 5)
 	{
 		scaleSpeed = 0;
 	}
@@ -78,8 +82,8 @@ void AFogManager::AliveZone()
 
 	compMeshAlive->SetRelativeScale3D(FVector(scale));
 
-	r = scale * 100 / 2; //AliveZone 원 반지름
-	aliveRange = GetActorLocation().Y + r; //AliveZone 범위. 원점에서 반지름까지 위치? 거리? ★★★400 이 아니라 위치 Y 값!!!
+	aliveRange = scale * 100 / 2; //AliveZone 원 반지름. AliveZone 범위. 원점에서 반지름까지 위치? 거리?
+	//aliveRange = r; //AliveZone 범위. 원점에서 반지름까지 위치? 거리? ★★★400 이 아니라 위치 Y 값!!!
 	FindActorPos();
 }
 
@@ -102,16 +106,48 @@ void AFogManager::FindActorPos()
 	for (int32 i = 0; i < Characters.Num(); i++)
 	{
 		actorPos = Characters[i]->GetActorLocation(); //캐릭터(액터)들의 위치
+		actorPos.Z = GetActorLocation().Z; //캐릭터(액터)의 높이와 AliveZone 높이를 맞춰준다. 캐릭터는 0 보다 높게 있고 AliveZone은 높이가 0 이었다.
 		moveDist = FVector::Distance(this->GetActorLocation(), actorPos); //AlvieZone 원점(위치)과 액터들(위치)의 거리. 간격
 
 		if (moveDist > aliveRange) //액터(플레이어, 에너미 등)가 Alive 영역 안에 없으면, 원 밖에 있으면
 		{
-			isAlive = false; //Alive 아님 ---> Kill
+			DestroyObject(Characters[i]);
+			//isAlive = false; //Alive 아님 ---> Kill
 		}
 		else //액터가 Alive 영역 안에 있다
 		{
-			isAlive = true; //Alive 맞음
+			//isAlive = true; //Alive 맞음
 		}
+	}
+
+	
+}
+
+
+void AFogManager::DestroyObject(AActor* actor) //★★★ 추가. 킬존 필요 없어도 될 듯 하다
+{
+	ARIM_Player* Player = Cast<ARIM_Player>(actor);
+	if (Player != nullptr) // 킬존에 닿인 것이 플레이어일 때
+	{
+		if (Player->playerState != EPlayerState::Die)
+		{
+			Player->Die(); //킬존에 플레이어가 닿이면 죽는 코드
+		}
+	}
+	ASH_Enemy* Enemy = Cast<ASH_Enemy>(actor);
+	if (Enemy != nullptr)
+	{
+		if (Enemy->fsm->mState != EEnemyState::Die)
+		{
+			Enemy->fsm->stateChangeMontage(EEnemyState::Die, TEXT("Die"));
+		}
+	}
+	AWeapon* weapon = Cast<AWeapon>(actor);
+	if (weapon != nullptr)
+	{
+		AItemSpawn* ItemSpawn = Cast<AItemSpawn>(UGameplayStatics::GetActorOfClass(GetWorld(), AItemSpawn::StaticClass()));
+		ItemSpawn->DeleteWeapon(weapon);
+		weapon->Destroy();
 	}
 }
 

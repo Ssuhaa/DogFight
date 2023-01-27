@@ -3,7 +3,7 @@
 
 #include "TennisWeapon.h"
 
-ATennisWeapon::ATennisWeapon() //추가
+ATennisWeapon::ATennisWeapon() //생성자. 추가
 {
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("StaticMesh'/Game/Geometry/Tenis.Tenis'"));
 	if (tempMesh.Succeeded())
