@@ -19,6 +19,8 @@ enum class EEnemyState : uint8
 	Down,
 	Pickup,
 	Wakeup,
+	Run,
+	Jump,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -49,6 +51,8 @@ public:
 	void DownState();//넉백 상태 함수
 	void PickupState();//픽업 상태함수
 	void WakeupState();// 일어나는 상태 함수
+	void RunState();
+	void JumpState();
 
 
 	UPROPERTY(VisibleAnywhere, Category=FSM)
@@ -97,6 +101,8 @@ public:
 	float WakeupDelayTime = 1.0f; //깨어남 대기시간
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
 	float PickupDelayTime = 0.2f; //잡기 대기시간
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = FSM)
+	float RunDelayTime = 2.0f;
 	bool isDelay(float delaytime); //딜레이 함수
 
 
@@ -135,5 +141,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UDownWidget> dieUI;
+
+	FVector randPos;
 
 };
