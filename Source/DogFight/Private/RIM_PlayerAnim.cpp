@@ -3,6 +3,8 @@
 
 #include "RIM_PlayerAnim.h"
 #include "RIM_Player.h"
+#include <GameFramework/Character.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 void URIM_PlayerAnim::NativeBeginPlay()
 {
@@ -44,8 +46,12 @@ void URIM_PlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 		//두 벡터를 내적한 값을 dirHdp 세팅하기(할당하기)
 		dirH = FVector::DotProduct(rightVector, velocity);
 
+		//공중에 있는지 여부 세팅
+		bAir = player->GetCharacterMovement()->IsFalling();
 
 	}
+
+
 }
 
 //[섞인 애니메이션 ---> 플레이어 공격 몽타주 애니메이션 재생 함수 구현] //★★★???
@@ -61,3 +67,8 @@ void URIM_PlayerAnim::PlayPlayerTwoAnim(FString Name, int32 index)
 	FString sectionName = FString::Printf(TEXT("%s%d"), *Name, index); //섹션네임(한글+숫자 조합)
 	player->PlayAnimMontage(playerMontageTwo, 1.0f, FName(*sectionName)); //플레이어에서 몽타주를 가져 온다???
 }
+
+// void URIM_PlayerAnim::AnimNotify_MovementStart()
+//{
+//	player->GetCharacterMovement()->
+//}

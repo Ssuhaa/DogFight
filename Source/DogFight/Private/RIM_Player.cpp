@@ -138,7 +138,7 @@ ARIM_Player::ARIM_Player() //생성자
 	}
 
 	//[무기 드랍할때 스폰할 테니스라켓 가져와서 등록]
-	ConstructorHelpers::FClassFinder<ATennisWeapon> tempTennis(TEXT("Class'/Script/DogFight.ShovelWeapon'"));
+	ConstructorHelpers::FClassFinder<ATennisWeapon> tempTennis(TEXT("Class'/Script/DogFight.TennisWeapon'"));
 	if (tempTennis.Succeeded())
 	{
 		weaponTennis = tempTennis.Class;
@@ -165,6 +165,8 @@ ARIM_Player::ARIM_Player() //생성자
 	DeadBlock->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DeadBlock->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
 	DeadBlock->SetVisibility(false);
+
+	GetCharacterMovement()->JumpZVelocity = jumpZ;
 }
 
 // Called when the game starts or when spawned
@@ -267,10 +269,12 @@ void ARIM_Player::Tick(float DeltaTime)
 	if (playerState == EPlayerState::KnockDown)
 	{
 		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_01"), false);
+		DeadBlock->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 	else
 	{
 		GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("spine_01"), true);
+		DeadBlock->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
@@ -294,7 +298,7 @@ void ARIM_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	//[달리기 입력 이벤트 처리 함수 바인딩/호출]
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ARIM_Player::InputRun);
-	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ARIM_Player::InputRun);
+	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ARIM_Player::InputRun); //★★★ 왜 필요?
 
 	//[공격/잡기 이벤트 처리 함수 바인딩/호출] = 총알 발사 + 펀치 + 무기 공격
 	PlayerInputComponent->BindAction(TEXT("PunchGrab"), IE_Pressed, this, &ARIM_Player::InputPunchGrab);
@@ -407,6 +411,8 @@ void ARIM_Player::InputKickToss()
 
 	animPlayer->PlayPlayerTwoAnim(TEXT("Kick"), 0); //플레이어 애니메이션 몽타주 중 '킥' 애니메이션 재생
 	TargetDotAttack();
+
+	//GetCharacterMovement()->DisableMovement();
 }
 
 

@@ -65,14 +65,14 @@ void AFogManager::AliveZone()
 	}
 	else
 	{
-		if (currentTime < 30)
+		if (currentTime < 10)
 		{
 			scale -= scaleSpeed;
 		}
 		else
 		{
 			delayTime += GetWorld()->DeltaTimeSeconds;
-			if (delayTime > 10)
+			if (delayTime > 20)
 			{
 				currentTime = 0;
 				delayTime = 0;

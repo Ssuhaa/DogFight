@@ -33,10 +33,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float dirH = 0;
 
-	//점프. 공중에 있는지 여부
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bAir = false;
-
 	//"섞인 애니메이션" 플레이어 애니메이션 몽타주
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* playerMontage;
@@ -53,5 +49,12 @@ public:
 	UFUNCTION()
 	void PlayPlayerTwoAnim(FString Name, int32 index); //저장할 섹션 이름을 받을 FName 타입 sectionName을 매개변수로 갖는 함수
 
+	//점프. 공중에 있는지 여부
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bAir = false; //공중에 있을 때 true
+
+public:
+// 	UFUNCTION()
+// 	void AnimNotify_MovementStart();
 
 };

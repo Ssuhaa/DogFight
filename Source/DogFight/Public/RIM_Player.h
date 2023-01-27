@@ -208,14 +208,11 @@ public:
 	//enum. bool 대신 사용
 	EPlayerState playerState = EPlayerState::Idle;
 
-
-
-	/*UPROPERTY(EditAnywhere)
-	 TSubclassOf<class USkeletalMesh> aaa;
-
 	UPROPERTY(EditAnywhere)
-	class USkeletalMesh* bbb;*/
+	float jumpZ = 500;
 
+
+public:
 	UPROPERTY(EditAnywhere)
 	class UPhysicalAnimationComponent* PhysicComp;
 
@@ -223,6 +220,15 @@ public:
 	class UStaticMeshComponent* DeadBlock;
 
 	void setPhysicsData();
+
+
+public:
+	/*UPROPERTY(EditAnywhere)
+	TSubclassOf<class USkeletalMesh> aaa;
+
+	UPROPERTY(EditAnywhere)
+	class USkeletalMesh* bbb;*/
+
 
 };
 
